@@ -5,16 +5,18 @@ class Projectile:
     color: str
     x_speed: int
     y_speed: int
+    damage: int
     # type: str
     player_number: int
 
-    def __init__(self, x, y, c, r, xs, ys, pn):
+    def __init__(self, x, y, c, r, xs, ys, d, pn):
         self.x = x
         self.y = y
         self.color = c
         self.radius = r
         self.x_speed = xs
         self.y_speed = ys
+        self.damage = d
         self.player_number = pn
         # self.type = t
 
