@@ -25,6 +25,8 @@ class Robot:
     robots_base_path = "./../Robots/"
     recoil_percent = 0.1
     hit_cooldown = 0
+    attack_start: int
+    attack_buffer: int
 
     def __init__(self, x, y, r, a, am, aam, vm, hm, c, pn):
         self.posx = x
@@ -64,7 +66,7 @@ class Robot:
         self.vel = v
 
     def change_alpha(self, a):
-        self.alpha = a
+        self.alpha = a % 360
 
     def change_velocity_cap(self, v):
         if abs(v) < self.vel_max:
@@ -132,6 +134,55 @@ class Robot:
         distance = math.sqrt(dx * dx + dy * dy)
 
         return distance
+
+    def melee_rework(self, pygame, screen, robots, arena):
+        if self.melee_cd == 0:
+            if self.alpha == 0:  # right
+                self.attack_start = 315
+            elif self.alpha == 90:  # down
+                self.attack_start = 45
+            elif self.alpha == 180:  # left
+                self.attack_start = 135
+            elif self.alpha == 270:  # up
+                self.attack_start = 225
+            else:  # failsafe
+                print("how did you do this? alpha=", self.alpha)
+            new_x = self.radius * (math.cos(math.radians(self.attack_start)))
+            new_y = self.radius * (math.sin(math.radians(self.attack_start)))
+            line_start = (self.posx + new_x, self.posy + new_y)
+            line_end = (self.posx + new_x * 2.5, self.posy + new_y * 2.5)
+            pygame.draw.line(screen, "red", line_start, line_end, width=4)
+            self.attack_buffer = 0
+        elif self.melee_cd % 5 == 0 and self.melee_cd <= 30:
+            self.attack_start = (self.attack_start + 15) % 360
+            new_x = self.radius * (math.cos(math.radians(self.attack_start)))
+            new_y = self.radius * (math.sin(math.radians(self.attack_start)))
+            line_start = (self.posx + new_x, self.posy + new_y)
+            line_end = (self.posx + new_x * 2.5, self.posy + new_y * 2.5)
+            pygame.draw.line(screen, "red", line_start, line_end, width=4)
+            self.attack_buffer = 4
+        elif self.attack_buffer > 0:
+            new_x = self.radius * (math.cos(math.radians(self.attack_start)))
+            new_y = self.radius * (math.sin(math.radians(self.attack_start)))
+            line_start = (self.posx + new_x, self.posy + new_y)
+            line_end = (self.posx + new_x * 2.5, self.posy + new_y * 2.5)
+            pygame.draw.line(screen, "red", line_start, line_end, width=4)
+            self.attack_buffer -= 1
+        for i in range(1, len(robots)):  # old hitreg should still work
+            # now I will use https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line:
+            # Line defined by two points
+            if (
+                    self.distance_from_segment(
+                        line_start[0], line_start[1], line_end[0], line_end[1], robots[i].posx, robots[i].posy
+                    )
+                    <= robots[i].radius
+            ):  # if the distance from this line to the center of a robot
+                # is smaller than it's radius, we have a hit and that robot takes some damage
+                # print(i, "hit")
+                robots[i].take_damage_debug(1)
+                if robots[i].hit_cooldown <= 0:
+                    self.recoil(arena, robots[i])
+
 
     def ranged_attack(self):
         if self.ranged_cd == 0 or self.ranged_cd == 10:
