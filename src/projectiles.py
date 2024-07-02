@@ -6,10 +6,10 @@ class Projectile:
     x_speed: int
     y_speed: int
     damage: int
-    # type: str
+    type: str
     player_number: int
 
-    def __init__(self, x, y, c, r, xs, ys, d, pn):
+    def __init__(self, x, y, c, r, xs, ys, d, pn, t):
         self.x = x
         self.y = y
         self.color = c
@@ -18,7 +18,7 @@ class Projectile:
         self.y_speed = ys
         self.damage = d
         self.player_number = pn
-        # self.type = t
+        self.type = t
 
     def move_projectile(self):
         self.x = self.x + self.x_speed

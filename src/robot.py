@@ -27,6 +27,7 @@ class Robot:
     hit_cooldown = 0
     attack_start: int
     attack_buffer: int
+    ranged_type: int  # 0 = normal 1= explosive
 
     def __init__(self, x, y, r, a, am, aam, vm, hm, c, pn):
         self.posx = x
@@ -183,7 +184,7 @@ class Robot:
                 if robots[i].hit_cooldown <= 0:
                     self.recoil(arena, robots[i])
 
-    def ranged_attack(self):
+    def ranged_attack(self, type):
         if self.ranged_cd == 0 or self.ranged_cd == 10:
             r = self.radius / 4
             if self.alpha == 0:  # right
@@ -208,12 +209,29 @@ class Robot:
                 y = self.posy - self.radius - r
             else:  # failsafe
                 print("how did you do this? alpha=", self.alpha)
-            c = "black"
-            d = 1
             pn = self.player_number  # projectile created by player number x
+            if type == "normal":
+                self.ranged_type = 0
+                t = type
+                d = 1
+                c = "black"
+            elif type == "explosive":
+                self.ranged_type = 1
+                t = type
+                r = r*2
+                xs = xs / 2
+                ys = ys / 2
+                d = 5
+                c = "gray"
+            else:
+                print("invalid type default to normal")
+                self.ranged_type = 0
+                t = "normal"
+                d = 1
+                c = "black"
             # this shouldn't be needed since the robot that owns the projectiles array has this number,
             # but I used this as a fix in ranged_hit_reg, in order to be unable to hit yourself
-            self.projectiles.append(Projectile(x, y, c, r, xs, ys, d, pn))  # this append must be the reason
+            self.projectiles.append(Projectile(x, y, c, r, xs, ys, d, pn, t))  # this append must be the reason
 
     def ranged_hit_reg(self, robots, screen_height, screen_width, arena):
         for i in range(0, len(robots)):

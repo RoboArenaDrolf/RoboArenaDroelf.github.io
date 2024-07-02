@@ -368,12 +368,17 @@ def player_robot_handling(player_robot):
         else:
             player_robot.melee_cd += 1
     # Player ranged attack cooldown
-    elif player_robot.ranged_cd != 0:
+    if player_robot.ranged_cd != 0 and player_robot.ranged_type == 0:
         if player_robot.ranged_cd == 60:
             player_robot.ranged_cd = 0
-        elif player_robot.ranged_cd < 11:  # second ranged attack at ranged_cd == 10
-            player_robot.ranged_attack()
+        elif player_robot.ranged_cd <= 10:  # second ranged attack at ranged_cd == 10
+            player_robot.ranged_attack("normal")
             player_robot.ranged_cd += 1
+        else:
+            player_robot.ranged_cd += 1
+    elif player_robot.ranged_cd != 0 and player_robot.ranged_type == 1:
+        if player_robot.ranged_cd == 120:
+            player_robot.ranged_cd = 0
         else:
             player_robot.ranged_cd += 1
 
@@ -452,8 +457,11 @@ while run:
                 ):  # we can attack if we have no cooldown and press the button
                     player_robot.melee_rework(pygame, screen, robots, arena)
                     player_robot.melee_cd += 1
-                elif key == pygame.K_r and (player_robot.ranged_cd == 0 or player_robot.ranged_cd == 10):
-                    player_robot.ranged_attack()
+                elif key == pygame.K_r and player_robot.ranged_cd == 0:
+                    player_robot.ranged_attack("normal")
+                    player_robot.ranged_cd += 1
+                elif key == pygame.K_t and player_robot.ranged_cd == 0:
+                    player_robot.ranged_attack("explosive")
                     player_robot.ranged_cd += 1
                 elif key == pygame.K_f:
                     player_robot.take_damage_debug(10)
