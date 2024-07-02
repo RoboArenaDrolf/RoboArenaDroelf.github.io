@@ -358,24 +358,22 @@ def player_robot_handling(player_robot):
     if player_robot.health <= 0:
         playing = False
         death = True
-    # attack will stay for a certain duration
-    if player_robot.melee_cd < 30 and player_robot.melee_cd != 0:
-        player_robot.melee_attack(pygame, screen, robots, arena)
-        player_robot.melee_cd += 1
     # Player melee attack cooldown
-    elif player_robot.melee_cd != 0:
-        if player_robot.melee_cd == 60:
+    if player_robot.melee_cd != 0:
+        if player_robot.melee_cd == 60:  # reset cooldown
             player_robot.melee_cd = 0
+        elif player_robot.melee_cd < 30:  # attack will stay for a certain duration
+            player_robot.melee_attack(pygame, screen, robots, arena)
+            player_robot.melee_cd += 1
         else:
             player_robot.melee_cd += 1
-    # second ranged attack at ranged_cd == 10
-    if player_robot.ranged_cd < 11 and player_robot.ranged_cd != 0:
-        player_robot.ranged_attack()
-        player_robot.ranged_cd += 1
     # Player ranged attack cooldown
     elif player_robot.ranged_cd != 0:
         if player_robot.ranged_cd == 60:
             player_robot.ranged_cd = 0
+        elif player_robot.ranged_cd < 11:  # second ranged attack at ranged_cd == 10
+            player_robot.ranged_attack()
+            player_robot.ranged_cd += 1
         else:
             player_robot.ranged_cd += 1
 
