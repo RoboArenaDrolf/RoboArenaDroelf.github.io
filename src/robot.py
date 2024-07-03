@@ -154,7 +154,7 @@ class Robot:
             line_end = (self.posx + new_x * 2.5, self.posy + new_y * 2.5)
             pygame.draw.line(screen, "red", line_start, line_end, width=4)
             self.attack_buffer = 0
-            self.hit_reg_line(robots, arena, line_start, line_end)
+            self.hit_reg_line(robots, arena, line_start, line_end, 1)
         elif self.melee_cd % 5 == 0 and self.melee_cd <= 30:
             self.attack_start = (self.attack_start + 15) % 360
             new_x = self.radius * (math.cos(math.radians(self.attack_start)))
@@ -162,7 +162,7 @@ class Robot:
             line_start = (self.posx + new_x, self.posy + new_y)
             line_end = (self.posx + new_x * 2.5, self.posy + new_y * 2.5)
             pygame.draw.line(screen, "red", line_start, line_end, width=4)
-            self.hit_reg_line(robots, arena, line_start, line_end)
+            self.hit_reg_line(robots, arena, line_start, line_end, 1)
             self.attack_buffer = 4
         elif self.attack_buffer > 0:
             new_x = self.radius * (math.cos(math.radians(self.attack_start)))
@@ -170,7 +170,7 @@ class Robot:
             line_start = (self.posx + new_x, self.posy + new_y)
             line_end = (self.posx + new_x * 2.5, self.posy + new_y * 2.5)
             pygame.draw.line(screen, "red", line_start, line_end, width=4)
-            self.hit_reg_line(robots, arena, line_start, line_end)
+            self.hit_reg_line(robots, arena, line_start, line_end, 1)
             self.attack_buffer -= 1
 
     def ranged_attack(self, type):
@@ -273,13 +273,15 @@ class Robot:
                     recty = robots[i].projectiles[n].y
                     rectr = robots[i].projectiles[n].radius
                     pygame.draw.rect(screen, "red", [rectx-4*rectr, recty-4*rectr, 8*rectr, 8*rectr], 1)
+                    testrect = pygame.Rect(rectx-4*rectr, recty-4*rectr, 8*rectr, 8*rectr)
+                    self.hit_reg_rect(robots, arena, testrect, 5)
                     # explosion is visible for a very short time
                     # sometimes it does not get displayed
                     # print("boom")
                     # tested with this, we do identify explosions correctly
                 robots[i].projectiles.pop(n)
 
-    def hit_reg_line(self, robots, arena, line_start, line_end):
+    def hit_reg_line(self, robots, arena, line_start, line_end, dmg):
         for i in range(1, len(robots)):  # old hitreg should still work
             # now I will use https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line:
             # Line defined by two points
@@ -291,12 +293,29 @@ class Robot:
             ):  # if the distance from this line to the center of a robot
                 # is smaller than it's radius, we have a hit and that robot takes some damage
                 # print(i, "hit")
-                robots[i].take_damage_debug(1)
+                robots[i].take_damage_debug(dmg)
                 if robots[i].hit_cooldown <= 0:
                     self.recoil(arena, robots[i])
 
-    def hit_reg_rect(self):
-        pass
+    def hit_reg_rect(self, robots, arena, rect, dmg):
+        # if we change our collision to be a hit box, we could use some builtin functions
+        tl = rect.topleft
+        tr = rect.topright
+        bl = rect.bottomleft
+        br = rect.bottomright
+        for i in range(1, len(robots)):
+            if ((bl[1] < robots[i].posy < tl[1] and bl[0] < robots[i].posx < br[0])  # inside of rect
+                    or (self.distance_from_segment(tl[0], tl[1], tr[0], tr[1], robots[i].posx, robots[i].posy)
+                        <= robots[i].radius)
+                    or (self.distance_from_segment(tl[0], tl[1], bl[0], bl[1], robots[i].posx, robots[i].posy)
+                        <= robots[i].radius)
+                    or (self.distance_from_segment(br[0], br[1], tr[0], tr[1], robots[i].posx, robots[i].posy)
+                        <= robots[i].radius)
+                    or (self.distance_from_segment(br[0], br[1], bl[0], bl[1], robots[i].posx, robots[i].posy)
+                        <= robots[i].radius)):  # or distance from robot to the sides of the rect is < robot radius
+                robots[i].take_damage_debug(dmg)
+                if robots[i].hit_cooldown <= 0:
+                    self.recoil(arena, robots[i])
 
     def decrease_hit_cooldown(self):
         if self.hit_cooldown > 0:
