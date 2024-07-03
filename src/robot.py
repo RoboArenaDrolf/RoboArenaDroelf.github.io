@@ -88,7 +88,7 @@ class Robot:
         else:
             self.health = 0
 
-    def melee_attack(self, pygame, screen, robots, arena):  # keep this for now -Björn
+    def melee_attack_old(self, pygame, screen, robots, arena):  # keep this for now -Björn
         new_x = self.radius * (math.cos(math.radians(self.alpha)))
         new_y = self.radius * (math.sin(math.radians(self.alpha)))
         line_start = (self.posx + new_x, self.posy + new_y)
@@ -136,7 +136,7 @@ class Robot:
 
         return distance
 
-    def melee_rework(self, pygame, screen, robots, arena):
+    def melee_attack(self, pygame, screen, robots, arena):
         if self.melee_cd == 0:
             if self.alpha == 0:  # right
                 self.attack_start = 315

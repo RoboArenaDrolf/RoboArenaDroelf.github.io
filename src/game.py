@@ -363,7 +363,7 @@ def player_robot_handling(player_robot):
         if player_robot.melee_cd == 60:  # reset cooldown
             player_robot.melee_cd = 0
         elif player_robot.melee_cd < 30:  # attack will stay for a certain duration
-            player_robot.melee_rework(pygame, screen, robots, arena)
+            player_robot.melee_attack(pygame, screen, robots, arena)
             player_robot.melee_cd += 1
         else:
             player_robot.melee_cd += 1
@@ -455,7 +455,7 @@ while run:
                 elif (
                     key == pygame.K_g and player_robot.melee_cd == 0
                 ):  # we can attack if we have no cooldown and press the button
-                    player_robot.melee_rework(pygame, screen, robots, arena)
+                    player_robot.melee_attack(pygame, screen, robots, arena)
                     player_robot.melee_cd += 1
                 elif key == pygame.K_r and player_robot.ranged_cd == 0:
                     player_robot.ranged_attack("normal")
