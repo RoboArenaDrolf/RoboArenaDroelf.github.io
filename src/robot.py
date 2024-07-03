@@ -273,8 +273,8 @@ class Robot:
                     recty = robots[i].projectiles[n].y
                     rectr = robots[i].projectiles[n].radius
                     pygame.draw.rect(screen, "red", [rectx-4*rectr, recty-4*rectr, 8*rectr, 8*rectr], 1)
-                    testrect = pygame.Rect(rectx-4*rectr, recty-4*rectr, 8*rectr, 8*rectr)
-                    self.hit_reg_rect(robots, arena, testrect, 5)
+                    explosive_rect = pygame.Rect(rectx-4*rectr, recty-4*rectr, 8*rectr, 8*rectr)
+                    self.hit_reg_rect(robots, arena, explosive_rect, 5)  # explosive damage is 5 for now
                     # explosion is visible for a very short time
                     # sometimes it does not get displayed
                     # print("boom")
@@ -303,7 +303,7 @@ class Robot:
         tr = rect.topright
         bl = rect.bottomleft
         br = rect.bottomright
-        for i in range(1, len(robots)):
+        for i in range(0, len(robots)):
             if ((bl[1] < robots[i].posy < tl[1] and bl[0] < robots[i].posx < br[0])  # inside of rect
                     or (self.distance_from_segment(tl[0], tl[1], tr[0], tr[1], robots[i].posx, robots[i].posy)
                         <= robots[i].radius)
