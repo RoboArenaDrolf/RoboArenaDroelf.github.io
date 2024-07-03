@@ -233,7 +233,11 @@ class Robot:
             # but I used this as a fix in ranged_hit_reg, in order to be unable to hit yourself
             self.projectiles.append(Projectile(x, y, c, r, xs, ys, d, pn, t))  # this append must be the reason
 
-    def ranged_hit_reg(self, robots, screen_height, screen_width, arena):
+    def ranged_hit_reg(self, pygame, screen, robots, arena):
+        # we can probably get screen_height and screen_width from the screen itself
+        screen_height = screen.get_height()
+        screen_width = screen.get_width()
+        # this should be it
         for i in range(0, len(robots)):
             to_delete = []
             for j in range(0, len(robots[i].projectiles)):
@@ -243,7 +247,7 @@ class Robot:
                         robots[i].posy - robots[i].projectiles[j].y
                     )
                     if distance < (robots[i].radius + robots[i].projectiles[j].radius):
-                        # we have a hit
+                        # we have a direct hit
                         robots[i].take_damage_debug(robots[i].projectiles[j].damage)
                         if robots[i].hit_cooldown <= 0:
                             self.recoil(arena, robots[i])
@@ -274,6 +278,16 @@ class Robot:
 
             to_delete = reversed(to_delete)  # reverse it so we delete the largest index first
             for n in to_delete:  # after the j loop we delete them
+                if robots[i].projectiles[n].type == "explosive":  # if projectile is explosive
+                    #  place holder explosion
+                    rectx = robots[i].projectiles[n].x
+                    recty = robots[i].projectiles[n].y
+                    rectr = robots[i].projectiles[n].radius
+                    pygame.draw.rect(screen, "red", [rectx-4*rectr, recty-4*rectr, 8*rectr, 8*rectr], 1)
+                    # explosion is visible for a very short time
+                    # sometimes it does not get displayed
+                    # print("boom")
+                    # tested with this, we do identify explosions correctly
                 robots[i].projectiles.pop(n)
 
     def decrease_hit_cooldown(self):
