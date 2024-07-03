@@ -27,7 +27,7 @@ class Robot:
     hit_cooldown = 0
     attack_start: int
     attack_buffer: int
-    ranged_type: int  # 0 = normal 1= explosive
+    ranged_explodes: bool  # false = normal true = explosive
 
     def __init__(self, x, y, r, a, am, aam, vm, hm, c, pn):
         self.posx = x
@@ -200,12 +200,12 @@ class Robot:
                 print("how did you do this? alpha=", self.alpha)
             pn = self.player_number  # projectile created by player number x
             if type == "normal":
-                self.ranged_type = 0
+                self.ranged_explodes = False
                 t = type
                 d = 1
                 c = "black"
             elif type == "explosive":
-                self.ranged_type = 1
+                self.ranged_explodes = True
                 t = type
                 r = r*2
                 xs = xs / 2
@@ -214,7 +214,7 @@ class Robot:
                 c = "gray"
             else:
                 print("invalid type default to normal")
-                self.ranged_type = 0
+                self.ranged_explodes = False
                 t = "normal"
                 d = 1
                 c = "black"

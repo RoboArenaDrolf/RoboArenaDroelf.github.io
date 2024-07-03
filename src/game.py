@@ -368,7 +368,7 @@ def player_robot_handling(player_robot):
         else:
             player_robot.melee_cd += 1
     # Player ranged attack cooldown
-    if player_robot.ranged_cd != 0 and player_robot.ranged_type == 0:
+    if player_robot.ranged_cd != 0 and (not player_robot.ranged_explodes):
         if player_robot.ranged_cd == 60:
             player_robot.ranged_cd = 0
         elif player_robot.ranged_cd <= 10:  # second ranged attack at ranged_cd == 10
@@ -376,7 +376,7 @@ def player_robot_handling(player_robot):
             player_robot.ranged_cd += 1
         else:
             player_robot.ranged_cd += 1
-    elif player_robot.ranged_cd != 0 and player_robot.ranged_type == 1:
+    elif player_robot.ranged_cd != 0 and player_robot.ranged_explodes:
         if player_robot.ranged_cd == 120:
             player_robot.ranged_cd = 0
         else:
