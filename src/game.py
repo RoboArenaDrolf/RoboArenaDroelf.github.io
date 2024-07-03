@@ -359,13 +359,22 @@ def player_robot_handling(player_robot):
         playing = False
         death = True
     # Player melee attack cooldown
-    if player_robot.melee_cd != 0:
+    if player_robot.melee_cd != 0 and (not player_robot.heavy_attack):
         if player_robot.melee_cd == 60:  # reset cooldown
             player_robot.melee_cd = 0
         elif player_robot.melee_cd < 30:  # attack will stay for a certain duration
-            player_robot.melee_attack(pygame, screen, robots, arena)
+            player_robot.melee_attack(pygame, screen, robots, arena, "light")
             player_robot.melee_cd += 1
         else:
+            player_robot.melee_cd += 1
+    elif player_robot.melee_cd != 0 and player_robot.heavy_attack:
+        if player_robot.melee_cd == 120:  # reset cooldown
+            player_robot.melee_cd = 0
+        elif player_robot.melee_cd <= 60:  # attack will stay for a certain duration
+            player_robot.melee_attack(pygame, screen, robots, arena, "heavy")
+            player_robot.melee_cd += 1
+        else:
+            player_robot.no_move = False  # after 60 Frames, attack is finished , we are allowed to move again
             player_robot.melee_cd += 1
     # Player ranged attack cooldown
     if player_robot.ranged_cd != 0 and (not player_robot.ranged_explodes):
@@ -384,17 +393,17 @@ def player_robot_handling(player_robot):
 
     # Player movement
     keys = pygame.key.get_pressed()
-    if keys[pygame.K_LEFT]:
+    if keys[pygame.K_LEFT] and (not player_robot.no_move):
         player_robot.change_acceleration(player_robot.accel - arena.tile_size / 1000.0)
         player_robot.change_alpha(180)
         direction_left = True
-    elif keys[pygame.K_RIGHT]:
+    elif keys[pygame.K_RIGHT] and (not player_robot.no_move):
         player_robot.change_acceleration(player_robot.accel + arena.tile_size / 1000.0)
         player_robot.change_alpha(0)
         direction_left = False
-    elif keys[pygame.K_DOWN]:
+    elif keys[pygame.K_DOWN] and (not player_robot.no_move):
         player_robot.change_alpha(90)
-    elif keys[pygame.K_UP]:
+    elif keys[pygame.K_UP] and (not player_robot.no_move):
         player_robot.change_alpha(270)
     else:
         if player_robot.vel < 0:
@@ -455,7 +464,13 @@ while run:
                 elif (
                     key == pygame.K_g and player_robot.melee_cd == 0
                 ):  # we can attack if we have no cooldown and press the button
-                    player_robot.melee_attack(pygame, screen, robots, arena)
+                    player_robot.melee_attack(pygame, screen, robots, arena, "light")
+                    player_robot.melee_cd += 1
+                elif (
+                        key == pygame.K_h and player_robot.melee_cd == 0
+                ):  # we can attack if we have no cooldown and press the button
+                    player_robot.melee_attack(pygame, screen, robots, arena, "heavy")
+                    player_robot.no_move = True  # charge attack no moving allowed
                     player_robot.melee_cd += 1
                 elif key == pygame.K_r and player_robot.ranged_cd == 0:
                     player_robot.ranged_attack("normal")
@@ -465,7 +480,7 @@ while run:
                     player_robot.ranged_cd += 1
                 elif key == pygame.K_f:
                     player_robot.take_damage_debug(10)
-                elif key == pygame.K_SPACE:
+                elif key == pygame.K_SPACE and (not player_robot.no_move):
                     if player_robot.jump_counter <= 1:
                         player_robot.jump = True
             elif build_arena:
