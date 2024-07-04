@@ -1,5 +1,6 @@
 import math
 import pygame
+from enum import Enum
 
 from src.projectiles import Projectile
 
@@ -26,6 +27,12 @@ class Robot:
     recoil_percent = 0.1
     hit_cooldown = 0
 
+    tile_below: int
+    # Normal/No effect = 0
+    # Lava = 1
+    # Ice = 2
+    # Sand = 3
+
     def __init__(self, x, y, r, a, am, aam, vm, hm, c, pn):
         self.posx = x
         self.posy = y
@@ -44,6 +51,7 @@ class Robot:
         self.second_robot = pygame.image.load(self.robots_base_path + "secondRobot.png")
         self.second_robot = pygame.transform.scale(self.second_robot, (self.radius * 2, self.radius * 2))
         self.second_robot_flipped = pygame.transform.flip(self.second_robot, True, False)
+        self.tile_below = 0
 
     def change_acceleration(self, a):
         if abs(a) <= self.accel_max:

@@ -134,6 +134,7 @@ class Arena:
                 elif self.tiles[y][x].lava:
                     return True
         return False
+
     def is_ice(self, x_positions, y_positions):
         for x in x_positions:
             for y in y_positions:
