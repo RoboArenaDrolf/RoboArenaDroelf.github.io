@@ -1,6 +1,5 @@
 import math
 import pygame
-from enum import Enum
 
 from src.projectiles import Projectile
 
