@@ -5,7 +5,6 @@ class Movement:
 
     def move_robot(self, robot, x, arena, dt):
         dt_scaled = dt / 15.0
-        print(robot.tile_below)
 
         # Bewegung in x-Richtung
         robot.posx += x * dt_scaled
