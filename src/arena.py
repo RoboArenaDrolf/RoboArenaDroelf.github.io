@@ -9,18 +9,21 @@ class Arena:
         Enum of different tile types, value of tile represents its filename.
         """
 
-        AIR = ("Air.png", False)
-        GRASS = ("Grass.png", True)
-        ICE = ("Ice.png", True)
-        SAND = ("Sand.png", True)
-        LAVA = ("Lava.png", True)
-        BIRCH = ("Birch.png", True)
-        LEAVES = ("Leaves.png", True)
-        SPAWN = ("Spawn.png", False)
+        AIR = ("Air.png", False, False, False, False)
+        GRASS = ("Grass.png", True, False, False, False)
+        ICE = ("Ice.png", True, False, True, False)
+        SAND = ("Sand.png", True, False, False, True)
+        LAVA = ("Lava.png", True, True, False, False)
+        BIRCH = ("Birch.png", True, False, False, False)
+        LEAVES = ("Leaves.png", True, False, False, False)
+        SPAWN = ("Spawn.png", False, False, False, False)
 
-        def __init__(self, filename, solid):
+        def __init__(self, filename, solid, lava, ice, sand):
             self.filename = filename
             self.solid = solid
+            self.lava = lava
+            self.ice = ice
+            self.sand = sand
             self.image = None
 
         @classmethod
