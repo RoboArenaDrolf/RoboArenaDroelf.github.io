@@ -422,6 +422,7 @@ def player_robot_handling(player_robot):
     movement.move_robot(player_robot, player_robot.vel, arena, dt)
     player_robot.paint_robot(pygame, screen, direction_left)
     player_robot.ranged_hit_reg(pygame, screen, robots, arena)
+    player_robot.handle_explosions(screen, arena, robots)
 
 
 while run:

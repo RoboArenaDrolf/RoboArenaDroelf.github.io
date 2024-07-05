@@ -30,6 +30,7 @@ class Robot:
     ranged_explodes: bool  # false = normal true = explosive
     heavy_attack: bool  # false = light true = heavy
     no_move = False  # false = moving allowed true = moving not allowed, start with allowed movement
+    explosions = []
 
     def __init__(self, x, y, r, a, am, aam, vm, hm, c, pn):
         self.posx = x
@@ -299,10 +300,10 @@ class Robot:
                     recty = robots[i].projectiles[n].y
                     rectr = robots[i].projectiles[n].radius
                     explosive_rect = pygame.Rect(rectx-4*rectr, recty-4*rectr, 8*rectr, 8*rectr)
-                    pygame.draw.rect(screen, "red", explosive_rect, 1)
-                    self.hit_reg_rect(robots, arena, explosive_rect, 5, -1)  # explosive damage is 5 for now
-                    # explosion is visible for a very short time 1 frame
-                    # sometimes it does not get displayed
+                    self.explosions.append(explosive_rect)  # add the explosion
+                    self.explosions.append(5)  # add the duration
+                    # could be consolidated into an object
+
                     # print("boom")
                     # tested with this, we do identify explosions correctly
                 robots[i].projectiles.pop(n)
@@ -361,6 +362,17 @@ class Robot:
         else:  # facing upwards
             robot.vertical_speed += -arena.map_size[1] / 100 * robot.recoil_percent  # recoil up again
         robot.recoil_percent += 0.05
+
+    def handle_explosions(self, screen, arena, robots):
+        for i in range(0, len(self.explosions)-1):
+            if self.explosions[i+1] > 0:
+                pygame.draw.rect(screen, "red", self.explosions[i], 1)
+                self.hit_reg_rect(robots, arena, self.explosions[i], 5, -1)  # explosive damage is 5 for now
+                self.explosions[i+1] -= 1
+            elif self.explosions[i+1] == 0:
+                self.explosions.pop(i+1)
+                self.explosions.pop(i)
+            i = i+1  # we want to jump 2 at a time
 
     def paint_robot(self, pygame, screen, direction_left):
         # Bild des Roboters zeichnen
