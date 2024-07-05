@@ -382,11 +382,19 @@ def player_robot_handling(player_robot):
     # Player movement
     keys = pygame.key.get_pressed()
     if keys[pygame.K_LEFT]:
-        player_robot.change_acceleration(player_robot.accel - arena.tile_size / 1000.0)
+        if player_robot.tile_below == 2:  # if we stand on ice
+            player_robot.change_acceleration((player_robot.accel - arena.tile_size / 1000.0) / 2)
+            # we accelerate half as fast as normal
+        else:
+            player_robot.change_acceleration(player_robot.accel - arena.tile_size / 1000.0)
         player_robot.change_alpha(180)
         direction_left = True
     elif keys[pygame.K_RIGHT]:
-        player_robot.change_acceleration(player_robot.accel + arena.tile_size / 1000.0)
+        if player_robot.tile_below == 2:  # if we stand on ice
+            player_robot.change_acceleration((player_robot.accel + arena.tile_size / 1000.0) / 2)
+            # we accelerate half as fast as normal
+        else:
+            player_robot.change_acceleration(player_robot.accel + arena.tile_size / 1000.0)
         player_robot.change_alpha(0)
         direction_left = False
     elif keys[pygame.K_DOWN]:
@@ -395,18 +403,28 @@ def player_robot_handling(player_robot):
         player_robot.change_alpha(270)
     else:
         if player_robot.vel < 0:
-            player_robot.change_acceleration(player_robot.accel + arena.tile_size / 2000.0)
+            if player_robot.tile_below == 2:
+                player_robot.change_acceleration((player_robot.accel + arena.tile_size / 2000.0)/2)
+            else:
+                player_robot.change_acceleration(player_robot.accel + arena.tile_size / 2000.0)
             if player_robot.vel + player_robot.accel >= 0:
                 player_robot.change_velocity_cap(0)
                 player_robot.change_acceleration(0)
         elif player_robot.vel > 0:
-            player_robot.change_acceleration(player_robot.accel - arena.tile_size / 2000.0)
+            if player_robot.tile_below == 2:
+                player_robot.change_acceleration((player_robot.accel - arena.tile_size / 2000.0)/2)
+            else:
+                player_robot.change_acceleration(player_robot.accel - arena.tile_size / 2000.0)
             if player_robot.vel + player_robot.accel <= 0:
                 player_robot.change_velocity_cap(0)
                 player_robot.change_acceleration(0)
         else:
             player_robot.change_acceleration(0)
-    player_robot.change_velocity_cap(player_robot.vel + player_robot.accel)
+    if player_robot.tile_below == 3:  # if we stand on sand
+        player_robot.change_velocity_cap_lower(player_robot.vel + player_robot.accel, player_robot.vel_max/2)
+        # can at best move half as fast as on a normal tile
+    else:
+        player_robot.change_velocity_cap(player_robot.vel + player_robot.accel)
     movement.move_robot(player_robot, player_robot.vel, arena, dt)
     player_robot.paint_robot(pygame, screen, direction_left)
     player_robot.ranged_hit_reg(robots, display_resolution[1], display_resolution[0], arena)

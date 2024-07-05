@@ -83,6 +83,18 @@ class Robot:
                 self.vel = self.vel_max
         # self.alpha = 270 + (90 / self.vel_max) * self.vel
 
+    def change_velocity_cap_lower(self, v, c):
+        if c < self.vel_max:
+            if abs(v) < c:
+                self.vel = v
+            else:
+                if v < 0:
+                    self.vel = -c
+                else:
+                    self.vel = c
+        else:
+            self.change_velocity_cap(v)
+
     def change_turn_velocity(self, va):
         self.vel = va
 
