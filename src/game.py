@@ -326,12 +326,12 @@ def bots_handling():
             robots[i].change_velocity_cap(robots[i].vel + robots[i].accel)
         robots[i].decrease_hit_cooldown()
         if robots[i].vel < 0:
-            robots[i].change_acceleration(robots[i].accel + arena.map_size[0] / 40000)
+            robots[i].change_acceleration(robots[i].accel + arena.tile_size / 2000.0)
             if robots[i].vel + robots[i].accel >= 0:
                 robots[i].change_velocity_cap(0)
                 robots[i].change_acceleration(0)
         elif robots[i].vel > 0:
-            robots[i].change_acceleration(robots[i].accel - arena.map_size[0] / 40000)
+            robots[i].change_acceleration(robots[i].accel - arena.tile_size / 2000.0)
             if robots[i].vel + robots[i].accel <= 0:
                 robots[i].change_velocity_cap(0)
                 robots[i].change_acceleration(0)
