@@ -319,7 +319,11 @@ def bots_handling():
             jump[i - 1] = random.choice([True, False])
     # Move and paint bots
     for i in range(1, len(robots)):
-        robots[i].change_velocity_cap(robots[i].vel + robots[i].accel)
+        if player_robot.tile_below == 3:  # if we stand on sand
+            player_robot.change_velocity_cap_lower(player_robot.vel + player_robot.accel, player_robot.vel_max/2)
+            # we can at best move half as fast as on a normal tile
+        else:
+            robots[i].change_velocity_cap(robots[i].vel + robots[i].accel)
         robots[i].decrease_hit_cooldown()
         if robots[i].vel < 0:
             robots[i].change_acceleration(robots[i].accel + arena.map_size[0] / 40000)
@@ -422,7 +426,7 @@ def player_robot_handling(player_robot):
             player_robot.change_acceleration(0)
     if player_robot.tile_below == 3:  # if we stand on sand
         player_robot.change_velocity_cap_lower(player_robot.vel + player_robot.accel, player_robot.vel_max/2)
-        # can at best move half as fast as on a normal tile
+        # we can at best move half as fast as on a normal tile
     else:
         player_robot.change_velocity_cap(player_robot.vel + player_robot.accel)
     movement.move_robot(player_robot, player_robot.vel, arena, dt)

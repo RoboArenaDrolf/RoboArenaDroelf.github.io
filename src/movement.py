@@ -154,6 +154,7 @@ class Movement:
         # Tastatureingaben verarbeiten
         if jump:
             robot.vertical_speed = (-arena.map_size[1] / 100) * dt_scaled  # Vertikale Geschwindigkeit für Sprung setzen
+            robot.tile_below = 0  # if we jump we no longer stand on a tile, might not be needed
 
     def check_collision_y(self, robot, arena):
         # Überprüfen, ob der Roboter mit einem festen Tile kollidiert auf y-Achse
