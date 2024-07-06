@@ -219,7 +219,6 @@ def handle_settings_menu_events():
             screen = pygame.display.set_mode(display_resolution)
         screens = Screens(pygame, available_resolutions, get_json_filenames(arena.maps_base_path))
         arena = Arena(map_filename, pygame)
-        screens = Screens(pygame)
         movement = Movement(arena.tile_size / 120.0)
         recalculate_robot_values()
 
@@ -354,21 +353,34 @@ def bots_handling():
     if frame_count >= change_direction_interval:
         for i in range(1, len(robots)):
             # Zufällige Änderungen der Beschleunigung und der Drehgeschwindigkeit
-            robots[i].change_acceleration(robots[i].accel + random.uniform(-1, 1))
+            if robots[i].tile_below == 2:  # if we stand on ice
+                robots[i].change_acceleration(robots[i].accel + (random.uniform(-1, 1)/2))
+            else:
+                robots[i].change_acceleration(robots[i].accel + random.uniform(-1, 1))
             # Setze den Zähler zurück
             frame_count = 0
             jump[i - 1] = random.choice([True, False])
     # Move and paint bots
     for i in range(1, len(robots)):
-        robots[i].change_velocity_cap(robots[i].vel + robots[i].accel)
+        if robots[i].tile_below == 3:  # if we stand on sand
+            robots[i].change_velocity_cap_lower(robots[i].vel + robots[i].accel, robots[i].vel_max/2)
+            # we can at best move half as fast as on a normal tile
+        else:
+            robots[i].change_velocity_cap(robots[i].vel + robots[i].accel)
         robots[i].decrease_hit_cooldown()
         if robots[i].vel < 0:
-            robots[i].change_acceleration(robots[i].accel + arena.map_size[0] / 40000)
+            if robots[i].tile_below == 2:  # if we stand on ice
+                robots[i].change_acceleration(robots[i].accel - (arena.tile_size / 1000.0)/2)
+            else:
+                robots[i].change_acceleration(robots[i].accel + arena.tile_size / 1000.0)
             if robots[i].vel + robots[i].accel >= 0:
                 robots[i].change_velocity_cap(0)
                 robots[i].change_acceleration(0)
         elif robots[i].vel > 0:
-            robots[i].change_acceleration(robots[i].accel - arena.map_size[0] / 40000)
+            if robots[i].tile_below == 2:  # if we stand on ice
+                robots[i].change_acceleration(robots[i].accel - (arena.tile_size / 1000.0)/2)
+            else:
+                robots[i].change_acceleration(robots[i].accel - arena.tile_size / 1000.0)
             if robots[i].vel + robots[i].accel <= 0:
                 robots[i].change_velocity_cap(0)
                 robots[i].change_acceleration(0)
@@ -441,18 +453,28 @@ def player_robot_handling(player_robot):
         moved = move_player_keys(player_robot, keys)
     if not moved:
         if player_robot.vel < 0:
-            player_robot.change_acceleration(player_robot.accel + arena.tile_size / 2000.0)
+            if player_robot.tile_below == 2:
+                player_robot.change_acceleration(player_robot.accel + (arena.tile_size / 2000.0)/2)
+            else:
+                player_robot.change_acceleration(player_robot.accel + arena.tile_size / 2000.0)
             if player_robot.vel + player_robot.accel >= 0:
                 player_robot.change_velocity_cap(0)
                 player_robot.change_acceleration(0)
         elif player_robot.vel > 0:
-            player_robot.change_acceleration(player_robot.accel - arena.tile_size / 2000.0)
+            if player_robot.tile_below == 2:
+                player_robot.change_acceleration(player_robot.accel - (arena.tile_size / 2000.0)/2)
+            else:
+                player_robot.change_acceleration(player_robot.accel - arena.tile_size / 2000.0)
             if player_robot.vel + player_robot.accel <= 0:
                 player_robot.change_velocity_cap(0)
                 player_robot.change_acceleration(0)
         else:
             player_robot.change_acceleration(0)
-    player_robot.change_velocity_cap(player_robot.vel + player_robot.accel)
+    if player_robot.tile_below == 3:  # if we stand on sand
+        player_robot.change_velocity_cap_lower(player_robot.vel + player_robot.accel, player_robot.vel_max/2)
+        # we can at best move half as fast as on a normal tile
+    else:
+        player_robot.change_velocity_cap(player_robot.vel + player_robot.accel)
     movement.move_robot(player_robot, player_robot.vel, arena, dt)
     player_robot.paint_robot(pygame, screen, direction_left)
     player_robot.ranged_hit_reg(pygame, screen, robots, arena)
@@ -462,11 +484,19 @@ def player_robot_handling(player_robot):
 def move_player_keys(player_robot, keys):
     global direction_left
     if keys[pygame.K_LEFT] and (not player_robot.no_move):
-        player_robot.change_acceleration(player_robot.accel - arena.tile_size / 1000.0)
+        if player_robot.tile_below == 2:  # if we stand on ice
+            player_robot.change_acceleration(player_robot.accel - (arena.tile_size / 1000.0)/2)
+            # we accelerate half as fast as normal
+        else:
+            player_robot.change_acceleration(player_robot.accel - arena.tile_size / 1000.0)
         player_robot.change_alpha(180)
         direction_left = True
     elif keys[pygame.K_RIGHT] and (not player_robot.no_move):
-        player_robot.change_acceleration(player_robot.accel + arena.tile_size / 1000.0)
+        if player_robot.tile_below == 2:  # if we stand on ice
+            player_robot.change_acceleration(player_robot.accel + (arena.tile_size / 1000.0)/2)
+            # we accelerate half as fast as normal
+        else:
+            player_robot.change_acceleration(player_robot.accel + arena.tile_size / 1000.0)
         player_robot.change_alpha(0)
         direction_left = False
     elif keys[pygame.K_DOWN] and (not player_robot.no_move):
@@ -485,11 +515,19 @@ def move_player_controller(player_robot, joystick):
     value_x = joystick.get_axis(0)
     value_y = joystick.get_axis(1)
     if value_x < -0.2 and (not player_robot.no_move):
-        player_robot.change_acceleration(player_robot.accel - arena.tile_size / 1000.0)
+        if player_robot.tile_below == 2:  # if we stand on ice
+            player_robot.change_acceleration(player_robot.accel - (arena.tile_size / 1000.0)/2)
+            # we accelerate half as fast as normal
+        else:
+            player_robot.change_acceleration(player_robot.accel - arena.tile_size / 1000.0)
         player_robot.change_alpha(180)
         direction_left = True
     elif value_x > 0.2 and (not player_robot.no_move):
-        player_robot.change_acceleration(player_robot.accel + arena.tile_size / 1000.0)
+        if player_robot.tile_below == 2:  # if we stand on ice
+            player_robot.change_acceleration(player_robot.accel + (arena.tile_size / 1000.0)/2)
+            # we accelerate half as fast as normal
+        else:
+            player_robot.change_acceleration(player_robot.accel + arena.tile_size / 1000.0)
         player_robot.change_alpha(0)
         direction_left = False
     elif value_y > 0.2 and (not player_robot.no_move):

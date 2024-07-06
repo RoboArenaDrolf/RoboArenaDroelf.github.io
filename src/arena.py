@@ -9,18 +9,21 @@ class Arena:
         Enum of different tile types, value of tile represents its filename.
         """
 
-        AIR = ("Air.png", False)
-        GRASS = ("Grass.png", True)
-        ICE = ("Ice.png", True)
-        SAND = ("Sand.png", True)
-        LAVA = ("Lava.png", True)
-        BIRCH = ("Birch.png", True)
-        LEAVES = ("Leaves.png", True)
-        SPAWN = ("Spawn.png", False)
+        AIR = ("Air.png", False, False, False, False)
+        GRASS = ("Grass.png", True, False, False, False)
+        ICE = ("Ice.png", True, False, True, False)
+        SAND = ("Sand.png", True, False, False, True)
+        LAVA = ("Lava.png", True, True, False, False)
+        BIRCH = ("Birch.png", True, False, False, False)
+        LEAVES = ("Leaves.png", True, False, False, False)
+        SPAWN = ("Spawn.png", False, False, False, False)
 
-        def __init__(self, filename, solid):
+        def __init__(self, filename, solid, lava, ice, sand):
             self.filename = filename
             self.solid = solid
+            self.lava = lava
+            self.ice = ice
+            self.sand = sand
             self.image = None
 
         @classmethod
@@ -120,5 +123,32 @@ class Arena:
                 if x < 0 or y < 0 or x >= self.num_tiles_x or y >= self.num_tiles_y:
                     return False
                 elif self.tiles[y][x].solid:
+                    return True
+        return False
+
+    def is_lava(self, x_positions, y_positions):
+        for x in x_positions:
+            for y in y_positions:
+                if x < 0 or y < 0 or x >= self.num_tiles_x or y >= self.num_tiles_y:
+                    return False
+                elif self.tiles[y][x].lava:
+                    return True
+        return False
+
+    def is_ice(self, x_positions, y_positions):
+        for x in x_positions:
+            for y in y_positions:
+                if x < 0 or y < 0 or x >= self.num_tiles_x or y >= self.num_tiles_y:
+                    return False
+                elif self.tiles[y][x].ice:
+                    return True
+        return False
+
+    def is_sand(self, x_positions, y_positions):
+        for x in x_positions:
+            for y in y_positions:
+                if x < 0 or y < 0 or x >= self.num_tiles_x or y >= self.num_tiles_y:
+                    return False
+                elif self.tiles[y][x].sand:
                     return True
         return False

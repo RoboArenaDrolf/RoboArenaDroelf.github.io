@@ -32,6 +32,12 @@ class Robot:
     no_move = False  # false = moving allowed true = moving not allowed, start with allowed movement
     explosions = []
 
+    tile_below: int
+    # Normal/No effect = 0
+    # Lava = 1
+    # Ice = 2
+    # Sand = 3
+
     def __init__(self, x, y, r, a, am, aam, vm, hm, c, pn):
         self.posx = x
         self.posy = y
@@ -50,6 +56,7 @@ class Robot:
         self.second_robot = pygame.image.load(self.robots_base_path + "secondRobot.png")
         self.second_robot = pygame.transform.scale(self.second_robot, (self.radius * 2, self.radius * 2))
         self.second_robot_flipped = pygame.transform.flip(self.second_robot, True, False)
+        self.tile_below = 0
 
     def change_acceleration(self, a):
         if abs(a) <= self.accel_max:
@@ -81,6 +88,18 @@ class Robot:
             else:
                 self.vel = self.vel_max
         # self.alpha = 270 + (90 / self.vel_max) * self.vel
+
+    def change_velocity_cap_lower(self, v, c):
+        if c < self.vel_max:
+            if abs(v) < c:
+                self.vel = v
+            else:
+                if v < 0:
+                    self.vel = -c
+                else:
+                    self.vel = c
+        else:
+            self.change_velocity_cap(v)
 
     def change_turn_velocity(self, va):
         self.vel = va
