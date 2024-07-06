@@ -212,7 +212,6 @@ class Robot:
                 robots[i].projectiles.pop(n)
 
     def decrease_hit_cooldown(self):
-        
         if self.hit_cooldown > 0:
             self.hit_cooldown -= 1
 

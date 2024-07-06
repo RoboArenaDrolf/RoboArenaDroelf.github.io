@@ -65,6 +65,7 @@ jumping_sound = pygame.mixer.Sound("Sounds/jumping.mp3")
 death_sound = pygame.mixer.Sound("Sounds/death.mp3")
 damage_sound = pygame.mixer.Sound("Sounds/damage.mp3")
 
+
 def get_json_filenames(directory):
     json_files = []
     # Gehe durch alle Dateien im angegebenen Verzeichnis
