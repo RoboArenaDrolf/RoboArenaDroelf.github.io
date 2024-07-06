@@ -219,7 +219,6 @@ def handle_settings_menu_events():
             screen = pygame.display.set_mode(display_resolution)
         screens = Screens(pygame, available_resolutions, get_json_filenames(arena.maps_base_path))
         arena = Arena(map_filename, pygame)
-        screens = Screens(pygame)
         movement = Movement(arena.tile_size / 120.0)
         recalculate_robot_values()
 
