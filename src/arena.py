@@ -36,8 +36,8 @@ class Arena:
                     pygame.image.load(base_path + member.filename).convert(), (tile_size, tile_size)
                 )
 
-    blocks_base_path = "../Tiles/"
-    maps_base_path = "./../Maps/"
+    blocks_base_path = "Tiles/"
+    maps_base_path = "Maps/"
 
     def __init__(self, filename, pygame):
         self.load_map_from_json(filename, pygame)
