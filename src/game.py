@@ -225,7 +225,7 @@ def handle_settings_menu_events():
 
 
 def handle_start_game_menu_events():
-    global robots, jump, start_game, map
+    global robots, jump, start_game, playing
 
     robot1 = Robot(
         arena.spawn_positions[0][0] + robot_radius,
@@ -286,12 +286,10 @@ def handle_start_game_menu_events():
         jump = [False, False]
         start_game = False
     elif four_player_item.pressed:
-        player_count = 4
         robots = [robot1, robot2, robot3, robot4]
         jump = [False, False, False]
     if robots:
         start_game = False
-        map = True
         reset_selected_item()
         playing = True
 
@@ -423,7 +421,7 @@ def player_robot_handling(player_robot):
             player_robot.ranged_cd += 1
 
     # Player movement
-    if use_controller:
+    if use_controller and joysticks:
         joystick = joysticks[0]
         moved = move_player_controller(player_robot, joystick)
     else:
