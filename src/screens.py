@@ -1,3 +1,7 @@
+import tkinter as tk
+from tkinter import messagebox
+
+
 class Screens:
     class MenuItem:
         def __init__(self, text, textcolor, font, dist_mult, display_resolution):
@@ -228,3 +232,10 @@ class Screens:
             item.draw(screen, pygame, self._black, self._display_resolution)
 
         return self.level_menu_items
+
+    @staticmethod
+    def show_popup(message):
+        root = tk.Tk()
+        root.withdraw()  # Verstecke das Haupt-Tkinter-Fenster
+        messagebox.showinfo("", message)
+        root.destroy()

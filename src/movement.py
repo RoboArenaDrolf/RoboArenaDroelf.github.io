@@ -48,7 +48,7 @@ class Movement:
         # Sprung
         if robot.jump:
             robot.vertical_speed = (
-                -arena.map_size[1] / 75
+                -arena.tile_size / 3.5
             ) * dt_scaled  # Vertikale Geschwindigkeit für den ersten Sprung setzen
             robot.jump_counter += 1
             robot.jump = False

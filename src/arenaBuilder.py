@@ -3,6 +3,7 @@ from tkinter import filedialog, Tk
 import shutil
 import os
 from arena import Arena
+from screens import Screens
 
 
 class ArenaBuilder(Arena):
@@ -24,6 +25,7 @@ class ArenaBuilder(Arena):
         self.num_tiles_x = num_tiles_x
         self.num_tiles_y = num_tiles_y
         self.tiles = [[self.TileType.AIR for _ in range(self.num_tiles_x)] for _ in range(self.num_tiles_y)]
+        self._spawn_positions_unscaled = [[0, 0], [0, 0], [0, 0], [0, 0]]
         self._background_image_filename = super().maps_base_path + "emptyMap.png"
         filename = "emptyMap.json"
         self.save_to_json(filename)
@@ -35,14 +37,16 @@ class ArenaBuilder(Arena):
         self._legend_space = screen_size[0] / 5
         pygame.display.set_mode((screen_size[0] - self._legend_space, screen_size[1]))
         super().__init__(filename, pygame)
-        self.render_arena(pygame)
         self.x_offset = 0
         self.y_offset = 0
+        self._calculate_spawn_positions()
         self.pygame = pygame
         if bool(flags & pygame.FULLSCREEN):
             self.screen = self.pygame.display.set_mode(screen_size, pygame.FULLSCREEN)
         else:
             self.screen = self.pygame.display.set_mode(screen_size)
+        if filename == "emptyMap.json":
+            self._reset_spawn_positions()
 
     def _set_up_paint_related(self):
         # Set up scaled sizes
@@ -63,6 +67,11 @@ class ArenaBuilder(Arena):
         # Set up font
         self._font = self.pygame.font.SysFont(None, int(display_resolution[1] / 40))
         self._text_color = self.WHITE
+        # Set up reset spawn positions button
+        self._reset_button_text = self._font.render("Reset Spawns", True, self.WHITE)
+        self._reset_button_rect = self.pygame.Rect(
+            self._x_of_legend, self._y_of_legend_end, elements_x_size, buttons_y_size
+        )
         # Set up text input field for saving
         self._input_text_saving = ""
         self._input_active_saving = False
@@ -106,9 +115,11 @@ class ArenaBuilder(Arena):
         save_button_clicked = False
         load_map_button_clicked = False
         load_background_button_clicked = False
+        reset_button_clicked = False
         button_click_time_saving = 0
         button_click_time_loading_map = 0
         button_click_time_loading_background = 0
+        button_click_time_reset = 0
 
         # Main loop
         while running:
@@ -116,7 +127,9 @@ class ArenaBuilder(Arena):
             self.screen.fill(self.BLACK)
 
             # Paint the arenaBuilder
-            self._paint_arena_builder(save_button_clicked, load_map_button_clicked, load_background_button_clicked)
+            self._paint_arena_builder(
+                save_button_clicked, load_map_button_clicked, load_background_button_clicked, reset_button_clicked
+            )
 
             # Update the display
             self.pygame.display.flip()
@@ -137,6 +150,8 @@ class ArenaBuilder(Arena):
                         running,
                         load_background_button_clicked,
                         button_click_time_loading_background,
+                        reset_button_clicked,
+                        button_click_time_reset,
                     ) = self._handle_mouse_button_down(
                         button_click_time_loading_map,
                         button_click_time_saving,
@@ -146,6 +161,8 @@ class ArenaBuilder(Arena):
                         running,
                         load_background_button_clicked,
                         button_click_time_loading_background,
+                        reset_button_clicked,
+                        button_click_time_reset,
                     )
                 elif event.type == self.pygame.MOUSEBUTTONUP and event.button == 1:  # Left mouse button released
                     mouse_pressed = False
@@ -164,13 +181,31 @@ class ArenaBuilder(Arena):
             if load_background_button_clicked and current_time - button_click_time_loading_background >= 200:
                 load_background_button_clicked = False
 
+            if reset_button_clicked and current_time - button_click_time_reset >= 200:
+                reset_button_clicked = False
+
     def _paint_tile(self, current_tile):
         x, y = self.pygame.mouse.get_pos()
         x //= self.tile_size
         y //= self.tile_size
         if x < self.num_tiles_x and y < self.num_tiles_y:
-            self.set_tile(x, y, current_tile)
+            if current_tile == self.TileType.SPAWN and [x, y] not in self._spawn_positions_unscaled:
+                self.set_spawn_position(x, y)
+            else:
+                self.set_tile(x, y, current_tile)
             self.render_arena(self.pygame)
+
+    def set_tile(self, x, y, tile_type):
+        self.tiles[y][x] = tile_type
+
+    def set_spawn_position(self, x, y):
+        if len(self.spawn_positions) < 4:
+            self._spawn_positions_unscaled.append([x, y])
+            self.spawn_positions.append([x * self.tile_size + self.x_offset, y * self.tile_size + self.y_offset])
+
+    def _reset_spawn_positions(self):
+        self._spawn_positions_unscaled = []
+        self.spawn_positions = []
 
     def _handle_key_down(self, current_tile, event):
         if self._input_active_saving:
@@ -203,6 +238,8 @@ class ArenaBuilder(Arena):
             current_tile = self.TileType.BIRCH
         elif event.key == self.pygame.K_7:
             current_tile = self.TileType.LEAVES
+        elif event.key == self.pygame.K_8:
+            current_tile = self.TileType.SPAWN
         return current_tile
 
     def _handle_mouse_button_down(
@@ -215,10 +252,16 @@ class ArenaBuilder(Arena):
         running,
         load_background_button_clicked,
         button_click_time_loading_background,
+        reset_button_clicked,
+        button_click_time_reset,
     ):
         mouse_pressed = True
         mouse_pos = self.pygame.mouse.get_pos()
-        if self._save_button_rect.collidepoint(mouse_pos):
+        if self._reset_button_rect.collidepoint(mouse_pos):
+            reset_button_clicked = True
+            button_click_time_reset = current_time
+            self._reset_spawn_positions()
+        elif self._save_button_rect.collidepoint(mouse_pos):
             save_button_clicked = True
             button_click_time_saving = current_time
             self._save_map()
@@ -250,6 +293,8 @@ class ArenaBuilder(Arena):
             running,
             load_background_button_clicked,
             button_click_time_loading_background,
+            reset_button_clicked,
+            button_click_time_reset,
         )
 
     def _load_map(self):
@@ -260,9 +305,14 @@ class ArenaBuilder(Arena):
         self._input_text_saving = map_name
 
     def _save_map(self):
-        self.save_to_json(self._input_text_saving + ".json")
+        if len(self.spawn_positions) == 4:
+            self.save_to_json(self._input_text_saving + ".json")
+        else:
+            Screens.show_popup("You need to set all 4 Spawn positions first!")
 
-    def _paint_arena_builder(self, save_button_clicked, load_map_button_clicked, load_background_button_clicked):
+    def _paint_arena_builder(
+        self, save_button_clicked, load_map_button_clicked, load_background_button_clicked, reset_button_clicked
+    ):
         """
         Paints the arena defined by tiles with a grid
         and a legend of possible tiles as well as other fields
@@ -271,9 +321,26 @@ class ArenaBuilder(Arena):
         self._draw_grid()
         self._draw_legend()
         self._draw_input_fields()
-        self._draw_buttons(load_map_button_clicked, save_button_clicked, load_background_button_clicked)
+        self._draw_buttons(
+            load_map_button_clicked, save_button_clicked, load_background_button_clicked, reset_button_clicked
+        )
+        self._draw_spawn_positions()
 
-    def _draw_buttons(self, load_map_button_clicked, save_button_clicked, load_background_button_clicked):
+    def _draw_buttons(
+        self, load_map_button_clicked, save_button_clicked, load_background_button_clicked, reset_button_clicked
+    ):
+        # Draw reset spawn positions button
+        if reset_button_clicked:
+            self.pygame.draw.rect(self.screen, self.DARK_GREEN, self._reset_button_rect)
+        else:
+            self.pygame.draw.rect(self.screen, self.GREEN, self._reset_button_rect)
+        self.screen.blit(
+            self._reset_button_text,
+            (
+                self._reset_button_rect.x + self._button_text_x_offset,
+                self._reset_button_rect.y + self._button_text_y_offset,
+            ),
+        )
         # Draw save button
         if save_button_clicked:
             self.pygame.draw.rect(self.screen, self.DARK_GREEN, self._save_button_rect)
@@ -360,6 +427,14 @@ class ArenaBuilder(Arena):
         for y in range(0, self._max_y_of_map + self.tile_size, self.tile_size):
             self.pygame.draw.line(self.screen, self.GREY, (0, y), (self._max_x_of_map, y))
 
+    def _draw_spawn_positions(self):
+        FONT_SIZE = int(self.tile_size)
+        font = self.pygame.font.SysFont(None, FONT_SIZE)
+        for i, pos in enumerate(self.spawn_positions):
+            text = font.render(str(i + 1), True, self.BLACK)  # Rendere den Text (Schwarz)
+            text_rect = text.get_rect(center=(pos[0] + self.tile_size // 2, pos[1] + self.tile_size // 2))
+            self.screen.blit(text, text_rect)
+
     def _load_background(self):
         filename = self._open_file_dialog()
         if filename != "":
@@ -376,9 +451,6 @@ class ArenaBuilder(Arena):
         )
         return file_path
 
-    def set_tile(self, x, y, tile_type):
-        self.tiles[y][x] = tile_type
-
     # Speichere die Daten in einer JSON-Datei
     def save_to_json(self, filename):
         _, file_extension = os.path.splitext(self._background_image_filename)
@@ -391,6 +463,7 @@ class ArenaBuilder(Arena):
             "num_tiles_x": self.num_tiles_x,
             "num_tiles_y": self.num_tiles_y,
             "background_image": map_name + file_extension,
+            "spawn_positions_unscaled": self._spawn_positions_unscaled,
             "tiles": [[tile.name for tile in row] for row in self.tiles],
         }
         with open(self.maps_base_path + filename, "w") as f:
