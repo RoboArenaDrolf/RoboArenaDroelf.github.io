@@ -1,7 +1,7 @@
 import math
 import pygame
 
-from src.projectiles import Projectile
+from projectiles import Projectile
 
 
 class Robot:
@@ -22,7 +22,7 @@ class Robot:
     projectiles = []
     melee_cd = 0
     ranged_cd = 0
-    robots_base_path = "./../Robots/"
+    robots_base_path = "Robots/"
     recoil_percent = 0.1
     hit_cooldown = 0
 
@@ -80,8 +80,12 @@ class Robot:
         self.vel = va
 
     def take_damage_debug(self, d):
+        pygame.mixer.init()
+        damage_sound = pygame.mixer.Sound("Sounds/damage.mp3")
+        damage_sound.play()
         if d <= self.health:
             self.health = self.health - d
+
         else:
             self.health = 0
 
@@ -208,6 +212,7 @@ class Robot:
                 robots[i].projectiles.pop(n)
 
     def decrease_hit_cooldown(self):
+        
         if self.hit_cooldown > 0:
             self.hit_cooldown -= 1
 

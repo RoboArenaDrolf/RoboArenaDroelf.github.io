@@ -60,6 +60,10 @@ jump = []
 
 clock = pygame.time.Clock()
 
+pygame.mixer.init()
+jumping_sound = pygame.mixer.Sound("Sounds/jumping.mp3")
+death_sound = pygame.mixer.Sound("Sounds/death.mp3")
+damage_sound = pygame.mixer.Sound("Sounds/damage.mp3")
 
 def get_json_filenames(directory):
     json_files = []
@@ -358,6 +362,7 @@ def player_robot_handling(player_robot):
     if player_robot.health <= 0:
         playing = False
         death = True
+        death_sound.play()
     # attack will stay for a certain duration
     if player_robot.melee_cd < 30 and player_robot.melee_cd != 0:
         player_robot.melee_attack(pygame, screen, robots, arena)
@@ -455,11 +460,11 @@ while run:
                     player_robot.melee_attack(pygame, screen, robots, arena)
                     player_robot.melee_cd += 1
                 elif key == pygame.K_r and (player_robot.ranged_cd == 0 or player_robot.ranged_cd == 10):
-                    player_robot.ranged_attack()
                     player_robot.ranged_cd += 1
                 elif key == pygame.K_f:
                     player_robot.take_damage_debug(10)
                 elif key == pygame.K_SPACE:
+                    jumping_sound.play()
                     if player_robot.jump_counter <= 1:
                         player_robot.jump = True
             elif build_arena:
