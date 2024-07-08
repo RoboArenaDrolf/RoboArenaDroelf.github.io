@@ -1,7 +1,7 @@
 import math
 import pygame
 
-from src.projectiles import Projectile
+from projectiles import Projectile
 
 
 class Robot:
@@ -22,7 +22,7 @@ class Robot:
     projectiles = []
     melee_cd = 0
     ranged_cd = 0
-    robots_base_path = "./../Robots/"
+    robots_base_path = "Robots/"
     recoil_percent = 0.1
     hit_cooldown = 0
     attack_start: int
@@ -56,6 +56,12 @@ class Robot:
         self.second_robot = pygame.image.load(self.robots_base_path + "secondRobot.png")
         self.second_robot = pygame.transform.scale(self.second_robot, (self.radius * 2, self.radius * 2))
         self.second_robot_flipped = pygame.transform.flip(self.second_robot, True, False)
+        self.third_robot = pygame.image.load(self.robots_base_path + "thirdRobot.png")
+        self.third_robot = pygame.transform.scale(self.third_robot, (self.radius * 2.3, self.radius * 2.3))
+        self.third_robot_flipped = pygame.transform.flip(self.third_robot, True, False)
+        self.fourth_robot = pygame.image.load(self.robots_base_path + "fourthRobot.png")
+        self.fourth_robot = pygame.transform.scale(self.fourth_robot, (self.radius * 2.3, self.radius * 2.3))
+        self.fourth_robot_flipped = pygame.transform.flip(self.fourth_robot, True, False)
         self.tile_below = 0
 
     def change_acceleration(self, a):
@@ -269,6 +275,7 @@ class Robot:
             self.projectiles.append(Projectile(x, y, c, r, xs, ys, d, pn, t))  # this append must be the reason
 
     def ranged_hit_reg(self, pygame, screen, robots, arena):
+        explosion_image = pygame.image.load('Animation/explosion.png')
         # we can probably get screen_height and screen_width from the screen itself
         screen_height = screen.get_height()
         screen_width = screen.get_width()
@@ -322,7 +329,8 @@ class Robot:
                     self.explosions.append(explosive_rect)  # add the explosion
                     self.explosions.append(5)  # add the duration
                     # could be consolidated into an object
-
+                    screen.blit(explosion_image, (self.posx, self.posy))
+                    print("explosion_image")
                     # print("boom")
                     # tested with this, we do identify explosions correctly
                 robots[i].projectiles.pop(n)
@@ -409,14 +417,14 @@ class Robot:
                 screen.blit(self.second_robot_flipped, image_rect)
         elif pn == 2:
             if not direction_left:
-                screen.blit(self.first_robot, image_rect)
+                screen.blit(self.third_robot, image_rect)
             elif direction_left:
-                screen.blit(self.first_robot_flipped, image_rect)
+                screen.blit(self.third_robot_flipped, image_rect)
         elif pn == 3:
             if not direction_left:
-                screen.blit(self.first_robot, image_rect)
+                screen.blit(self.fourth_robot, image_rect)
             elif direction_left:
-                screen.blit(self.first_robot_flipped, image_rect)
+                screen.blit(self.fourth_robot_flipped, image_rect)
         # corresponding health UI
         health_font = pygame.font.Font(None, int(pygame.display.get_window_size()[1] / 25))
         player_health = health_font.render(f"{self.health}", True, f"{self.color}")
