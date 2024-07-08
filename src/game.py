@@ -334,12 +334,12 @@ def game_loop():
     screen.fill(white)
     arena.paint_arena(screen)
     # Handling of player robot
-    for i, player_robot in enumerate(robots):
-        player_robot_handling(player_robot, i)
+    for player_robot in robots:
+        player_robot_handling(player_robot)
         player_robot.decrease_hit_cooldown()
 
 
-def player_robot_handling(player_robot, player_number):
+def player_robot_handling(player_robot):
     global playing, death
 
     # Überprüfen, ob player die seitlichen Grenzen der Arena erreicht hat
@@ -392,8 +392,8 @@ def player_robot_handling(player_robot, player_number):
     # Player movement
     moved = False
     if use_controller and joysticks:
-        if player_number < len(joysticks):
-            joystick = joysticks[player_number]
+        if player_robot.player_number < len(joysticks):
+            joystick = joysticks[player_robot.player_number]
             moved = move_player_controller(player_robot, joystick)
     else:
         keys = pygame.key.get_pressed()
