@@ -1,5 +1,4 @@
 import os
-import random
 import pygame
 from pygame._sdl2.video import Window
 from screeninfo import get_monitors
@@ -20,7 +19,6 @@ for i in range(pygame.joystick.get_count()):
     joystick = pygame.joystick.Joystick(i)
     joystick.init()
     joysticks.append(joystick)
-    print(f"Joystick {i}: {joystick.get_name()} initialized.")
 
 display_resolution = (720, 720)
 available_resolutions = [(720, 720), (1280, 720), (1280, 1080), (1920, 1080)]
@@ -61,9 +59,6 @@ menu_items = []
 selected_item_index = 0
 recently_switched_item = False
 
-# Zähler für die Anzahl der Frames, bevor die Richtung des Roboters geändert wird
-change_direction_interval = 100  # Ändere die Richtung alle 120 Frames
-frame_count = 0
 # Initiale Fensterposition
 window = Window.from_display_module()
 initial_window_pos = window.position
@@ -338,63 +333,13 @@ def game_loop():
 
     screen.fill(white)
     arena.paint_arena(screen)
-    frame_count += 1
-    player_robot = robots[0]
     # Handling of player robot
-    player_robot_handling(player_robot)
-    # Handling of bots
-    bots_handling()
+    for i, player_robot in enumerate(robots):
+        player_robot_handling(player_robot, i)
+        player_robot.decrease_hit_cooldown()
 
 
-def bots_handling():
-    global frame_count
-
-    # Setup bots random movement
-    if frame_count >= change_direction_interval:
-        for i in range(1, len(robots)):
-            # Zufällige Änderungen der Beschleunigung und der Drehgeschwindigkeit
-            if robots[i].tile_below == 2:  # if we stand on ice
-                robots[i].change_acceleration(robots[i].accel + (random.uniform(-1, 1)/2))
-            else:
-                robots[i].change_acceleration(robots[i].accel + random.uniform(-1, 1))
-            # Setze den Zähler zurück
-            frame_count = 0
-            jump[i - 1] = random.choice([True, False])
-    # Move and paint bots
-    for i in range(1, len(robots)):
-        if robots[i].tile_below == 3:  # if we stand on sand
-            robots[i].change_velocity_cap_lower(robots[i].vel + robots[i].accel, robots[i].vel_max/2)
-            # we can at best move half as fast as on a normal tile
-        else:
-            robots[i].change_velocity_cap(robots[i].vel + robots[i].accel)
-        robots[i].decrease_hit_cooldown()
-        if robots[i].vel < 0:
-            if robots[i].tile_below == 2:  # if we stand on ice
-                robots[i].change_acceleration(robots[i].accel - (arena.tile_size / 1000.0)/2)
-            else:
-                robots[i].change_acceleration(robots[i].accel + arena.tile_size / 1000.0)
-            if robots[i].vel + robots[i].accel >= 0:
-                robots[i].change_velocity_cap(0)
-                robots[i].change_acceleration(0)
-        elif robots[i].vel > 0:
-            if robots[i].tile_below == 2:  # if we stand on ice
-                robots[i].change_acceleration(robots[i].accel - (arena.tile_size / 1000.0)/2)
-            else:
-                robots[i].change_acceleration(robots[i].accel - arena.tile_size / 1000.0)
-            if robots[i].vel + robots[i].accel <= 0:
-                robots[i].change_velocity_cap(0)
-                robots[i].change_acceleration(0)
-        else:
-            robots[i].change_acceleration(0)
-        # Bewegung des Roboters
-        movement.move_bot(
-            robots[i], display_resolution[1], display_resolution[0], robots[i].vel, arena, jump[i - 1], dt
-        )
-        jump[i - 1] = False
-        robots[i].paint_robot(pygame, screen, direction_left)
-
-
-def player_robot_handling(player_robot):
+def player_robot_handling(player_robot, player_number):
     global playing, death
 
     # Überprüfen, ob player die seitlichen Grenzen der Arena erreicht hat
@@ -445,9 +390,11 @@ def player_robot_handling(player_robot):
             player_robot.ranged_cd += 1
 
     # Player movement
+    moved = False
     if use_controller and joysticks:
-        joystick = joysticks[0]
-        moved = move_player_controller(player_robot, joystick)
+        if player_number < len(joysticks):
+            joystick = joysticks[player_number]
+            moved = move_player_controller(player_robot, joystick)
     else:
         keys = pygame.key.get_pressed()
         moved = move_player_keys(player_robot, keys)
@@ -597,12 +544,14 @@ while run:
                 handle_build_arena_menu_events(event)
         elif event.type == pygame.JOYBUTTONDOWN:
             if playing and not game_paused:
-                player_robot = robots[0]
-                if event.button == 0:
-                    if player_robot.jump_counter <= 1:
-                        player_robot.jump = True
-                elif event.button == 7:
-                    game_paused = True
+                joystick_id = event.instance_id
+                if joystick_id < len(robots):
+                    player_robot = robots[joystick_id]
+                    if event.button == 0:
+                        if player_robot.jump_counter <= 1:
+                            player_robot.jump = True
+                    elif event.button == 7:
+                        game_paused = True
             else:
                 if event.button == 1:
                     menu_items[selected_item_index].pressed = True
@@ -611,19 +560,21 @@ while run:
 
         elif event.type == pygame.JOYAXISMOTION:
             if playing and not game_paused:
-                player_robot = robots[0]
-                if (
-                    event.axis == 5 and event.value > 0.2 and player_robot.melee_cd == 0
-                ):  # we can attack if we have no cooldown and press the button
-                    player_robot.melee_attack(pygame, screen, robots, arena, "light")
-                    player_robot.melee_cd += 1
-                if (
-                    event.axis == 4
-                    and event.value > 0.2
-                    and (player_robot.ranged_cd == 0 or player_robot.ranged_cd == 10)
-                ):
-                    player_robot.ranged_attack("normal")
-                    player_robot.ranged_cd += 1
+                joystick_id = event.instance_id
+                if joystick_id < len(robots):
+                    player_robot = robots[joystick_id]
+                    if (
+                        event.axis == 5 and event.value > 0.2 and player_robot.melee_cd == 0
+                    ):  # we can attack if we have no cooldown and press the button
+                        player_robot.melee_attack(pygame, screen, robots, arena, "light")
+                        player_robot.melee_cd += 1
+                    if (
+                        event.axis == 4
+                        and event.value > 0.2
+                        and (player_robot.ranged_cd == 0 or player_robot.ranged_cd == 10)
+                    ):
+                        player_robot.ranged_attack("normal")
+                        player_robot.ranged_cd += 1
             else:
                 if event.axis == 1:
                     if event.value > 0.2 and not recently_switched_item:
