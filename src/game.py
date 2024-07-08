@@ -401,7 +401,7 @@ def player_robot_handling(player_robot, player_number):
     if not moved:
         if player_robot.vel < 0:
             if player_robot.tile_below == 2:
-                player_robot.change_acceleration(player_robot.accel + (arena.tile_size / 2000.0)/2)
+                player_robot.change_acceleration(player_robot.accel + (arena.tile_size / 2000.0) / 2)
             else:
                 player_robot.change_acceleration(player_robot.accel + arena.tile_size / 2000.0)
             if player_robot.vel + player_robot.accel >= 0:
@@ -409,7 +409,7 @@ def player_robot_handling(player_robot, player_number):
                 player_robot.change_acceleration(0)
         elif player_robot.vel > 0:
             if player_robot.tile_below == 2:
-                player_robot.change_acceleration(player_robot.accel - (arena.tile_size / 2000.0)/2)
+                player_robot.change_acceleration(player_robot.accel - (arena.tile_size / 2000.0) / 2)
             else:
                 player_robot.change_acceleration(player_robot.accel - arena.tile_size / 2000.0)
             if player_robot.vel + player_robot.accel <= 0:
@@ -418,7 +418,7 @@ def player_robot_handling(player_robot, player_number):
         else:
             player_robot.change_acceleration(0)
     if player_robot.tile_below == 3:  # if we stand on sand
-        player_robot.change_velocity_cap_lower(player_robot.vel + player_robot.accel, player_robot.vel_max/2)
+        player_robot.change_velocity_cap_lower(player_robot.vel + player_robot.accel, player_robot.vel_max / 2)
         # we can at best move half as fast as on a normal tile
     else:
         player_robot.change_velocity_cap(player_robot.vel + player_robot.accel)
@@ -432,7 +432,7 @@ def move_player_keys(player_robot, keys):
     global direction_left
     if keys[pygame.K_LEFT] and (not player_robot.no_move):
         if player_robot.tile_below == 2:  # if we stand on ice
-            player_robot.change_acceleration(player_robot.accel - (arena.tile_size / 1000.0)/2)
+            player_robot.change_acceleration(player_robot.accel - (arena.tile_size / 1000.0) / 2)
             # we accelerate half as fast as normal
         else:
             player_robot.change_acceleration(player_robot.accel - arena.tile_size / 1000.0)
@@ -440,7 +440,7 @@ def move_player_keys(player_robot, keys):
         direction_left = True
     elif keys[pygame.K_RIGHT] and (not player_robot.no_move):
         if player_robot.tile_below == 2:  # if we stand on ice
-            player_robot.change_acceleration(player_robot.accel + (arena.tile_size / 1000.0)/2)
+            player_robot.change_acceleration(player_robot.accel + (arena.tile_size / 1000.0) / 2)
             # we accelerate half as fast as normal
         else:
             player_robot.change_acceleration(player_robot.accel + arena.tile_size / 1000.0)
@@ -463,7 +463,7 @@ def move_player_controller(player_robot, joystick):
     value_y = joystick.get_axis(1)
     if value_x < -0.2 and (not player_robot.no_move):
         if player_robot.tile_below == 2:  # if we stand on ice
-            player_robot.change_acceleration(player_robot.accel - (arena.tile_size / 1000.0)/2)
+            player_robot.change_acceleration(player_robot.accel - (arena.tile_size / 1000.0) / 2)
             # we accelerate half as fast as normal
         else:
             player_robot.change_acceleration(player_robot.accel - arena.tile_size / 1000.0)
@@ -471,7 +471,7 @@ def move_player_controller(player_robot, joystick):
         direction_left = True
     elif value_x > 0.2 and (not player_robot.no_move):
         if player_robot.tile_below == 2:  # if we stand on ice
-            player_robot.change_acceleration(player_robot.accel + (arena.tile_size / 1000.0)/2)
+            player_robot.change_acceleration(player_robot.accel + (arena.tile_size / 1000.0) / 2)
             # we accelerate half as fast as normal
         else:
             player_robot.change_acceleration(player_robot.accel + arena.tile_size / 1000.0)
@@ -524,7 +524,7 @@ while run:
                     player_robot.melee_attack(pygame, screen, robots, arena, "light")
                     player_robot.melee_cd += 1
                 elif (
-                        key == pygame.K_h and player_robot.melee_cd == 0
+                    key == pygame.K_h and player_robot.melee_cd == 0
                 ):  # we can attack if we have no cooldown and press the button
                     player_robot.melee_attack(pygame, screen, robots, arena, "heavy")
                     player_robot.no_move = True  # charge attack no moving allowed

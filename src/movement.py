@@ -72,7 +72,6 @@ class Movement:
             robot.jump = False
             robot.tile_below = 0  # if we jump we no longer stand on a tile, might not be needed
 
-
     def check_collision_y(self, robot, arena):
         # Überprüfen, ob der Roboter mit einem festen Tile kollidiert auf y-Achse
         x_positions = [
