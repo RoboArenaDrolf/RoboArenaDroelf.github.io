@@ -1,9 +1,12 @@
+import pygame
+
 class Movement:
 
     def __init__(self, gravity):
         self.gravity = gravity
 
     def move_robot(self, robot, x, arena, dt):
+
         dt_scaled = dt / 15.0
 
         # Bewegung in x-Richtung

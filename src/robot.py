@@ -138,6 +138,8 @@ class Robot:
         return distance
 
     def ranged_attack(self):
+        pygame.mixer.init()
+        shooting_sound = pygame.mixer.Sound("Sounds/shooting.mp3")
         if self.ranged_cd == 0 or self.ranged_cd == 10:
             r = self.radius / 4
             if self.alpha == 0:  # right
@@ -145,21 +147,25 @@ class Robot:
                 ys = 0
                 x = self.posx + self.radius + r
                 y = self.posy
+                shooting_sound.play()
             elif self.alpha == 90:  # down
                 xs = 0
                 ys = self.vel_max
                 x = self.posx
                 y = self.posy + self.radius + r
+                shooting_sound.play()
             elif self.alpha == 180:  # left
                 xs = -self.vel_max
                 ys = 0
                 x = self.posx - self.radius - r
                 y = self.posy
+                shooting_sound.play()
             elif self.alpha == 270:  # up
                 xs = 0
                 ys = -self.vel_max
                 x = self.posx
                 y = self.posy - self.radius - r
+                shooting_sound.play()
             else:  # failsafe
                 print("how did you do this? alpha=", self.alpha)
             c = "black"

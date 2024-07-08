@@ -4,6 +4,7 @@ import pygame
 from pygame._sdl2.video import Window
 from screeninfo import get_monitors
 import sys
+import time 
 
 from movement import Movement
 from arena import Arena
@@ -64,7 +65,10 @@ pygame.mixer.init()
 jumping_sound = pygame.mixer.Sound("Sounds/jumping.mp3")
 death_sound = pygame.mixer.Sound("Sounds/death.mp3")
 damage_sound = pygame.mixer.Sound("Sounds/damage.mp3")
-
+footsteps_sound = pygame.mixer.Sound("Sounds/footsteps.mp3")
+click_sound = pygame.mixer.Sound("Sounds/click.mp3")
+fight_sound = pygame.mixer.Sound("Sounds/fight.mp3")
+music = pygame.mixer.Sound("Sounds/music.mp3")
 
 def get_json_filenames(directory):
     json_files = []
@@ -162,15 +166,18 @@ def handle_settings_menu_events():
     dis_res_changed = False
 
     if fullscreen_rect.collidepoint(mouse_pos):
+        click_sound.play()
         display_resolution = fullscreen_res
         fullscreen = True
         dis_res_changed = True
     elif back_rect.collidepoint(mouse_pos):
+        click_sound.play()
         menu = True
         settings = False
 
     for i, res_rect in enumerate(resolution_rects):
         if res_rect.collidepoint(mouse_pos):
+            click_sound.play()
             display_resolution = available_resolutions[i]
             fullscreen = False
             dis_res_changed = True
@@ -240,17 +247,21 @@ def handle_start_game_menu_events():
     )
 
     if one_player_rect.collidepoint(mouse_pos):
+        #click_sound.play()
         player_count = 1
         robots = [robot1]
     elif two_player_rect.collidepoint(mouse_pos):
+        #click_sound.play()
         player_count = 2
         robots = [robot1, robot2]
         jump = [False]
     elif three_player_rect.collidepoint(mouse_pos):
+        #click_sound.play()
         player_count = 3
         robots = [robot1, robot2, robot3]
         jump = [False, False]
     elif four_player_rect.collidepoint(mouse_pos):
+        #click_sound.play()
         player_count = 4
         robots = [robot1, robot2, robot3, robot4]
         jump = [False, False, False]
@@ -263,9 +274,11 @@ def handle_death_screen_events():
     global menu, death
 
     if main_menu_rect.collidepoint(mouse_pos):
+        click_sound.play()
         menu = True
         death = False
     elif quit_rect.collidepoint(mouse_pos):
+        click_sound.play()
         pygame.quit()
         sys.exit()
 
@@ -274,12 +287,15 @@ def handle_pause_screen_events():
     global game_paused, menu, playing
 
     if resume_rect.collidepoint(mouse_pos):
+        click_sound.play()
         game_paused = False
     elif main_menu_rect.collidepoint(mouse_pos):
+        click_sound.play()
         menu = True
         playing = False
         game_paused = False
     elif quit_rect.collidepoint(mouse_pos):
+        click_sound.play()
         pygame.quit()
         sys.exit()
 
@@ -289,6 +305,7 @@ def handle_map_screen_events():
 
     for i, level_rect in enumerate(level_rects):
         if level_rect.collidepoint(mouse_pos):
+            click_sound.play()
             map_name = maps[i]
             arena = Arena(map_name, pygame)
             recalculate_robot_values()
@@ -370,8 +387,11 @@ def player_robot_handling(player_robot):
         player_robot.melee_cd += 1
     # Player melee attack cooldown
     elif player_robot.melee_cd != 0:
+        if player_robot.melee_cd == 30:
+            fight_sound.play()
         if player_robot.melee_cd == 60:
             player_robot.melee_cd = 0
+            #fight_sound.play()
         else:
             player_robot.melee_cd += 1
     # second ranged attack at ranged_cd == 10
@@ -391,10 +411,12 @@ def player_robot_handling(player_robot):
         player_robot.change_acceleration(player_robot.accel - arena.tile_size / 1000.0)
         player_robot.change_alpha(180)
         direction_left = True
+        #footsteps_sound.play()
     elif keys[pygame.K_RIGHT]:
         player_robot.change_acceleration(player_robot.accel + arena.tile_size / 1000.0)
         player_robot.change_alpha(0)
         direction_left = False
+        #footsteps_sound.play()
     elif keys[pygame.K_DOWN]:
         player_robot.change_alpha(90)
     elif keys[pygame.K_UP]:
@@ -418,6 +440,7 @@ def player_robot_handling(player_robot):
     player_robot.ranged_hit_reg(robots, display_resolution[1], display_resolution[0], arena)
 
 
+
 while run:
     pygame.time.delay(0)
     dt = clock.tick(120)
@@ -435,12 +458,16 @@ while run:
             mouse_pos = pygame.mouse.get_pos()
             if not playing:
                 if menu:
+                    click_sound.play()
                     handle_main_menu_events()
                 elif build_arena:
+                    click_sound.play()
                     handle_build_arena_menu_events(event)
                 elif settings:
+                    click_sound.play()
                     handle_settings_menu_events()
                 elif start_game:
+                    click_sound.play()
                     handle_start_game_menu_events()
                 elif death:
                     handle_death_screen_events()
