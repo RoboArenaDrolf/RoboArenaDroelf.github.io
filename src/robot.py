@@ -162,20 +162,20 @@ class Robot:
         if type == "heavy":
             self.heavy_attack = True
             if 30 <= self.melee_cd <= 60:
-                hit_box_height = 2*self.radius
-                hit_box_width = 2*self.radius
+                hit_box_height = 2 * self.radius
+                hit_box_width = 2 * self.radius
                 if self.alpha == 0:  # right
-                    rect_left_x = self.posx+0.5*hit_box_width
-                    rect_top_y = self.posy-0.5*hit_box_height
+                    rect_left_x = self.posx + 0.5 * hit_box_width
+                    rect_top_y = self.posy - 0.5 * hit_box_height
                 elif self.alpha == 90:  # down
-                    rect_left_x = self.posx-0.5*hit_box_width
-                    rect_top_y = self.posy+0.5*hit_box_height
+                    rect_left_x = self.posx - 0.5 * hit_box_width
+                    rect_top_y = self.posy + 0.5 * hit_box_height
                 elif self.alpha == 180:  # left
-                    rect_left_x = self.posx-1.5*hit_box_height
-                    rect_top_y = self.posy-0.5*hit_box_height
+                    rect_left_x = self.posx - 1.5 * hit_box_height
+                    rect_top_y = self.posy - 0.5 * hit_box_height
                 elif self.alpha == 270:  # up
-                    rect_left_x = self.posx-0.5*hit_box_height
-                    rect_top_y = self.posy-1.5*hit_box_height
+                    rect_left_x = self.posx - 0.5 * hit_box_height
+                    rect_top_y = self.posy - 1.5 * hit_box_height
                 else:  # failsafe
                     print("how did you do this? alpha=", self.alpha)
                 hit_box = pygame.Rect(rect_left_x, rect_top_y, hit_box_width, hit_box_height)
@@ -253,7 +253,7 @@ class Robot:
             elif type == "explosive":
                 self.ranged_explodes = True
                 t = type
-                r = r*2
+                r = r * 2
                 xs = xs / 2
                 ys = ys / 2
                 d = 5
@@ -318,7 +318,7 @@ class Robot:
                     rectx = robots[i].projectiles[n].x
                     recty = robots[i].projectiles[n].y
                     rectr = robots[i].projectiles[n].radius
-                    explosive_rect = pygame.Rect(rectx-4*rectr, recty-4*rectr, 8*rectr, 8*rectr)
+                    explosive_rect = pygame.Rect(rectx - 4 * rectr, recty - 4 * rectr, 8 * rectr, 8 * rectr)
                     self.explosions.append(explosive_rect)  # add the explosion
                     self.explosions.append(5)  # add the duration
                     # could be consolidated into an object
@@ -328,14 +328,16 @@ class Robot:
                 robots[i].projectiles.pop(n)
 
     def hit_reg_line(self, robots, arena, line_start, line_end, dmg):
-        for i in range(1, len(robots)):  # old hitreg should still work
+        for i in range(0, len(robots)):  # old hitreg should still work
+            if i == self.player_number:
+                continue
             # now I will use https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line:
             # Line defined by two points
             if (
-                    self.distance_from_segment(
-                        line_start[0], line_start[1], line_end[0], line_end[1], robots[i].posx, robots[i].posy
-                    )
-                    <= robots[i].radius
+                self.distance_from_segment(
+                    line_start[0], line_start[1], line_end[0], line_end[1], robots[i].posx, robots[i].posy
+                )
+                <= robots[i].radius
             ):  # if the distance from this line to the center of a robot
                 # is smaller than it's radius, we have a hit and that robot takes some damage
                 # print(i, "hit")
@@ -351,16 +353,28 @@ class Robot:
         bl = rect.bottomleft
         br = rect.bottomright
         for i in range(0, len(robots)):  # check all robots
+            if i == self.player_number:
+                continue
             if i != exception:  # except for j, use -1 for no exception
-                if ((bl[1] < robots[i].posy < tl[1] and bl[0] < robots[i].posx < br[0])  # inside of rect
-                        or (self.distance_from_segment(tl[0], tl[1], tr[0], tr[1], robots[i].posx, robots[i].posy)
-                            <= robots[i].radius)
-                        or (self.distance_from_segment(tl[0], tl[1], bl[0], bl[1], robots[i].posx, robots[i].posy)
-                            <= robots[i].radius)
-                        or (self.distance_from_segment(br[0], br[1], tr[0], tr[1], robots[i].posx, robots[i].posy)
-                            <= robots[i].radius)
-                        or (self.distance_from_segment(br[0], br[1], bl[0], bl[1], robots[i].posx, robots[i].posy)
-                            <= robots[i].radius)):  # or distance from robot to the sides of the rect is < robot radius
+                if (
+                    (bl[1] < robots[i].posy < tl[1] and bl[0] < robots[i].posx < br[0])  # inside of rect
+                    or (
+                        self.distance_from_segment(tl[0], tl[1], tr[0], tr[1], robots[i].posx, robots[i].posy)
+                        <= robots[i].radius
+                    )
+                    or (
+                        self.distance_from_segment(tl[0], tl[1], bl[0], bl[1], robots[i].posx, robots[i].posy)
+                        <= robots[i].radius
+                    )
+                    or (
+                        self.distance_from_segment(br[0], br[1], tr[0], tr[1], robots[i].posx, robots[i].posy)
+                        <= robots[i].radius
+                    )
+                    or (
+                        self.distance_from_segment(br[0], br[1], bl[0], bl[1], robots[i].posx, robots[i].posy)
+                        <= robots[i].radius
+                    )
+                ):  # or distance from robot to the sides of the rect is < robot radius
                     robots[i].take_damage_debug(dmg)
                     if robots[i].hit_cooldown <= 0:
                         self.recoil(arena, robots[i])
@@ -383,15 +397,15 @@ class Robot:
         robot.recoil_percent += 0.05
 
     def handle_explosions(self, screen, arena, robots):
-        for i in range(0, len(self.explosions)-1):
-            if self.explosions[i+1] > 0:
+        for i in range(0, len(self.explosions) - 1):
+            if self.explosions[i + 1] > 0:
                 pygame.draw.rect(screen, "red", self.explosions[i], 1)
                 self.hit_reg_rect(robots, arena, self.explosions[i], 5, -1)  # explosive damage is 5 for now
-                self.explosions[i+1] -= 1
-            elif self.explosions[i+1] == 0:
-                self.explosions.pop(i+1)
+                self.explosions[i + 1] -= 1
+            elif self.explosions[i + 1] == 0:
+                self.explosions.pop(i + 1)
                 self.explosions.pop(i)
-            i = i+1  # we want to jump 2 at a time
+            i = i + 1  # we want to jump 2 at a time
 
     def paint_robot(self, pygame, screen, direction_left):
         # Bild des Roboters zeichnen
