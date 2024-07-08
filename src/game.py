@@ -615,14 +615,14 @@ while run:
                 if (
                     event.axis == 5 and event.value > 0.2 and player_robot.melee_cd == 0
                 ):  # we can attack if we have no cooldown and press the button
-                    player_robot.melee_attack(pygame, screen, robots, arena)
+                    player_robot.melee_attack(pygame, screen, robots, arena, "light")
                     player_robot.melee_cd += 1
                 if (
                     event.axis == 4
                     and event.value > 0.2
                     and (player_robot.ranged_cd == 0 or player_robot.ranged_cd == 10)
                 ):
-                    player_robot.ranged_attack()
+                    player_robot.ranged_attack("normal")
                     player_robot.ranged_cd += 1
             else:
                 if event.axis == 1:
