@@ -1,7 +1,7 @@
 import math
 import pygame
 
-from src.projectiles import Projectile
+from projectiles import Projectile
 
 
 class Robot:
@@ -22,7 +22,7 @@ class Robot:
     projectiles = []
     melee_cd = 0
     ranged_cd = 0
-    robots_base_path = "./../Robots/"
+    robots_base_path = "Robots/"
     recoil_percent = 0.1
     hit_cooldown = 0
 
