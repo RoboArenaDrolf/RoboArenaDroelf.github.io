@@ -400,8 +400,6 @@ def robot_handling(robot):
             keys = pygame.key.get_pressed()
             moved = move_player_keys(robot, keys)
     if not moved:
-        if robot.player_number != 0:
-            print(robot.accel, robot.vel, arena.tile_size / 2000.0)
         if robot.vel < 0:
             if robot.tile_below == 2:
                 robot.change_acceleration(robot.accel + (arena.tile_size / 2000.0) / 2)
