@@ -393,11 +393,9 @@ class Robot:
             robot.change_acceleration(robot.accel + (arena.tile_size / 4) * robot.recoil_percent)
             robot.change_velocity_cap(robot.vel + robot.accel)
         elif self.alpha < 225:  # facing left
-            print("left!")
             robot.change_acceleration(robot.accel - (arena.tile_size / 4) * robot.recoil_percent)
             robot.change_velocity_cap(robot.vel + robot.accel)
         else:  # facing upwards
-            print("up!")
             robot.vertical_speed += -arena.tile_size / 11 * robot.recoil_percent  # recoil up again
         robot.recoil_percent += 0.05
 
