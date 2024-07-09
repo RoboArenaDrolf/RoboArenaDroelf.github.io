@@ -386,17 +386,18 @@ class Robot:
     def recoil(self, arena, robot):
         robot.hit_cooldown = 20  # setting this so the robot doesn't get launched into space
         # cause recoil
-        robot.vertical_speed += -arena.tile_size / 2.5 * robot.recoil_percent  # recoil up
+        robot.vertical_speed += -arena.tile_size / 5 * robot.recoil_percent  # recoil up
         # check if we face left, right or upwards
         if self.alpha > 315 or self.alpha == 0:  # facing right
-            print(arena.tile_size, arena.map_size[0], arena.map_size[1])
-            robot.change_acceleration(robot.accel + (arena.tile_size / 2) * robot.recoil_percent)
+            robot.change_acceleration(robot.accel + (arena.tile_size / 4) * robot.recoil_percent)
+            robot.change_velocity_cap(robot.vel + robot.accel)
         elif self.alpha < 225:  # facing left
             print("left!")
-            robot.change_acceleration(robot.accel - (arena.tile_size / 2) * robot.recoil_percent)
+            robot.change_acceleration(robot.accel - (arena.tile_size / 4) * robot.recoil_percent)
+            robot.change_velocity_cap(robot.vel + robot.accel)
         else:  # facing upwards
             print("up!")
-            robot.vertical_speed += -arena.tile_size / 1.25 * robot.recoil_percent  # recoil up again
+            robot.vertical_speed += -arena.tile_size / 11 * robot.recoil_percent  # recoil up again
         robot.recoil_percent += 0.05
 
     def handle_explosions(self, screen, arena, robots):
