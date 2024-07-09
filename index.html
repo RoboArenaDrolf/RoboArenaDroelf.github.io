@@ -252,5 +252,16 @@
         von 4 Spielern auch 4 verschiedene Roboter haben. Desweiteren liegt in diesem Sprint noch der Versuch vor, eine 
         Explosionsanimation bei einem Fernkampangriff einzubinden.
     </p>
+    <p>
+        Luca hat in diesem Sprint die erste "richtige" Map designed und hat in diesem Zug das Movement anpassen müssen. Davor war das Movement von der Arena Größe (in Pixeln) abhängig,
+        was dazu geführt hat dass bei Maps mit vielen Tiles die Roboter sehr schnell unterwegs waren. Nun ist das Movement von der Größe der Tiles abhängig, wodurch sich die Roboter
+        auf unterschiedlich großen Maps gleich schnell bewegen.<br>
+        Dann hat er dem Arena Builder ein neues Feature verpasst: man muss nun bei Erstellung einer Arena 4 Spawn Positionen festlegen. Dadurch dass die Arenas unten unterschiedlich aufgebaut
+        sind hat die vorherige Positionierung der Spawn Positionen nicht mehr gepasst, dies wurde nun dadurch behoben. <br>
+        Danach hat er noch den Controller Support umgesetzt. Dabei hat er nicht nur die Steuerung der Roboter angepasst, sondern auch alle Menüs (bis auf das Arena Builder Menu und den Arena Builder
+        im generellen) auch für Controller angepasst. Man kann nun mit dem linken Joystick durch Menu Buttons wechseln, welche dann gehighlighted werden, und diese mit dem button b auswählen/clicken. Dafür hat er den Aufbau der Screens
+        Klasse stark verändert, indem er z.B. eine Subklasse MenuItem erstellt hat über welche nun die ganzen Buttons der Screens laufen.<br>
+        Zuguterletzt hat er noch angefangen den lokalen Multiplayer (couch coop) umzusetzen, was er jedoch bis dato noch nicht ganz fertigstellen konnte.
+    </p>
 </body>
 </html>
