@@ -263,5 +263,19 @@
         Klasse stark verändert, indem er z.B. eine Subklasse MenuItem erstellt hat über welche nun die ganzen Buttons der Screens laufen.<br>
         Zuguterletzt hat er noch angefangen den lokalen Multiplayer (couch coop) umzusetzen, was er jedoch bis dato noch nicht ganz fertigstellen konnte.
     </p>
+    <p>
+        Björn hat in diesem Sprint die den Melee Angriff der Roboter nochmal überarbeitet.<br>
+        Die ehemalige Implementierung war ein recht kurzer "Stich" nun haben wir einen "Schwung" über 90° der doch schon etwas interresanter aussieht.<br>
+        Zusätlich wurde noch ein explosives Projektil und ein schwerer Melee Angriff eingebaut.<br>
+        Das explosive Projektil ist langsamer und größer und bei Kontakt mir einem Roboter oder einer Wand kommt es zu einer explosion auch wenn für diese bisher nur die Hitbox implementiert wurde.<br>
+        Der schwere melee Angriff hat einen windup während dem man sich nicht mehr bewegen kann hat dafür aber eine große hitbox und einen höheren schaden als der normale melee angriff.<br>
+        Außerdem hat er noch angefangen weitere Projektil zu implementieren,
+        zum einen eines das von Wänden abprallen kann,
+        sowie einen "Laser" der zwar eine begrenzte Reichweite hat aber frühzeitig an Wänden aber nicht and Robotern aufhört.<br>
+        Weiterhin wurde die hit-reg überarbeitet so gibt es eine spezielle funktion für hitboxen die überprüft ob eine hitbox und ein Roboter kollidieren
+        und die alte hit-reg für eine linie wurde ebenfalls in eine eigene funktion umverlegt.<br>
+        Letzlicht wurden unsere Tiles noch überarbeitet, so weiß der Roboter nun zu jedem zeitpunkt auf welchem Tile er steht,
+        das nutzten wir um auf Eis langsamer zu beschleunigen und abzubremsen, auf sand die maximale gescwindigkeit zu verringern und beim berühren von lava schaden zu bekommen.
+    </p>
 </body>
 </html>
