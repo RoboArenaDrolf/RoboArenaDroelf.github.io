@@ -19,6 +19,7 @@ class Robot:
     color: str
     jump = False
     jump_counter = 0
+    direction_left = False
     projectiles = []
     melee_cd = 0
     ranged_cd = 0
@@ -411,29 +412,29 @@ class Robot:
                 self.explosions.pop(i)
             i = i + 1  # we want to jump 2 at a time
 
-    def paint_robot(self, pygame, screen, direction_left):
+    def paint_robot(self, pygame, screen):
         # Bild des Roboters zeichnen
         image_rect = self.first_robot.get_rect(center=(self.posx, self.posy))
         pn = self.player_number
         if pn == 0:
-            if not direction_left:
+            if not self.direction_left:
                 screen.blit(self.first_robot, image_rect)
-            elif direction_left:
+            elif self.direction_left:
                 screen.blit(self.first_robot_flipped, image_rect)
         elif pn == 1:
-            if not direction_left:
+            if not self.direction_left:
                 screen.blit(self.second_robot, image_rect)
-            elif direction_left:
+            elif self.direction_left:
                 screen.blit(self.second_robot_flipped, image_rect)
         elif pn == 2:
-            if not direction_left:
+            if not self.direction_left:
                 screen.blit(self.first_robot, image_rect)
-            elif direction_left:
+            elif self.direction_left:
                 screen.blit(self.first_robot_flipped, image_rect)
         elif pn == 3:
-            if not direction_left:
+            if not self.direction_left:
                 screen.blit(self.first_robot, image_rect)
-            elif direction_left:
+            elif self.direction_left:
                 screen.blit(self.first_robot_flipped, image_rect)
         # corresponding health UI
         health_font = pygame.font.Font(None, int(pygame.display.get_window_size()[1] / 25))
