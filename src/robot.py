@@ -131,7 +131,15 @@ class Robot:
                 # print(i, "hit")
                 robots[i].take_damage_debug(1)
                 if robots[i].hit_cooldown <= 0:
-                    self.recoil(arena, robots[i])
+                    if self.alpha == 180:
+                        direction = Projectile.Direction.LEFT
+                    elif self.alpha == 0:
+                        direction = Projectile.Direction.RIGHT
+                    elif self.alpha == 270:
+                        direction = Projectile.Direction.UP
+                    else:
+                        direction = Projectile.Direction.DOWN
+                    self.recoil(arena, robots[i], direction)
 
     def distance_from_segment(self, x1, y1, x2, y2, x3, y3):
         # Vektoren berechnen
@@ -286,7 +294,15 @@ class Robot:
                         # we have a direct hit
                         robots[i].take_damage_debug(robots[i].projectiles[j].damage)
                         if robots[i].hit_cooldown <= 0:
-                            self.recoil(arena, robots[i])
+                            if robots[i].projectiles[j].x_speed > 0:
+                                direction = Projectile.Direction.RIGHT
+                            elif robots[i].projectiles[j].x_speed < 0:
+                                direction = Projectile.Direction.LEFT
+                            elif robots[i].projectiles[j].y_speed > 0:
+                                direction = Projectile.Direction.DOWN
+                            else:
+                                direction = Projectile.Direction.UP
+                            self.recoil(arena, robots[i], direction)
                         # DO NOT REMOVE PROJECTILES INSIDE THE LOOP instead
                         to_delete.append(j)  # save the index (might be multiple)
                 # Überprüfen, ob die Projectile die seitlichen Grenzen der Arena erreicht hat
@@ -344,7 +360,15 @@ class Robot:
                 # print(i, "hit")
                 robots[i].take_damage_debug(dmg)
                 if robots[i].hit_cooldown <= 0:
-                    self.recoil(arena, robots[i])
+                    if self.alpha == 180:
+                        direction = Projectile.Direction.LEFT
+                    elif self.alpha == 0:
+                        direction = Projectile.Direction.RIGHT
+                    elif self.alpha == 270:
+                        direction = Projectile.Direction.UP
+                    else:
+                        direction = Projectile.Direction.DOWN
+                    self.recoil(arena, robots[i], direction)
 
     def hit_reg_rect(self, robots, arena, rect, dmg, exception):
         # j is a placeholder, we use it to exclude one robot
@@ -378,25 +402,28 @@ class Robot:
                 ):  # or distance from robot to the sides of the rect is < robot radius
                     robots[i].take_damage_debug(dmg)
                     if robots[i].hit_cooldown <= 0:
-                        self.recoil(arena, robots[i])
+                        self.recoil(arena, robots[i], Projectile.Direction.UP)
 
     def decrease_hit_cooldown(self):
         if self.hit_cooldown > 0:
             self.hit_cooldown -= 1
 
-    def recoil(self, arena, robot):
+    def recoil(self, arena, robot, direction):
         robot.hit_cooldown = 20  # setting this so the robot doesn't get launched into space
-        # cause recoil
-        robot.vertical_speed += -arena.tile_size / 3 * robot.recoil_percent  # recoil up
-        # check if we face left, right or upwards
-        if self.alpha > 315 or self.alpha == 0:  # facing right
-            robot.change_acceleration(robot.accel + (arena.tile_size / 3) * robot.recoil_percent)
+
+        if direction == Projectile.Direction.UP:
+            robot.vertical_speed += -arena.tile_size / 3 * robot.recoil_percent  # recoil up
+        elif direction == Projectile.Direction.DOWN:
+            robot.vertical_speed += arena.tile_size / 3 * robot.recoil_percent  # recoil down
+        elif direction == Projectile.Direction.LEFT:
+            robot.vertical_speed += -arena.tile_size / 4 * robot.recoil_percent  # recoil up
+            robot.change_acceleration(robot.accel - (arena.tile_size / 3) * robot.recoil_percent)  # recoil left
             robot.change_velocity_cap(robot.vel + robot.accel)
-        elif self.alpha < 225:  # facing left
-            robot.change_acceleration(robot.accel - (arena.tile_size / 3) * robot.recoil_percent)
+        elif direction == Projectile.Direction.RIGHT:
+            robot.vertical_speed += -arena.tile_size / 4 * robot.recoil_percent  # recoil up
+            robot.change_acceleration(robot.accel + (arena.tile_size / 3) * robot.recoil_percent)  # recoil right
             robot.change_velocity_cap(robot.vel + robot.accel)
-        else:  # facing upwards
-            robot.vertical_speed += -arena.tile_size / 10 * robot.recoil_percent  # recoil up again
+
         robot.recoil_percent += 0.05
 
     def handle_explosions(self, screen, arena, robots):

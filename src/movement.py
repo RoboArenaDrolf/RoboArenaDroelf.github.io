@@ -1,3 +1,6 @@
+from projectiles import Projectile
+
+
 class Movement:
 
     def __init__(self, gravity):
@@ -20,7 +23,11 @@ class Movement:
             if self.check_tile_type_y(robot, arena) == 1:  # if we touch lava-> take dmg
                 robot.take_damage_debug(1)
                 if robot.hit_cooldown <= 0:
-                    robot.recoil(arena, robot)
+                    if robot.vertical_speed < 0:
+                        direction = Projectile.Direction.DOWN
+                    else:
+                        direction = Projectile.Direction.UP
+                    robot.recoil(arena, robot, direction)
             if robot.vertical_speed > 0:  # Kollision von oben
                 # we stand on some tile -> find out which one
                 if self.check_tile_type_y(robot, arena) == 1:  # lava
@@ -49,7 +56,11 @@ class Movement:
             if self.check_tile_type_x(robot, arena) == 1:  # if we touch lava-> take dmg
                 robot.take_damage_debug(1)
                 if robot.hit_cooldown <= 0:
-                    robot.recoil(arena, robot)
+                    if x < 0:
+                        direction = Projectile.Direction.RIGHT
+                    else:
+                        direction = Projectile.Direction.LEFT
+                    robot.recoil(arena, robot, direction)
             if x > 0:
                 robot.posx = (
                     ((robot.posx - arena.x_offset) // arena.tile_size + 1) * arena.tile_size

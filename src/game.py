@@ -667,6 +667,7 @@ while run:
     pygame.time.delay(0)
     dt = clock.tick(120)
 
+    # Bugfix for bug with changing window position mid-game
     current_window_pos = window.position
     if playing:
         if current_window_pos != initial_window_pos:
