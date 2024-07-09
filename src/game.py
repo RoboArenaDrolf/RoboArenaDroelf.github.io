@@ -144,6 +144,7 @@ def handle_build_arena_menu_events(event):
     global input_active_x, input_active_y, build_arena, menu, x_tiles, y_tiles, screens
 
     if event.type == pygame.MOUSEBUTTONDOWN:
+        mouse_pos = pygame.mouse.get_pos()
         if input_rect_x_tiles.collidepoint(mouse_pos):
             input_active_x = True
             input_active_y = False
@@ -595,7 +596,10 @@ def mouse_handling():
 
 
 def screens_painting():
-    global menu_items, resume_item, main_menu_item, quit_item, play_item, build_arena_item, settings_item, exit_item, controller_on_off_item, resolution_items, fullscreen_item, back_item, input_rect_x_tiles, input_rect_y_tiles, start_building_item, one_player_item, two_player_item, three_player_item, four_player_item, level_items
+    global menu_items, resume_item, main_menu_item, quit_item, play_item, build_arena_item, \
+        settings_item, exit_item, controller_on_off_item, resolution_items, fullscreen_item, back_item, \
+        input_rect_x_tiles, input_rect_y_tiles, start_building_item, one_player_item, two_player_item, \
+        three_player_item, four_player_item, level_items
 
     if game_paused:
         menu_items = screens.pause_screen(pygame, screen)
