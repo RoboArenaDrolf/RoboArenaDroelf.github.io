@@ -510,12 +510,12 @@ def keydown_handling(event):
         if key == pygame.K_ESCAPE:
             game_paused = True
         elif (
-                key == pygame.K_g and player_robot.melee_cd == 0
+            key == pygame.K_g and player_robot.melee_cd == 0
         ):  # we can attack if we have no cooldown and press the button
             player_robot.melee_attack(pygame, screen, robots, arena, "light")
             player_robot.melee_cd += 1
         elif (
-                key == pygame.K_h and player_robot.melee_cd == 0
+            key == pygame.K_h and player_robot.melee_cd == 0
         ):  # we can attack if we have no cooldown and press the button
             player_robot.melee_attack(pygame, screen, robots, arena, "heavy")
             player_robot.no_move = True  # charge attack no moving allowed
@@ -560,15 +560,11 @@ def joyaxis_handling(event):
         if joystick_id < len(robots):
             player_robot = robots[joystick_id]
             if (
-                    event.axis == 5 and event.value > 0.2 and player_robot.melee_cd == 0
+                event.axis == 5 and event.value > 0.2 and player_robot.melee_cd == 0
             ):  # we can attack if we have no cooldown and press the button
                 player_robot.melee_attack(pygame, screen, robots, arena, "light")
                 player_robot.melee_cd += 1
-            if (
-                    event.axis == 4
-                    and event.value > 0.2
-                    and (player_robot.ranged_cd == 0 or player_robot.ranged_cd == 10)
-            ):
+            if event.axis == 4 and event.value > 0.2 and (player_robot.ranged_cd == 0 or player_robot.ranged_cd == 10):
                 player_robot.ranged_attack("normal")
                 player_robot.ranged_cd += 1
     else:
@@ -602,10 +598,7 @@ def mouse_handling():
 
 
 def screens_painting():
-    global menu_items, resume_item, main_menu_item, quit_item, play_item, build_arena_item, \
-        settings_item, exit_item, controller_on_off_item, resolution_items, fullscreen_item, \
-        back_item, input_rect_x_tiles, input_rect_y_tiles, start_building_item, one_player_item, \
-        two_player_item, three_player_item, four_player_item, level_items
+    global menu_items, resume_item, main_menu_item, quit_item, play_item, build_arena_item, settings_item, exit_item, controller_on_off_item, resolution_items, fullscreen_item, back_item, input_rect_x_tiles, input_rect_y_tiles, start_building_item, one_player_item, two_player_item, three_player_item, four_player_item, level_items
 
     if game_paused:
         menu_items = screens.pause_screen(pygame, screen)
