@@ -335,97 +335,100 @@ def game_loop():
     arena.paint_arena(screen)
     # Handling of player robot
     for player_robot in robots:
-        player_robot_handling(player_robot)
+        robot_handling(player_robot)
         player_robot.decrease_hit_cooldown()
 
 
-def player_robot_handling(player_robot):
+def robot_handling(robot):
     global playing, death
 
     # Überprüfen, ob player die seitlichen Grenzen der Arena erreicht hat
-    if player_robot.posx + player_robot.radius - arena.x_offset < 0:
-        player_robot.health = 0
-    elif player_robot.posx - player_robot.radius + arena.x_offset > display_resolution[0]:
-        player_robot.health = 0
+    if robot.posx + robot.radius - arena.x_offset < 0:
+        robot.health = 0
+    elif robot.posx - robot.radius + arena.x_offset > display_resolution[0]:
+        robot.health = 0
     # Überprüfen, ob player die oberen und unteren Grenzen der Arena erreicht hat
-    if player_robot.posy + player_robot.radius < arena.y_offset:
-        player_robot.health = 0
-    elif player_robot.posy - player_robot.radius > display_resolution[1] - arena.y_offset:
-        player_robot.health = 0
+    if robot.posy + robot.radius < arena.y_offset:
+        robot.health = 0
+    elif robot.posy - robot.radius > display_resolution[1] - arena.y_offset:
+        robot.health = 0
     # Check if player is dead:
-    if player_robot.health <= 0:
+    if robot.health <= 0:
         playing = False
         death = True
     # Player melee attack cooldown
-    if player_robot.melee_cd != 0 and (not player_robot.heavy_attack):
-        if player_robot.melee_cd == 60:  # reset cooldown
-            player_robot.melee_cd = 0
-        elif player_robot.melee_cd < 30:  # attack will stay for a certain duration
-            player_robot.melee_attack(pygame, screen, robots, arena, "light")
-            player_robot.melee_cd += 1
+    if robot.melee_cd != 0 and (not robot.heavy_attack):
+        if robot.melee_cd == 60:  # reset cooldown
+            robot.melee_cd = 0
+        elif robot.melee_cd < 30:  # attack will stay for a certain duration
+            robot.melee_attack(pygame, screen, robots, arena, "light")
+            robot.melee_cd += 1
         else:
-            player_robot.melee_cd += 1
-    elif player_robot.melee_cd != 0 and player_robot.heavy_attack:
-        if player_robot.melee_cd == 120:  # reset cooldown
-            player_robot.melee_cd = 0
-        elif player_robot.melee_cd <= 60:  # attack will stay for a certain duration
-            player_robot.melee_attack(pygame, screen, robots, arena, "heavy")
-            player_robot.melee_cd += 1
+            robot.melee_cd += 1
+    elif robot.melee_cd != 0 and robot.heavy_attack:
+        if robot.melee_cd == 120:  # reset cooldown
+            robot.melee_cd = 0
+        elif robot.melee_cd <= 60:  # attack will stay for a certain duration
+            robot.melee_attack(pygame, screen, robots, arena, "heavy")
+            robot.melee_cd += 1
         else:
-            player_robot.no_move = False  # after 60 Frames, attack is finished , we are allowed to move again
-            player_robot.melee_cd += 1
+            robot.no_move = False  # after 60 Frames, attack is finished , we are allowed to move again
+            robot.melee_cd += 1
     # Player ranged attack cooldown
-    if player_robot.ranged_cd != 0 and (not player_robot.ranged_explodes):
-        if player_robot.ranged_cd == 60:
-            player_robot.ranged_cd = 0
-        elif player_robot.ranged_cd <= 10:  # second ranged attack at ranged_cd == 10
-            player_robot.ranged_attack("normal")
-            player_robot.ranged_cd += 1
+    if robot.ranged_cd != 0 and (not robot.ranged_explodes):
+        if robot.ranged_cd == 60:
+            robot.ranged_cd = 0
+        elif robot.ranged_cd <= 10:  # second ranged attack at ranged_cd == 10
+            robot.ranged_attack("normal")
+            robot.ranged_cd += 1
         else:
-            player_robot.ranged_cd += 1
-    elif player_robot.ranged_cd != 0 and player_robot.ranged_explodes:
-        if player_robot.ranged_cd == 120:
-            player_robot.ranged_cd = 0
+            robot.ranged_cd += 1
+    elif robot.ranged_cd != 0 and robot.ranged_explodes:
+        if robot.ranged_cd == 120:
+            robot.ranged_cd = 0
         else:
-            player_robot.ranged_cd += 1
+            robot.ranged_cd += 1
 
     # Player movement
     moved = False
     if use_controller and joysticks:
-        if player_robot.player_number < len(joysticks):
-            joystick = joysticks[player_robot.player_number]
-            moved = move_player_controller(player_robot, joystick)
+        if robot.player_number < len(joysticks):
+            joystick = joysticks[robot.player_number]
+            moved = move_player_controller(robot, joystick)
     else:
-        keys = pygame.key.get_pressed()
-        moved = move_player_keys(player_robot, keys)
+        if robot.player_number == 0:
+            keys = pygame.key.get_pressed()
+            moved = move_player_keys(robot, keys)
     if not moved:
-        if player_robot.vel < 0:
-            if player_robot.tile_below == 2:
-                player_robot.change_acceleration(player_robot.accel + (arena.tile_size / 2000.0) / 2)
+        if robot.player_number != 0:
+            print(robot.accel, robot.vel, arena.tile_size / 2000.0)
+        if robot.vel < 0:
+            if robot.tile_below == 2:
+                robot.change_acceleration(robot.accel + (arena.tile_size / 2000.0) / 2)
             else:
-                player_robot.change_acceleration(player_robot.accel + arena.tile_size / 2000.0)
-            if player_robot.vel + player_robot.accel >= 0:
-                player_robot.change_velocity_cap(0)
-                player_robot.change_acceleration(0)
-        elif player_robot.vel > 0:
-            if player_robot.tile_below == 2:
-                player_robot.change_acceleration(player_robot.accel - (arena.tile_size / 2000.0) / 2)
+                robot.change_acceleration(robot.accel + arena.tile_size / 2000.0)
+            if robot.vel + robot.accel >= 0:
+                robot.change_velocity_cap(0)
+                robot.change_acceleration(0)
+        elif robot.vel > 0:
+            if robot.tile_below == 2:
+                robot.change_acceleration(robot.accel - (arena.tile_size / 2000.0) / 2)
             else:
-                player_robot.change_acceleration(player_robot.accel - arena.tile_size / 2000.0)
-            if player_robot.vel + player_robot.accel <= 0:
-                player_robot.change_velocity_cap(0)
-                player_robot.change_acceleration(0)
+                robot.change_acceleration(robot.accel - arena.tile_size / 2000.0)
+            if robot.vel + robot.accel <= 0:
+                robot.change_velocity_cap(0)
+                robot.change_acceleration(0)
         else:
-            player_robot.change_acceleration(0)
-    if player_robot.tile_below == 3:  # if we stand on sand
-        player_robot.change_velocity_cap_lower(player_robot.vel + player_robot.accel, player_robot.vel_max / 2)
+            robot.change_acceleration(0)
+    if robot.tile_below == 3:  # if we stand on sand
+        robot.change_velocity_cap_lower(robot.vel + robot.accel, robot.vel_max / 2)
         # we can at best move half as fast as on a normal tile
     else:
-        player_robot.change_velocity_cap(player_robot.vel + player_robot.accel)
-    movement.move_robot(player_robot, player_robot.vel, arena, dt)
-    player_robot.paint_robot(pygame, screen, direction_left)
-    player_robot.ranged_hit_reg(pygame, screen, robots, arena)
-    player_robot.handle_explosions(screen, arena, robots)
+        robot.change_velocity_cap(robot.vel + robot.accel)
+    movement.move_robot(robot, robot.vel, arena, dt)
+    robot.paint_robot(pygame, screen, direction_left)
+    robot.ranged_hit_reg(pygame, screen, robots, arena)
+    robot.handle_explosions(screen, arena, robots)
 
 
 def move_player_keys(player_robot, keys):
