@@ -46,9 +46,11 @@ build_arena = False
 settings = False
 playing = False
 map = False
-death = False
 robots = []
 use_controller = True
+single_player = False
+death = False
+win = False
 
 input_active_x = False
 input_active_y = False
@@ -61,8 +63,6 @@ recently_switched_item = False
 # Initiale Fensterposition
 window = Window.from_display_module()
 initial_window_pos = window.position
-
-jump = []
 
 clock = pygame.time.Clock()
 
@@ -219,7 +219,7 @@ def handle_settings_menu_events():
 
 
 def handle_start_game_menu_events():
-    global robots, jump, start_game, playing
+    global robots, start_game, playing, single_player
 
     robot1 = Robot(
         arena.spawn_positions[0][0] + robot_radius,
@@ -272,28 +272,27 @@ def handle_start_game_menu_events():
 
     if one_player_item.pressed:
         robots = [robot1]
+        single_player = True
     elif two_player_item.pressed:
         robots = [robot1, robot2]
-        jump = [False]
     elif three_player_item.pressed:
         robots = [robot1, robot2, robot3]
-        jump = [False, False]
         start_game = False
     elif four_player_item.pressed:
         robots = [robot1, robot2, robot3, robot4]
-        jump = [False, False, False]
     if robots:
         start_game = False
         reset_selected_item()
         playing = True
 
 
-def handle_death_screen_events():
-    global menu, death
+def handle_death_or_win_screen_events():
+    global menu, death, win
 
     if main_menu_item.pressed:
         menu = True
         death = False
+        win = False
     elif quit_item.pressed:
         pygame.quit()
         sys.exit()
@@ -329,7 +328,7 @@ def handle_map_screen_events():
 
 
 def game_loop():
-    global player_robot, frame_count
+    global player_robot, frame_count, win, playing
 
     screen.fill(white)
     arena.paint_arena(screen)
@@ -337,17 +336,21 @@ def game_loop():
     for player_robot in robots:
         robot_handling(player_robot)
         player_robot.decrease_hit_cooldown()
+    # Multiplayer: Check if only one is left
+    if not single_player and len(robots) == 1:
+        win = True
+        playing = False
 
 
 def robot_handling(robot):
-    # Check if robot dies
-    check_robot_death(robot)
     # Execute attacks
     robot_attacks(robot)
     # Robot movement
     robot_movement(robot)
     # Robot rendering
     robot.paint_robot(pygame, screen)
+    # Check if robot dies
+    check_robot_death(robot)
 
 
 def robot_movement(robot):
@@ -438,8 +441,10 @@ def check_robot_death(robot):
         robot.health = 0
     # Check if player is dead:
     if robot.health <= 0:
-        playing = False
-        death = True
+        if single_player:
+            death = True
+        else:
+            robots.remove(robot)
 
 
 def move_robot_keys(robot, keys):
@@ -608,7 +613,11 @@ def screens_painting():
     elif death:
         menu_items = screens.death_screen(pygame, screen)
         main_menu_item, quit_item = menu_items[0], menu_items[1]
-        handle_death_screen_events()
+        handle_death_or_win_screen_events()
+    elif win:
+        menu_items = screens.win_screen(pygame, screen, robots[0])
+        main_menu_item, quit_item = menu_items[0], menu_items[1]
+        handle_death_or_win_screen_events()
     elif menu:
         menu_items = screens.main_menu_screen(pygame, screen)
         play_item, build_arena_item, settings_item, exit_item = (
