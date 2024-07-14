@@ -125,13 +125,14 @@ def reset_selected_item():
 
 
 def handle_main_menu_events():
-    global robots, map, menu, build_arena, settings, run
+    global robots, map, menu, build_arena, settings, run, use_controller
 
     if play_item.pressed:
         robots = []
         map = True
         menu = False
     elif build_arena_item.pressed:
+        use_controller = False
         build_arena = True
         menu = False
         reset_selected_item()
