@@ -25,6 +25,9 @@ available_resolutions = [(720, 720), (1280, 720), (1280, 1080), (1920, 1080)]
 monitor = get_monitors()[0]
 fullscreen_res = (monitor.width, monitor.height)
 fullscreen = False
+mouse_visibility_counter = 0
+mouse_visible = True
+framerate = 120
 
 screen = pygame.display.set_mode(display_resolution)
 pygame.display.set_caption("Robo Arena")
@@ -187,10 +190,6 @@ def handle_settings_menu_events():
 
     if controller_on_off_item.pressed:
         use_controller = not use_controller
-        if use_controller:
-            pygame.mouse.set_visible(False)
-        else:
-            pygame.mouse.set_visible(True)
     elif fullscreen_item.pressed:
         display_resolution = fullscreen_res
         fullscreen = True
@@ -678,7 +677,13 @@ def item_selections():
 ##################################
 while run:
     pygame.time.delay(0)
-    dt = clock.tick(120)
+    dt = clock.tick(framerate)
+
+    if mouse_visible:
+        mouse_visibility_counter += 1
+        if mouse_visibility_counter >= 2 * framerate:
+            mouse_visible = False
+            pygame.mouse.set_visible(False)
 
     # Bugfix for bug with changing window position mid-game
     current_window_pos = window.position
@@ -693,14 +698,19 @@ while run:
             run = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mouse_handling()
-        if use_controller:
-            if event.type == pygame.JOYBUTTONDOWN:
-                joybuttons_handling(event)
-            elif event.type == pygame.JOYAXISMOTION:
-                joyaxis_handling(event)
+        elif event.type == pygame.MOUSEMOTION:
+            pygame.mouse.set_visible(True)
+            mouse_visible = True
+            mouse_visibility_counter = 0
         else:
-            if event.type == pygame.KEYDOWN:
-                keydown_handling(event)
+            if use_controller:
+                if event.type == pygame.JOYBUTTONDOWN:
+                    joybuttons_handling(event)
+                elif event.type == pygame.JOYAXISMOTION:
+                    joyaxis_handling(event)
+            else:
+                if event.type == pygame.KEYDOWN:
+                    keydown_handling(event)
 
     if playing and not game_paused:
         game_loop()
