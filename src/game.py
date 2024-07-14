@@ -693,12 +693,14 @@ while run:
             run = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mouse_handling()
-        elif event.type == pygame.KEYDOWN:
-            keydown_handling(event)
-        elif event.type == pygame.JOYBUTTONDOWN:
-            joybuttons_handling(event)
-        elif event.type == pygame.JOYAXISMOTION:
-            joyaxis_handling(event)
+        if use_controller:
+            if event.type == pygame.JOYBUTTONDOWN:
+                joybuttons_handling(event)
+            elif event.type == pygame.JOYAXISMOTION:
+                joyaxis_handling(event)
+        else:
+            if event.type == pygame.KEYDOWN:
+                keydown_handling(event)
 
     if playing and not game_paused:
         game_loop()
