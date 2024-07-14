@@ -698,7 +698,7 @@ while run:
             run = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mouse_handling()
-        elif event.type == pygame.MOUSEMOTION:
+        elif not mouse_visible and event.type == pygame.MOUSEMOTION:
             pygame.mouse.set_visible(True)
             mouse_visible = True
             mouse_visibility_counter = 0
