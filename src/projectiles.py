@@ -1,4 +1,18 @@
+from enum import Enum
+
+
 class Projectile:
+
+    class Direction(Enum):
+        """
+        Enum of different directions of a projectile or a melee attack for recoil.
+        """
+
+        LEFT = 1
+        RIGHT = 2
+        UP = 3
+        DOWN = 4
+
     x: int
     y: int
     radius: int
