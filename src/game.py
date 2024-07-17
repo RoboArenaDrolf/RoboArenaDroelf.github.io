@@ -430,7 +430,7 @@ def player_robot_handling(player_robot):
             player_robot.no_move = False  # after 60 Frames, attack is finished , we are allowed to move again
             player_robot.melee_cd += 1
     # Player ranged attack cooldown
-    if player_robot.ranged_cd != 0 and (not player_robot.ranged_explodes):
+    if player_robot.ranged_cd != 0 and (not player_robot.ranged_explodes and not player_robot.ranged_bounces):
         if player_robot.ranged_cd == 60:
             player_robot.ranged_cd = 0
         elif player_robot.ranged_cd <= 10:  # second ranged attack at ranged_cd == 10
@@ -440,6 +440,11 @@ def player_robot_handling(player_robot):
             player_robot.ranged_cd += 1
     elif player_robot.ranged_cd != 0 and player_robot.ranged_explodes:
         if player_robot.ranged_cd == 120:
+            player_robot.ranged_cd = 0
+        else:
+            player_robot.ranged_cd += 1
+    elif player_robot.ranged_cd != 0 and player_robot.ranged_bounces:
+        if player_robot.ranged_cd == 60:
             player_robot.ranged_cd = 0
         else:
             player_robot.ranged_cd += 1
@@ -587,6 +592,9 @@ while run:
                     player_robot.ranged_cd += 1
                 elif key == pygame.K_t and player_robot.ranged_cd == 0:
                     player_robot.ranged_attack("explosive")
+                    player_robot.ranged_cd += 1
+                elif key == pygame.K_z and player_robot.ranged_cd == 0:
+                    player_robot.ranged_attack("bouncy")
                     player_robot.ranged_cd += 1
                 elif key == pygame.K_f:
                     player_robot.take_damage_debug(10)
