@@ -28,6 +28,7 @@ class Robot:
     attack_start: int
     attack_buffer: int
     ranged_explodes: bool  # false = normal true = explosive
+    ranged_laser: bool  # false = normal true = laser
     heavy_attack: bool  # false = light true = heavy
     no_move = False  # false = moving allowed true = moving not allowed, start with allowed movement
     explosions = []
@@ -219,7 +220,7 @@ class Robot:
                 self.hit_reg_line(robots, arena, line_start, line_end, 1)
                 self.attack_buffer -= 1
 
-    def ranged_attack(self, type):
+    def ranged_attack(self, screen, robots, arena, type):
         if self.ranged_cd == 0 or self.ranged_cd == 10:
             r = self.radius / 4
             if self.alpha == 0:  # right
@@ -247,26 +248,147 @@ class Robot:
             pn = self.player_number  # projectile created by player number x
             if type == "normal":
                 self.ranged_explodes = False
+                self.ranged_laser = False
                 t = type
                 d = 1
                 c = "black"
             elif type == "explosive":
                 self.ranged_explodes = True
+                self.ranged_laser = False
                 t = type
                 r = r*2
                 xs = xs / 2
                 ys = ys / 2
                 d = 5
                 c = "gray"
+            elif type == "laser":
+                self.ranged_explodes = False
+                self.ranged_laser = True
             else:
                 print("invalid type default to normal")
                 self.ranged_explodes = False
+                self.ranged_laser = False
                 t = "normal"
                 d = 1
                 c = "black"
             # this shouldn't be needed since the robot that owns the projectiles array has this number,
             # but I used this as a fix in ranged_hit_reg, in order to be unable to hit yourself
-            self.projectiles.append(Projectile(x, y, c, r, xs, ys, d, pn, t))  # this append must be the reason
+            if type == "laser":
+                pass  # if we fire a laser, we do not want another projectile added
+            else:
+                self.projectiles.append(Projectile(x, y, c, r, xs, ys, d, pn, t))  # this append must be the reason
+        if type == "laser":
+            (len_x, len_y) = self.find_closest_block(screen, arena)  # x,y cords of nearest collision in front
+            # calculate the rectangle based on viewing direction
+            if self.alpha == 0:  # right
+                hit_box_height = 2*self.radius
+                hit_box_width = abs(len_x - self.posx)
+                rect_left_x = self.posx+self.radius
+                rect_top_y = self.posy-self.radius
+            elif self.alpha == 90:  # down
+                hit_box_height = abs(len_y - self.posy)
+                hit_box_width = 2*self.radius
+                rect_left_x = self.posx-self.radius
+                rect_top_y = self.posy+self.radius
+            elif self.alpha == 180:  # left
+                hit_box_height = 2*self.radius
+                hit_box_width = abs(len_x - self.posx)
+                rect_left_x = self.posx-self.radius-hit_box_width
+                rect_top_y = self.posy-self.radius
+            elif self.alpha == 270:  # up
+                hit_box_height = abs(len_y - self.posy)
+                hit_box_width = 2*self.radius
+                rect_left_x = self.posx-self.radius
+                rect_top_y = self.posy-self.radius-hit_box_height
+            # now we have the rectangle so we draw it and calculate the hit_reg
+            hit_box = pygame.Rect(rect_left_x, rect_top_y, hit_box_width, hit_box_height)
+            pygame.draw.rect(screen, "red", hit_box, width=2)
+            self.hit_reg_rect(robots, arena, hit_box, 10, self.player_number)
+
+    def find_closest_block(self, screen, arena):
+        r = 0  # this looks like it works, a projectile with radius 0
+        pn = self.player_number  # projectile created by player number x
+        if self.alpha == 0:  # right
+            xs = 1
+            ys = 0
+            x = self.posx + self.radius + r
+            y = self.posy
+            dir = 0
+        elif self.alpha == 90:  # down
+            xs = 0
+            ys = 1
+            x = self.posx
+            y = self.posy + self.radius + r
+            dir = 1
+        elif self.alpha == 180:  # left
+            xs = -1
+            ys = 0
+            x = self.posx - self.radius - r
+            y = self.posy
+            dir = 2
+        elif self.alpha == 270:  # up
+            xs = 0
+            ys = -1
+            x = self.posx
+            y = self.posy - self.radius - r
+            dir = 3
+        else:  # failsafe
+            print("how did you do this? alpha=", self.alpha)
+        l = len(self.projectiles)
+        t = "tracer"
+        d = 1
+        c = "black"
+        self.projectiles.append(Projectile(x, y, c, r, xs, ys, d, pn, t))
+        # this projectile will be used to find a possibly existing closest block
+
+        # now we must find distance to the edges of the arena
+        screen_height = screen.get_height()
+        screen_width = screen.get_width()
+        x_left = abs(self.posx - arena.x_offset)  # distance to left arena edge
+        x_right = abs(self.posx - (screen_width - arena.x_offset))
+        y_up = abs(self.posy - arena.y_offset)
+        y_down = abs(self.posy - (screen_height - arena.y_offset))
+        # print(x_left, x_right, y_up, y_down)
+
+        max_range = self.radius * 10  # this is the maximum range of the laser
+        x_right = min(x_right, max_range)  # we want to use the smaller one of 1.distance to edge and 2.max_range, later
+        x_left = min(x_left, max_range)
+        y_up = min(y_up, max_range)
+        y_down = min(y_down, max_range)
+        # although doing this here might not be ideal and might want to move this into ranged_attack()
+        # because we might want to use this function for other thing later
+
+        x_col = self.posx
+        y_col = self.posy
+        i = 0
+        if ys == 0:  # left or right
+            if dir == 0:  # right
+                while i < x_right and not self.projectiles[l].check_collision_x(arena):
+                    # we take our tracer projectile and move it until we hit either a block, the edge of the map,
+                    # or the maximum range
+                    self.projectiles[l].move_projectile()
+                    x_col += 1  # we save the x cord of our final point at the end of the loop
+                    i += 1
+            else:  # left
+                while i < x_left and not self.projectiles[l].check_collision_x(arena):
+                    self.projectiles[l].move_projectile()
+                    x_col += 1
+                    i += 1
+            self.projectiles.pop(l)  # once we have a collision we remove the projectile
+        else:  # up or down
+            if dir == 1:  # down
+                while i < y_down and not self.projectiles[l].check_collision_y(arena):
+                    self.projectiles[l].move_projectile()
+                    y_col += 1  # or y cord in these 2 cases
+                    i += 1
+            else:  # up
+                while i < y_up and not self.projectiles[l].check_collision_y(arena):
+                    self.projectiles[l].move_projectile()
+                    y_col += 1
+                    i += 1
+            self.projectiles.pop(l)  # once we are done here we can delete the projectile
+        # print(x_col, y_col)
+        return x_col, y_col
 
     def ranged_hit_reg(self, pygame, screen, robots, arena):
         # we can probably get screen_height and screen_width from the screen itself
