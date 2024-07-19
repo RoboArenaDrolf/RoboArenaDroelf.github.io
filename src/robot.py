@@ -334,7 +334,7 @@ class Robot:
             dir = 3
         else:  # failsafe
             print("how did you do this? alpha=", self.alpha)
-        l = len(self.projectiles)
+        proj_number = len(self.projectiles)
         t = "tracer"
         d = 1
         c = "black"
@@ -363,30 +363,30 @@ class Robot:
         i = 0
         if ys == 0:  # left or right
             if dir == 0:  # right
-                while i < x_right and not self.projectiles[l].check_collision_x(arena):
+                while i < x_right and not self.projectiles[proj_number].check_collision_x(arena):
                     # we take our tracer projectile and move it until we hit either a block, the edge of the map,
                     # or the maximum range
-                    self.projectiles[l].move_projectile()
+                    self.projectiles[proj_number].move_projectile()
                     x_col += 1  # we save the x cord of our final point at the end of the loop
                     i += 1
             else:  # left
-                while i < x_left and not self.projectiles[l].check_collision_x(arena):
-                    self.projectiles[l].move_projectile()
+                while i < x_left and not self.projectiles[proj_number].check_collision_x(arena):
+                    self.projectiles[proj_number].move_projectile()
                     x_col += 1
                     i += 1
-            self.projectiles.pop(l)  # once we have a collision we remove the projectile
+            self.projectiles.pop(proj_number)  # once we have a collision we remove the projectile
         else:  # up or down
             if dir == 1:  # down
-                while i < y_down and not self.projectiles[l].check_collision_y(arena):
-                    self.projectiles[l].move_projectile()
+                while i < y_down and not self.projectiles[proj_number].check_collision_y(arena):
+                    self.projectiles[proj_number].move_projectile()
                     y_col += 1  # or y cord in these 2 cases
                     i += 1
             else:  # up
-                while i < y_up and not self.projectiles[l].check_collision_y(arena):
-                    self.projectiles[l].move_projectile()
+                while i < y_up and not self.projectiles[proj_number].check_collision_y(arena):
+                    self.projectiles[proj_number].move_projectile()
                     y_col += 1
                     i += 1
-            self.projectiles.pop(l)  # once we are done here we can delete the projectile
+            self.projectiles.pop(proj_number)  # once we are done here we can delete the projectile
         # print(x_col, y_col)
         return x_col, y_col
 
