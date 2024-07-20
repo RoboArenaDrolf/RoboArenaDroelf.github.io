@@ -279,28 +279,29 @@ class Robot:
                 self.projectiles.append(Projectile(x, y, c, r, xs, ys, d, pn, t))  # this append must be the reason
         if type == "laser":
             (len_x, len_y) = self.find_closest_block(screen, arena)  # x,y cords of nearest collision in front
+            max_range = self.radius * 10  # this is the maximum range of the laser
             # calculate the rectangle based on viewing direction
             if self.alpha == 0:  # right
                 hit_box_height = 2*self.radius
-                hit_box_width = abs(len_x - self.posx)
+                hit_box_width = min(abs(len_x - self.posx), max_range)
                 rect_left_x = self.posx+self.radius
                 rect_top_y = self.posy-self.radius
             elif self.alpha == 90:  # down
-                hit_box_height = abs(len_y - self.posy)
+                hit_box_height = min(abs(len_y - self.posy), max_range)
                 hit_box_width = 2*self.radius
                 rect_left_x = self.posx-self.radius
                 rect_top_y = self.posy+self.radius
             elif self.alpha == 180:  # left
                 hit_box_height = 2*self.radius
-                hit_box_width = abs(len_x - self.posx)
+                hit_box_width = min(abs(len_x - self.posx), max_range)
                 rect_left_x = self.posx-self.radius-hit_box_width
                 rect_top_y = self.posy-self.radius
             elif self.alpha == 270:  # up
-                hit_box_height = abs(len_y - self.posy)
+                hit_box_height = min(abs(len_y - self.posy), max_range)
                 hit_box_width = 2*self.radius
                 rect_left_x = self.posx-self.radius
                 rect_top_y = self.posy-self.radius-hit_box_height
-            # now we have the rectangle so we draw it and calculate the hit_reg
+            # now we have the rectangle, so we draw it and calculate the hit_reg
             hit_box = pygame.Rect(rect_left_x, rect_top_y, hit_box_width, hit_box_height)
             pygame.draw.rect(screen, "red", hit_box, width=2)
             self.hit_reg_rect(robots, arena, hit_box, 10, self.player_number)
@@ -311,32 +312,28 @@ class Robot:
         if self.alpha == 0:  # right
             xs = 1
             ys = 0
-            x = self.posx + self.radius + r
+            x = self.posx + self.radius
             y = self.posy
-            dir = 0
         elif self.alpha == 90:  # down
             xs = 0
             ys = 1
             x = self.posx
-            y = self.posy + self.radius + r
-            dir = 1
+            y = self.posy + self.radius
         elif self.alpha == 180:  # left
             xs = -1
             ys = 0
-            x = self.posx - self.radius - r
+            x = self.posx - self.radius
             y = self.posy
-            dir = 2
         elif self.alpha == 270:  # up
             xs = 0
             ys = -1
             x = self.posx
-            y = self.posy - self.radius - r
-            dir = 3
+            y = self.posy - self.radius
         else:  # failsafe
             print("how did you do this? alpha=", self.alpha)
         proj_number = len(self.projectiles)
         t = "tracer"
-        d = 1
+        d = 0
         c = "black"
         self.projectiles.append(Projectile(x, y, c, r, xs, ys, d, pn, t))
         # this projectile will be used to find a possibly existing closest block
@@ -349,20 +346,11 @@ class Robot:
         y_up = abs(self.posy - arena.y_offset)
         y_down = abs(self.posy - (screen_height - arena.y_offset))
         # print(x_left, x_right, y_up, y_down)
-
-        max_range = self.radius * 10  # this is the maximum range of the laser
-        x_right = min(x_right, max_range)  # we want to use the smaller one of 1.distance to edge and 2.max_range, later
-        x_left = min(x_left, max_range)
-        y_up = min(y_up, max_range)
-        y_down = min(y_down, max_range)
-        # although doing this here might not be ideal and might want to move this into ranged_attack()
-        # because we might want to use this function for other thing later
-
         x_col = self.posx
         y_col = self.posy
         i = 0
         if ys == 0:  # left or right
-            if dir == 0:  # right
+            if self.alpha == 180:  # right
                 while i < x_right and not self.projectiles[proj_number].check_collision_x(arena):
                     # we take our tracer projectile and move it until we hit either a block, the edge of the map,
                     # or the maximum range
@@ -376,7 +364,7 @@ class Robot:
                     i += 1
             self.projectiles.pop(proj_number)  # once we have a collision we remove the projectile
         else:  # up or down
-            if dir == 1:  # down
+            if self.alpha == 90:  # down
                 while i < y_down and not self.projectiles[proj_number].check_collision_y(arena):
                     self.projectiles[proj_number].move_projectile()
                     y_col += 1  # or y cord in these 2 cases
