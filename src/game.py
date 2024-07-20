@@ -430,17 +430,25 @@ def player_robot_handling(player_robot):
             player_robot.no_move = False  # after 60 Frames, attack is finished , we are allowed to move again
             player_robot.melee_cd += 1
     # Player ranged attack cooldown
-    if player_robot.ranged_cd != 0 and (not player_robot.ranged_explodes):
+    if player_robot.ranged_cd != 0 and (not player_robot.ranged_explodes and not player_robot.ranged_laser):
         if player_robot.ranged_cd == 60:
             player_robot.ranged_cd = 0
         elif player_robot.ranged_cd <= 10:  # second ranged attack at ranged_cd == 10
-            player_robot.ranged_attack("normal")
+            player_robot.ranged_attack(screen, robots, arena, "normal")
             player_robot.ranged_cd += 1
         else:
             player_robot.ranged_cd += 1
     elif player_robot.ranged_cd != 0 and player_robot.ranged_explodes:
         if player_robot.ranged_cd == 120:
             player_robot.ranged_cd = 0
+        else:
+            player_robot.ranged_cd += 1
+    elif player_robot.ranged_cd != 0 and player_robot.ranged_laser:
+        if player_robot.ranged_cd == 240:  # long cooldown
+            player_robot.ranged_cd = 0
+        elif player_robot.ranged_cd <= 30:  # laser stays until ranged_cd == 30
+            player_robot.ranged_attack(screen, robots, arena, "laser")
+            player_robot.ranged_cd += 1
         else:
             player_robot.ranged_cd += 1
 
@@ -583,10 +591,13 @@ while run:
                     player_robot.no_move = True  # charge attack no moving allowed
                     player_robot.melee_cd += 1
                 elif key == pygame.K_r and player_robot.ranged_cd == 0:
-                    player_robot.ranged_attack("normal")
+                    player_robot.ranged_attack(screen, robots, arena, "normal")
                     player_robot.ranged_cd += 1
                 elif key == pygame.K_t and player_robot.ranged_cd == 0:
-                    player_robot.ranged_attack("explosive")
+                    player_robot.ranged_attack(screen, robots, arena, "explosive")
+                    player_robot.ranged_cd += 1
+                elif key == pygame.K_u and player_robot.ranged_cd == 0:
+                    player_robot.ranged_attack(screen, robots, arena, "laser")
                     player_robot.ranged_cd += 1
                 elif key == pygame.K_f:
                     player_robot.take_damage_debug(10)
@@ -622,7 +633,7 @@ while run:
                     and event.value > 0.2
                     and (player_robot.ranged_cd == 0 or player_robot.ranged_cd == 10)
                 ):
-                    player_robot.ranged_attack("normal")
+                    player_robot.ranged_attack(screen, robots, arena, "normal")
                     player_robot.ranged_cd += 1
             else:
                 if event.axis == 1:
