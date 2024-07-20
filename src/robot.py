@@ -341,8 +341,8 @@ class Robot:
         # now we must find distance to the edges of the arena
         screen_height = screen.get_height()
         screen_width = screen.get_width()
-        x_left = abs(self.posx - arena.x_offset)  # distance to left arena edge
-        x_right = abs(self.posx - (screen_width - arena.x_offset))
+        x_right = abs(self.posx - arena.x_offset)  # distance to left arena edge
+        x_left = abs(self.posx - (screen_width - arena.x_offset))
         y_up = abs(self.posy - arena.y_offset)
         y_down = abs(self.posy - (screen_height - arena.y_offset))
         # print(x_left, x_right, y_up, y_down)
