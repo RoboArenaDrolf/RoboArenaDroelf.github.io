@@ -411,7 +411,7 @@ def player_robot_handling(player_robot):
         player_robot.change_acceleration(player_robot.accel - arena.tile_size / 1000.0)
         player_robot.change_alpha(180)
         direction_left = True
-        footsteps_sound.play()
+        footsteps_sound.play()            
     elif keys[pygame.K_RIGHT]:
         player_robot.change_acceleration(player_robot.accel + arena.tile_size / 1000.0)
         player_robot.change_alpha(0)
