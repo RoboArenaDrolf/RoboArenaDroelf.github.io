@@ -65,11 +65,10 @@ pygame.mixer.init()
 jumping_sound = pygame.mixer.Sound("Sounds/jumping.mp3")
 jumping_sound.set_volume(0.7)
 death_sound = pygame.mixer.Sound("Sounds/death.mp3")
-death_sound.play()
 footsteps_sound = pygame.mixer.Sound("Sounds/footsteps.mp3")
 click_sound = pygame.mixer.Sound("Sounds/click.mp3")
 fight_sound = pygame.mixer.Sound("Sounds/fight.mp3")
-fight_sound.set_volume
+fight_sound.set_volume(0.7)
 music = pygame.mixer.Sound("Sounds/music.mp3")
 
 def get_json_filenames(directory):
@@ -274,7 +273,7 @@ def handle_start_game_menu_events():
 
 def handle_death_screen_events():
     global menu, death
-
+    death_sound.play()
     if main_menu_rect.collidepoint(mouse_pos):
         click_sound.play()
         menu = True
