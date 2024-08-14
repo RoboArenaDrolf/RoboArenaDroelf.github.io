@@ -63,11 +63,13 @@ clock = pygame.time.Clock()
 
 pygame.mixer.init()
 jumping_sound = pygame.mixer.Sound("Sounds/jumping.mp3")
+jumping_sound.set_volume(0.7)
 death_sound = pygame.mixer.Sound("Sounds/death.mp3")
-damage_sound = pygame.mixer.Sound("Sounds/damage.mp3")
+death_sound.play()
 footsteps_sound = pygame.mixer.Sound("Sounds/footsteps.mp3")
 click_sound = pygame.mixer.Sound("Sounds/click.mp3")
 fight_sound = pygame.mixer.Sound("Sounds/fight.mp3")
+fight_sound.set_volume
 music = pygame.mixer.Sound("Sounds/music.mp3")
 
 def get_json_filenames(directory):
@@ -470,6 +472,7 @@ while run:
                     click_sound.play()
                     handle_start_game_menu_events()
                 elif death:
+                    death_sound.play()
                     handle_death_screen_events()
                 elif map:
                     handle_map_screen_events()

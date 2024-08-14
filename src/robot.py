@@ -82,6 +82,7 @@ class Robot:
     def take_damage_debug(self, d):
         pygame.mixer.init()
         damage_sound = pygame.mixer.Sound("Sounds/damage.mp3")
+        damage_sound.set_volume(0.6)
         damage_sound.play()
         if d <= self.health:
             self.health = self.health - d
