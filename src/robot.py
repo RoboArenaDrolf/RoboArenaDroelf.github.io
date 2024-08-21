@@ -28,7 +28,9 @@ class Robot:
     attack_start: int
     attack_buffer: int
     ranged_explodes: bool  # false = normal true = explosive
-    heavy_attack: bool  # false = light true = heavy
+    heavy_attack: bool
+    light_attack: bool
+    stab_attack: bool
     no_move = False  # false = moving allowed true = moving not allowed, start with allowed movement
     explosions = []
 
@@ -161,6 +163,8 @@ class Robot:
     def melee_attack(self, pygame, screen, robots, arena, type):
         if type == "heavy":
             self.heavy_attack = True
+            self.light_attack = False
+            self.stab_attack = False
             if 30 <= self.melee_cd <= 60:
                 hit_box_height = 2*self.radius
                 hit_box_width = 2*self.radius
@@ -183,6 +187,8 @@ class Robot:
                 self.hit_reg_rect(robots, arena, hit_box, 10, self.player_number)
         elif type == "light":
             self.heavy_attack = False
+            self.light_attack = True
+            self.stab_attack = False
             if self.melee_cd == 0:
                 if self.alpha == 0:  # right
                     self.attack_start = 315
@@ -215,6 +221,39 @@ class Robot:
                 new_y = self.radius * (math.sin(math.radians(self.attack_start)))
                 line_start = (self.posx + new_x, self.posy + new_y)
                 line_end = (self.posx + new_x * 2.5, self.posy + new_y * 2.5)
+                pygame.draw.line(screen, "red", line_start, line_end, width=4)
+                self.hit_reg_line(robots, arena, line_start, line_end, 1)
+                self.attack_buffer -= 1
+        elif type == "stab":
+            self.heavy_attack = False
+            self.light_attack = False
+            self.stab_attack = True
+            if self.melee_cd == 0:
+                self.attack_start = self.alpha
+                new_x = self.radius * (math.cos(math.radians(self.attack_start)))
+                new_y = self.radius * (math.sin(math.radians(self.attack_start)))
+                line_start = (self.posx + new_x, self.posy + new_y)
+                line_end = (self.posx + new_x * 2, self.posy + new_y * 2)
+                pygame.draw.line(screen, "red", line_start, line_end, width=4)
+                self.attack_buffer = 5
+                self.hit_reg_line(robots, arena, line_start, line_end, 1)
+            elif self.melee_cd % 5 == 0 and self.attack_buffer == 0:
+                if self.melee_cd % 2 == 0:
+                    self.attack_start = (self.alpha + 15) % 360
+                else:
+                    self.attack_start = (self.alpha - 15) % 360
+                new_x = self.radius * (math.cos(math.radians(self.attack_start)))
+                new_y = self.radius * (math.sin(math.radians(self.attack_start)))
+                line_start = (self.posx + new_x, self.posy + new_y)
+                line_end = (self.posx + new_x * 2, self.posy + new_y * 2)
+                pygame.draw.line(screen, "red", line_start, line_end, width=4)
+                self.hit_reg_line(robots, arena, line_start, line_end, 1)
+                self.attack_buffer = 4
+            elif self.attack_buffer > 0:
+                new_x = self.radius * (math.cos(math.radians(self.attack_start)))
+                new_y = self.radius * (math.sin(math.radians(self.attack_start)))
+                line_start = (self.posx + new_x, self.posy + new_y)
+                line_end = (self.posx + new_x * 2, self.posy + new_y * 2)
                 pygame.draw.line(screen, "red", line_start, line_end, width=4)
                 self.hit_reg_line(robots, arena, line_start, line_end, 1)
                 self.attack_buffer -= 1

@@ -412,7 +412,7 @@ def player_robot_handling(player_robot):
         playing = False
         death = True
     # Player melee attack cooldown
-    if player_robot.melee_cd != 0 and (not player_robot.heavy_attack):
+    if player_robot.melee_cd != 0 and player_robot.light_attack:
         if player_robot.melee_cd == 60:  # reset cooldown
             player_robot.melee_cd = 0
         elif player_robot.melee_cd < 30:  # attack will stay for a certain duration
@@ -428,6 +428,14 @@ def player_robot_handling(player_robot):
             player_robot.melee_cd += 1
         else:
             player_robot.no_move = False  # after 60 Frames, attack is finished , we are allowed to move again
+            player_robot.melee_cd += 1
+    elif player_robot.melee_cd != 0 and player_robot.stab_attack:
+        if player_robot.melee_cd == 21:  # reset cooldown
+            player_robot.melee_cd = 0
+        elif player_robot.melee_cd < 21:  # attack will stay for a certain duration
+            player_robot.melee_attack(pygame, screen, robots, arena, "stab")
+            player_robot.melee_cd += 1
+        else:
             player_robot.melee_cd += 1
     # Player ranged attack cooldown
     if player_robot.ranged_cd != 0 and (not player_robot.ranged_explodes):
@@ -576,11 +584,12 @@ while run:
                 ):  # we can attack if we have no cooldown and press the button
                     player_robot.melee_attack(pygame, screen, robots, arena, "light")
                     player_robot.melee_cd += 1
-                elif (
-                        key == pygame.K_h and player_robot.melee_cd == 0
-                ):  # we can attack if we have no cooldown and press the button
+                elif key == pygame.K_h and player_robot.melee_cd == 0:
                     player_robot.melee_attack(pygame, screen, robots, arena, "heavy")
                     player_robot.no_move = True  # charge attack no moving allowed
+                    player_robot.melee_cd += 1
+                elif key == pygame.K_j and player_robot.melee_cd == 0:
+                    player_robot.melee_attack(pygame, screen, robots, arena, "stab")
                     player_robot.melee_cd += 1
                 elif key == pygame.K_r and player_robot.ranged_cd == 0:
                     player_robot.ranged_attack("normal")
