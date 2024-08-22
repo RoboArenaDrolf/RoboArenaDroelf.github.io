@@ -8,7 +8,6 @@ class Projectile:
     damage: int
     type: str
     player_number: int
-    animation_base_path = "Animation/"
 
     def __init__(self, x, y, c, r, xs, ys, d, pn, t):
         self.x = x
@@ -20,7 +19,6 @@ class Projectile:
         self.damage = d
         self.player_number = pn
         self.type = t
-        #self.prjectile = pygame.image.load(animation_base_path+"j")
 
     def move_projectile(self):
         self.x = self.x + self.x_speed
@@ -28,8 +26,7 @@ class Projectile:
 
     def paint_projectile(self, pygame, screen):
         # if self.type == "small":
-        projectile = pygame.image.load('Animation/projektil.png')
-        projectile = pygame.transform.scale(projectile, (10,10))
+        projectile = pygame.image.load('Animation/pojektil.png')
         screen.blit(projectile,(self.x, self.y))
         #pygame.draw.circle(screen, self.color, (self.x, self.y), self.radius)
         # if self.type == "big":
