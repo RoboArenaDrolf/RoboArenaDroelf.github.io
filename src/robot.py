@@ -235,20 +235,33 @@ class Robot:
                 line_start = (self.posx + new_x, self.posy + new_y)
                 line_end = (self.posx + new_x * 2, self.posy + new_y * 2)
                 pygame.draw.line(screen, "red", line_start, line_end, width=4)
-                self.attack_buffer = 5
+                self.attack_buffer = 9
                 self.hit_reg_line(robots, arena, line_start, line_end, 1)
-            elif self.melee_cd % 5 == 0 and self.attack_buffer == 0:
-                if self.melee_cd % 2 == 0:
-                    self.attack_start = (self.alpha + 15) % 360
+            elif self.attack_buffer == 0:
+                if self.melee_cd % 3 == 0:
+                    self.attack_start = self.alpha
+                    # print(1)
+                elif self.melee_cd % 3 == 1:
+                    self.attack_start = (self.alpha + 30) % 360
+                    # print(2)
                 else:
-                    self.attack_start = (self.alpha - 15) % 360
+                    self.attack_start = (self.alpha - 30) % 360
+                    # print(3)
                 new_x = self.radius * (math.cos(math.radians(self.attack_start)))
                 new_y = self.radius * (math.sin(math.radians(self.attack_start)))
                 line_start = (self.posx + new_x, self.posy + new_y)
-                line_end = (self.posx + new_x * 2, self.posy + new_y * 2)
+                line_end = (self.posx + new_x * 1.5, self.posy + new_y * 1.5)
                 pygame.draw.line(screen, "red", line_start, line_end, width=4)
                 self.hit_reg_line(robots, arena, line_start, line_end, 1)
-                self.attack_buffer = 4
+                self.attack_buffer = 9
+            elif self.attack_buffer > 5:
+                new_x = self.radius * (math.cos(math.radians(self.attack_start)))
+                new_y = self.radius * (math.sin(math.radians(self.attack_start)))
+                line_start = (self.posx + new_x, self.posy + new_y)
+                line_end = (self.posx + new_x * 1.5, self.posy + new_y * 1.5)
+                pygame.draw.line(screen, "red", line_start, line_end, width=4)
+                self.hit_reg_line(robots, arena, line_start, line_end, 1)
+                self.attack_buffer -= 1
             elif self.attack_buffer > 0:
                 new_x = self.radius * (math.cos(math.radians(self.attack_start)))
                 new_y = self.radius * (math.sin(math.radians(self.attack_start)))
