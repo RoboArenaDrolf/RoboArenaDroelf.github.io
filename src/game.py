@@ -275,11 +275,13 @@ def handle_start_game_menu_events():
         single_player = True
     elif two_player_item.pressed:
         robots = [robot1, robot2]
+        single_player = False
     elif three_player_item.pressed:
         robots = [robot1, robot2, robot3]
-        start_game = False
+        single_player = False
     elif four_player_item.pressed:
         robots = [robot1, robot2, robot3, robot4]
+        single_player = False
     if robots:
         start_game = False
         reset_selected_item()
@@ -443,6 +445,7 @@ def check_robot_death(robot):
     if robot.health <= 0:
         if single_player:
             death = True
+            playing = False
         else:
             robots.remove(robot)
 
