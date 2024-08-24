@@ -443,7 +443,7 @@ class Robot:
         bar_width = screen_width / 6
         bar_height = screen_height / 40
         bar_x = screen_width / 3.42 + (screen_width / 4) * (player_number - 1)
-        bar_y = screen_height / 20
+        bar_y = screen_height / 30
 
         # Hintergrund des Balkens (für die maximalen Lebenspunkte)
         pygame.draw.rect(screen, (0, 0, 0), (bar_x, bar_y, bar_width, bar_height))
@@ -465,7 +465,7 @@ class Robot:
         # Rückstoßprozente als Text rendern
         recoil_text = recoil_font.render(f"{int(recoil_percent * 100)}%", True, color)
         recoil_rect = recoil_text.get_rect(
-            center=(screen_width / 2.62 + (screen_width / 4) * (player_number - 1), screen_height / 10)
+            center=(screen_width / 2.62 + (screen_width / 4) * (player_number - 1), screen_height / 13)
         )
 
         # Textumrandung (zum Beispiel ein leichtes Schwarz für besseren Kontrast)
