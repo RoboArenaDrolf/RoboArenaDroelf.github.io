@@ -74,6 +74,10 @@ class Screens:
         self.level_menu_items = []
         for i, filename in enumerate(json_filenames):
             self.level_menu_items.append(self.MenuItem(filename, self._white, font, i, self._display_resolution))
+        self.win_screen_items = [
+            self.MenuItem("Main Menu", self._white, font, 2, self._display_resolution),
+            self.MenuItem("Quit Game", self._white, font, 3, self._display_resolution),
+        ]
 
     def death_screen(self, pygame, screen):
         screen.fill(self._black)
@@ -224,14 +228,30 @@ class Screens:
             ),
         )
 
-        # Hole die JSON- und PNG-Dateinamen
-        # png_filenames = get_png_filenames(directory)
-
         # Anzeige der JSON-Dateinamen
         for item in self.level_menu_items:
             item.draw(screen, pygame, self._black, self._display_resolution)
 
         return self.level_menu_items
+
+    def win_screen(self, pygame, screen, robot):
+
+        font = pygame.font.Font(None, self._font_size_big)
+
+        text = font.render("Player " + str(robot.player_number + 1) + " hat gewonnen!", True, f"{robot.color}")
+        screen.blit(
+            text,
+            (
+                self._display_resolution[0] // 2 - text.get_width() // 2,
+                self._display_resolution[1] // 2 - text.get_height() // 2 - 3 * self._dist_between_elements,
+            ),
+        )
+
+        # Anzeige der JSON-Dateinamen
+        for item in self.win_screen_items:
+            item.draw(screen, pygame, self._black, self._display_resolution)
+
+        return self.win_screen_items
 
     @staticmethod
     def show_popup(message):
