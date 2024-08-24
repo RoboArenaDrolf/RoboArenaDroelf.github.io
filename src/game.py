@@ -291,6 +291,11 @@ def handle_start_game_menu_events():
         start_game = False
         reset_selected_item()
         playing = True
+        # when we start a new round delete all projectiles that may still exist
+        robot1.reset_projectiles()
+        robot2.reset_projectiles()
+        robot3.reset_projectiles()
+        robot4.reset_projectiles()
 
 
 def handle_death_screen_events():

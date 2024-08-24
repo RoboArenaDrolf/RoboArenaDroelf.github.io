@@ -348,6 +348,9 @@ class Robot:
                     # tested with this, we do identify explosions correctly
                 robots[i].projectiles.pop(n)
 
+    def reset_projectiles(self):
+        self.projectiles = []
+
     def hit_reg_line(self, robots, arena, line_start, line_end, dmg):
         for i in range(1, len(robots)):  # old hitreg should still work
             # now I will use https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line:
