@@ -303,44 +303,44 @@ class Robot:
                         # DO NOT REMOVE PROJECTILES INSIDE THE LOOP instead
                         to_delete.append(j)  # save the index (might be multiple)
                 # Überprüfen, ob die Projectile die seitlichen Grenzen der Arena erreicht hat
-                if robots[i].projectiles[j].x < robots[i].projectiles[j].radius + arena.x_offset:
-                    if robots[i].projectiles[j].bounce_count > 0:
-                        robots[i].projectiles[j].bounce()
-                        print("hoae?")
-                    else:
-                        to_delete.append(j)
-                    # print("we delete this, left")  # shoot the left wall and see this
-                elif robots[i].projectiles[j].x > screen_width - robots[i].projectiles[j].radius - arena.x_offset:
-                    if robots[i].projectiles[j].bounce_count > 0:
-                        robots[i].projectiles[j].bounce()
-                    else:
-                        to_delete.append(j)
-                    # print("we delete this, right")
-                # Überprüfen, ob die Projectile die oberen und unteren Grenzen der Arena erreicht hat
-                elif robots[i].projectiles[j].y - robots[i].projectiles[j].radius < arena.y_offset:
-                    if robots[i].projectiles[j].bounce_count > 0:
-                        robots[i].projectiles[j].bounce()
-                    else:
-                        to_delete.append(j)
-                    # print("we delete this, up")
-                elif robots[i].projectiles[j].y + robots[i].projectiles[j].radius > screen_height - arena.y_offset:
-                    if robots[i].projectiles[j].bounce_count > 0:
-                        robots[i].projectiles[j].bounce()
-                    else:
-                        to_delete.append(j)
-                    # print("we delete this, down")
-                # Kollisionen in y-Richtung überprüfen und behandeln
-                elif robots[i].projectiles[j].check_collision_y(arena):
-                    if robots[i].projectiles[j].bounce_count > 0:
-                        robots[i].projectiles[j].bounce()
-                    else:
-                        to_delete.append(j)
-                # Kollisionen in x-Richtung überprüfen und behandeln
-                elif robots[i].projectiles[j].check_collision_x(arena):
-                    if robots[i].projectiles[j].bounce_count > 0:
-                        robots[i].projectiles[j].bounce()
-                    else:
-                        to_delete.append(j)
+                else:
+                    if robots[i].projectiles[j].x < robots[i].projectiles[j].radius + arena.x_offset:
+                        if robots[i].projectiles[j].bounce_count > 0:
+                            robots[i].projectiles[j].bounce()
+                        else:
+                            to_delete.append(j)
+                            # print("we delete this, left")  # shoot the left wall and see this
+                    elif robots[i].projectiles[j].x > screen_width - robots[i].projectiles[j].radius - arena.x_offset:
+                        if robots[i].projectiles[j].bounce_count > 0:
+                            robots[i].projectiles[j].bounce()
+                        else:
+                            to_delete.append(j)
+                            # print("we delete this, right")
+                    # Überprüfen, ob die Projectile die oberen und unteren Grenzen der Arena erreicht hat
+                    elif robots[i].projectiles[j].y - robots[i].projectiles[j].radius < arena.y_offset:
+                        if robots[i].projectiles[j].bounce_count > 0:
+                            robots[i].projectiles[j].bounce()
+                        else:
+                            to_delete.append(j)
+                            # print("we delete this, up")
+                    elif robots[i].projectiles[j].y + robots[i].projectiles[j].radius > screen_height - arena.y_offset:
+                        if robots[i].projectiles[j].bounce_count > 0:
+                            robots[i].projectiles[j].bounce()
+                        else:
+                            to_delete.append(j)
+                            # print("we delete this, down")
+                    # Kollisionen in y-Richtung überprüfen und behandeln
+                    elif robots[i].projectiles[j].check_collision_y(arena):
+                        if robots[i].projectiles[j].bounce_count > 0:
+                            robots[i].projectiles[j].bounce()
+                        else:
+                            to_delete.append(j)
+                    # Kollisionen in x-Richtung überprüfen und behandeln
+                    elif robots[i].projectiles[j].check_collision_x(arena):
+                        if robots[i].projectiles[j].bounce_count > 0:
+                            robots[i].projectiles[j].bounce()
+                        else:
+                            to_delete.append(j)
             # im not 100% sure if it's possible for a projectile to be added to the to_delete array twice,
             # so I might have to add a duplicate remover here
 
