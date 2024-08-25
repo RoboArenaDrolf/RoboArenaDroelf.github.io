@@ -137,8 +137,10 @@ class Robot:
         # Vektoren berechnen
         px, py = x2 - x1, y2 - y1
         norm = px * px + py * py
-        if norm == 0:
-            return 9999
+        if norm == 0:  # x1=x2, y1=y2 -> not a line, but a point
+            # now we don't have a distance form a line to a point but from a point to another point
+            distance = math.sqrt((x3-x1)*(x3-x1)+(y3-y1)*(y3-y1))
+            return distance
         # Punkt auf die Linie projizieren
         u = ((x3 - x1) * px + (y3 - y1) * py) / norm
 
