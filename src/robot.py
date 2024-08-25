@@ -137,7 +137,8 @@ class Robot:
         # Vektoren berechnen
         px, py = x2 - x1, y2 - y1
         norm = px * px + py * py
-
+        if norm == 0:
+            return 9999
         # Punkt auf die Linie projizieren
         u = ((x3 - x1) * px + (y3 - y1) * py) / norm
 
@@ -454,14 +455,14 @@ class Robot:
                     self.recoil(arena, robots[i])
 
     def hit_reg_rect(self, robots, arena, rect, dmg, exception):
-        # j is a placeholder, we use it to exclude one robot
+        # exception is used to exclude one robot
         # if we change our collision to be a hit box, we could use some builtin functions
         tl = rect.topleft
         tr = rect.topright
         bl = rect.bottomleft
         br = rect.bottomright
         for i in range(0, len(robots)):  # check all robots
-            if i != exception:  # except for j, use -1 for no exception
+            if i != exception:  # use -1 for no exception
                 if ((bl[1] < robots[i].posy < tl[1] and bl[0] < robots[i].posx < br[0])  # inside of rect
                         or (self.distance_from_segment(tl[0], tl[1], tr[0], tr[1], robots[i].posx, robots[i].posy)
                             <= robots[i].radius)
