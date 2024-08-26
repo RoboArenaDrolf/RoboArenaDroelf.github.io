@@ -218,6 +218,34 @@ class Robot:
                 pygame.draw.line(screen, "red", line_start, line_end, width=4)
                 self.hit_reg_line(robots, arena, line_start, line_end, 1)
                 self.attack_buffer -= 1
+        elif type == "flame":
+            (len_x, len_y) = self.find_closest_block(screen, arena)  # x,y cords of nearest collision in front
+            max_range = self.radius * 4  # this is the maximum range of the laser
+            # calculate the rectangle based on viewing direction
+            if self.alpha == 0:  # right
+                hit_box_height = 2*self.radius
+                hit_box_width = min(abs(len_x - self.posx), max_range)
+                rect_left_x = self.posx+self.radius
+                rect_top_y = self.posy-self.radius
+            elif self.alpha == 90:  # down
+                hit_box_height = min(abs(len_y - self.posy), max_range)
+                hit_box_width = 2*self.radius
+                rect_left_x = self.posx-self.radius
+                rect_top_y = self.posy+self.radius
+            elif self.alpha == 180:  # left
+                hit_box_height = 2*self.radius
+                hit_box_width = min(abs(len_x - self.posx), max_range)
+                rect_left_x = self.posx-self.radius-hit_box_width
+                rect_top_y = self.posy-self.radius
+            elif self.alpha == 270:  # up
+                hit_box_height = min(abs(len_y - self.posy), max_range)
+                hit_box_width = 2*self.radius
+                rect_left_x = self.posx-self.radius
+                rect_top_y = self.posy-self.radius-hit_box_height
+            # now we have the rectangle, so we draw it and calculate the hit_reg
+            hit_box = pygame.Rect(rect_left_x, rect_top_y, hit_box_width, hit_box_height)
+            pygame.draw.rect(screen, "red", hit_box, width=2)
+            self.hit_reg_rect(robots, arena, hit_box, 10, self.player_number)
 
     def ranged_attack(self, type):
         if self.ranged_cd == 0 or self.ranged_cd == 10:
