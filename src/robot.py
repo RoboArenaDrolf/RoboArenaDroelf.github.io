@@ -229,32 +229,51 @@ class Robot:
             self.light_attack = False
             self.flame_attack = True
             (len_x, len_y) = self.find_closest_block(screen, arena)  # x,y cords of nearest collision in front
-            max_range = self.radius * 4  # this is the maximum range of the laser
+            max_range = self.radius * 4  # this is the maximum range of the flames
             # calculate the rectangle based on viewing direction
             if self.alpha == 0:  # right
-                hit_box_height = 2*self.radius
-                hit_box_width = min(abs(len_x - self.posx), max_range)
+                hit_box_height = self.radius
+                hit_box_width = min(abs(len_x - self.posx), max_range)-self.radius
                 rect_left_x = self.posx+self.radius
-                rect_top_y = self.posy-self.radius
+                rect_top_y = self.posy-0.5*self.radius
+                hit_box2_height = 2*self.radius
+                hit_box2_width = self.radius
+                rect_left2_x = self.posx+self.radius+min(abs(len_x - self.posx), max_range)-self.radius
+                rect_top2_y = self.posy-1.5*self.radius
             elif self.alpha == 90:  # down
-                hit_box_height = min(abs(len_y - self.posy), max_range)
-                hit_box_width = 2*self.radius
-                rect_left_x = self.posx-self.radius
+                hit_box_height = min(abs(len_y - self.posy), max_range)-self.radius
+                hit_box_width = self.radius
+                rect_left_x = self.posx-0.5*self.radius
                 rect_top_y = self.posy+self.radius
+                hit_box2_height = self.radius
+                hit_box2_width = 3*self.radius
+                rect_left2_x = self.posx-1.5*self.radius
+                rect_top2_y = self.posy+self.radius+hit_box_height
             elif self.alpha == 180:  # left
-                hit_box_height = 2*self.radius
-                hit_box_width = min(abs(len_x - self.posx), max_range)
+                hit_box_height = self.radius
+                hit_box_width = min(abs(len_x - self.posx), max_range)-self.radius
                 rect_left_x = self.posx-self.radius-hit_box_width
-                rect_top_y = self.posy-self.radius
+                rect_top_y = self.posy-0.5*self.radius
+                hit_box2_height = 2*self.radius
+                hit_box2_width = self.radius
+                rect_left2_x = self.posx-self.radius-hit_box_width-self.radius
+                rect_top2_y = self.posy-1.5*self.radius
             elif self.alpha == 270:  # up
-                hit_box_height = min(abs(len_y - self.posy), max_range)
-                hit_box_width = 2*self.radius
-                rect_left_x = self.posx-self.radius
+                hit_box_height = min(abs(len_y - self.posy), max_range)-self.radius
+                hit_box_width = self.radius
+                rect_left_x = self.posx-0.5*self.radius
                 rect_top_y = self.posy-self.radius-hit_box_height
+                hit_box2_height = self.radius
+                hit_box2_width = 3*self.radius
+                rect_left2_x = self.posx-1.5*self.radius
+                rect_top2_y = self.posy-self.radius-hit_box_height-self.radius
             # now we have the rectangle, so we draw it and calculate the hit_reg
             hit_box = pygame.Rect(rect_left_x, rect_top_y, hit_box_width, hit_box_height)
             pygame.draw.rect(screen, "red", hit_box, width=2)
             self.hit_reg_rect(robots, arena, hit_box, 10, self.player_number)
+            hit_box2 = pygame.Rect(rect_left2_x, rect_top2_y, hit_box2_width, hit_box2_height)
+            pygame.draw.rect(screen, "red", hit_box2, width=2)
+            self.hit_reg_rect(robots, arena, hit_box2, 10, self.player_number)
 
     def ranged_attack(self, type):
         if self.ranged_cd == 0 or self.ranged_cd == 10:

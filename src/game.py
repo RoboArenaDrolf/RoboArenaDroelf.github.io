@@ -430,9 +430,9 @@ def player_robot_handling(player_robot):
             player_robot.no_move = False  # after 60 Frames, attack is finished , we are allowed to move again
             player_robot.melee_cd += 1
     elif player_robot.melee_cd != 0 and player_robot.flame_attack:
-        if player_robot.melee_cd == 31:  # reset cooldown
+        if player_robot.melee_cd == 180:  # reset cooldown
             player_robot.melee_cd = 0
-        elif player_robot.melee_cd < 30:  # attack will stay for a certain duration
+        elif 5 < player_robot.melee_cd < 60:  # attack will stay for a certain duration
             player_robot.melee_attack(pygame, screen, robots, arena, "flame")
             player_robot.melee_cd += 1
         else:
