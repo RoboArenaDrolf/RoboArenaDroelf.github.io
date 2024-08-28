@@ -306,7 +306,6 @@ def handle_death_or_win_screen_events():
         sys.exit()
 
 
-
 def handle_pause_screen_events():
     global game_paused, menu, playing
 
@@ -320,7 +319,6 @@ def handle_pause_screen_events():
     elif quit_item.pressed:
         pygame.quit()
         sys.exit()
-
 
 
 def handle_map_screen_events():
@@ -422,7 +420,7 @@ def robot_attacks(robot):
             robot.no_move = False  # after 60 Frames, attack is finished , we are allowed to move again
             robot.melee_cd += 1
     # Player ranged attack cooldown
-    if robot.ranged_cd != 0 and (not robot.ranged_explodes  and not player_robot.ranged_bounces):
+    if robot.ranged_cd != 0 and (not robot.ranged_explodes and not player_robot.ranged_bounces):
         if robot.ranged_cd == 60:
             robot.ranged_cd = 0
         elif robot.ranged_cd <= 10:  # second ranged attack at ranged_cd == 10
