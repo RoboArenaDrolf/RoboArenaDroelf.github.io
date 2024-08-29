@@ -29,6 +29,7 @@ class Robot:
     attack_start: int
     attack_buffer: int
     ranged_explodes: bool  # false = normal true = explosive
+    ranged_bounces: bool
     heavy_attack: bool  # false = light true = heavy
     no_move = False  # false = moving allowed true = moving not allowed, start with allowed movement
     explosions = []
@@ -128,7 +129,6 @@ class Robot:
                 <= robots[i].radius
             ):  # if the distance from this line to the center of a robot
                 # is smaller than it's radius, we have a hit and that robot takes some damage
-                # print(i, "hit")
                 robots[i].take_damage_debug(1)
                 if robots[i].hit_cooldown <= 0:
                     if self.alpha == 180:
@@ -256,26 +256,39 @@ class Robot:
             pn = self.player_number  # projectile created by player number x
             if type == "normal":
                 self.ranged_explodes = False
+                self.ranged_bounces = False
                 t = type
                 d = 1
                 c = "black"
+                b = 0
+            elif type == "bouncy":
+                self.ranged_explodes = False
+                self.ranged_bounces = True
+                t = type
+                d = 1
+                c = "blue"
+                b = 2
             elif type == "explosive":
                 self.ranged_explodes = True
+                self.ranged_bounces = False
                 t = type
                 r = r * 2
                 xs = xs / 2
                 ys = ys / 2
                 d = 5
                 c = "gray"
+                b = 0
             else:
                 print("invalid type default to normal")
                 self.ranged_explodes = False
+                self.ranged_bounces = False
                 t = "normal"
                 d = 1
                 c = "black"
+                b = 0
             # this shouldn't be needed since the robot that owns the projectiles array has this number,
             # but I used this as a fix in ranged_hit_reg, in order to be unable to hit yourself
-            self.projectiles.append(Projectile(x, y, c, r, xs, ys, d, pn, t))  # this append must be the reason
+            self.projectiles.append(Projectile(x, y, c, r, xs, ys, d, pn, b, t))  # this append must be the reason
 
     def ranged_hit_reg(self, pygame, screen, robots, arena):
         # we can probably get screen_height and screen_width from the screen itself
@@ -306,25 +319,32 @@ class Robot:
                         # DO NOT REMOVE PROJECTILES INSIDE THE LOOP instead
                         to_delete.append(j)  # save the index (might be multiple)
                 # Überprüfen, ob die Projectile die seitlichen Grenzen der Arena erreicht hat
-                if robots[i].projectiles[j].x < robots[i].projectiles[j].radius + arena.x_offset:
-                    to_delete.append(j)
-                    # print("we delete this, left")  # shoot the left wall and see this
-                elif robots[i].projectiles[j].x > screen_width - robots[i].projectiles[j].radius - arena.x_offset:
-                    to_delete.append(j)
-                    # print("we delete this, right")
-                # Überprüfen, ob die Projectile die oberen und unteren Grenzen der Arena erreicht hat
-                elif robots[i].projectiles[j].y - robots[i].projectiles[j].radius < arena.y_offset:
-                    to_delete.append(j)
-                    # print("we delete this, up")
-                elif robots[i].projectiles[j].y + robots[i].projectiles[j].radius > screen_height - arena.y_offset:
-                    to_delete.append(j)
-                    # print("we delete this, down")
-                # Kollisionen in y-Richtung überprüfen und behandeln
-                elif robots[i].projectiles[j].check_collision_y(arena):
-                    to_delete.append(j)
-                # Kollisionen in x-Richtung überprüfen und behandeln
-                elif robots[i].projectiles[j].check_collision_x(arena):
-                    to_delete.append(j)
+                else:
+                    if robots[i].projectiles[j].x < robots[i].projectiles[j].radius + arena.x_offset:
+                        to_delete.append(j)
+                        # left  # we shot the left wall
+                    elif robots[i].projectiles[j].x > screen_width - robots[i].projectiles[j].radius - arena.x_offset:
+                        to_delete.append(j)
+                        # right
+                    # Überprüfen, ob die Projectile die oberen und unteren Grenzen der Arena erreicht hat
+                    elif robots[i].projectiles[j].y - robots[i].projectiles[j].radius < arena.y_offset:
+                        to_delete.append(j)
+                        # up
+                    elif robots[i].projectiles[j].y + robots[i].projectiles[j].radius > screen_height - arena.y_offset:
+                        to_delete.append(j)
+                        # down
+                    # Kollisionen in y-Richtung überprüfen und behandeln
+                    elif robots[i].projectiles[j].check_collision_y(arena):
+                        if robots[i].projectiles[j].bounce_count > 0:
+                            robots[i].projectiles[j].bounce()
+                        else:
+                            to_delete.append(j)
+                    # Kollisionen in x-Richtung überprüfen und behandeln
+                    elif robots[i].projectiles[j].check_collision_x(arena):
+                        if robots[i].projectiles[j].bounce_count > 0:
+                            robots[i].projectiles[j].bounce()
+                        else:
+                            to_delete.append(j)
             # im not 100% sure if it's possible for a projectile to be added to the to_delete array twice,
             # so I might have to add a duplicate remover here
 
@@ -340,9 +360,13 @@ class Robot:
                     self.explosions.append(5)  # add the duration
                     # could be consolidated into an object
 
-                    # print("boom")
                     # tested with this, we do identify explosions correctly
                 robots[i].projectiles.pop(n)
+
+    def reset_projectiles(self):
+        for i in range(0, len(self.projectiles)):
+            self.projectiles.pop(0)
+        # self.projectiles = [] # this does not work properly :(
 
     def hit_reg_line(self, robots, arena, line_start, line_end, dmg):
         for i in range(0, len(robots)):  # old hitreg should still work
@@ -357,7 +381,6 @@ class Robot:
                 <= robots[i].radius
             ):  # if the distance from this line to the center of a robot
                 # is smaller than it's radius, we have a hit and that robot takes some damage
-                # print(i, "hit")
                 robots[i].take_damage_debug(dmg)
                 if robots[i].hit_cooldown <= 0:
                     if self.alpha == 180:
@@ -371,7 +394,7 @@ class Robot:
                     self.recoil(arena, robots[i], direction)
 
     def hit_reg_rect(self, robots, arena, rect, dmg, exception):
-        # j is a placeholder, we use it to exclude one robot
+        # we use exception to exclude one robot
         # if we change our collision to be a hit box, we could use some builtin functions
         tl = rect.topleft
         tr = rect.topright

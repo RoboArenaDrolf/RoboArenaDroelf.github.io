@@ -232,7 +232,7 @@ def handle_start_game_menu_events():
         100,
         "blue",
         0,
-    )
+        )
     robot2 = Robot(
         arena.spawn_positions[1][0] + robot_radius,
         arena.spawn_positions[1][1] + robot_radius,
@@ -244,7 +244,7 @@ def handle_start_game_menu_events():
         100,
         "red",
         1,
-    )
+        )
     robot3 = Robot(
         arena.spawn_positions[2][0] + robot_radius,
         arena.spawn_positions[2][1] + robot_radius,
@@ -256,7 +256,7 @@ def handle_start_game_menu_events():
         100,
         "green",
         2,
-    )
+        )
     robot4 = Robot(
         arena.spawn_positions[3][0] + robot_radius,
         arena.spawn_positions[3][1] + robot_radius,
@@ -268,7 +268,7 @@ def handle_start_game_menu_events():
         100,
         "yellow",
         3,
-    )
+        )
 
     if one_player_item.pressed:
         robots = [robot1]
@@ -286,6 +286,12 @@ def handle_start_game_menu_events():
         start_game = False
         reset_selected_item()
         playing = True
+        # print("purging")
+        # when we start a new round delete all projectiles that may still exist
+        robot1.reset_projectiles()
+        robot2.reset_projectiles()
+        robot3.reset_projectiles()
+        robot4.reset_projectiles()
 
 
 def handle_death_or_win_screen_events():
@@ -338,6 +344,8 @@ def game_loop():
     for player_robot in robots:
         robot_handling(player_robot)
         player_robot.decrease_hit_cooldown()
+    # moved hit_reg here since it only should be done once
+    robots[0].ranged_hit_reg(pygame, screen, robots, arena)
     # Multiplayer: Check if only one is left
     if not single_player and len(robots) == 1:
         win = True
@@ -412,7 +420,7 @@ def robot_attacks(robot):
             robot.no_move = False  # after 60 Frames, attack is finished , we are allowed to move again
             robot.melee_cd += 1
     # Player ranged attack cooldown
-    if robot.ranged_cd != 0 and (not robot.ranged_explodes):
+    if robot.ranged_cd != 0 and (not robot.ranged_explodes and not player_robot.ranged_bounces):
         if robot.ranged_cd == 60:
             robot.ranged_cd = 0
         elif robot.ranged_cd <= 10:  # second ranged attack at ranged_cd == 10
@@ -425,7 +433,11 @@ def robot_attacks(robot):
             robot.ranged_cd = 0
         else:
             robot.ranged_cd += 1
-    robot.ranged_hit_reg(pygame, screen, robots, arena)
+    elif player_robot.ranged_cd != 0 and player_robot.ranged_bounces:
+        if player_robot.ranged_cd == 60:
+            player_robot.ranged_cd = 0
+        else:
+            player_robot.ranged_cd += 1
     robot.handle_explosions(screen, arena, robots)
 
 
@@ -516,12 +528,12 @@ def keydown_handling(event):
         if key == pygame.K_ESCAPE:
             game_paused = True
         elif (
-            key == pygame.K_g and player_robot.melee_cd == 0
+                key == pygame.K_g and player_robot.melee_cd == 0
         ):  # we can attack if we have no cooldown and press the button
             player_robot.melee_attack(pygame, screen, robots, arena, "light")
             player_robot.melee_cd += 1
         elif (
-            key == pygame.K_h and player_robot.melee_cd == 0
+                key == pygame.K_h and player_robot.melee_cd == 0
         ):  # we can attack if we have no cooldown and press the button
             player_robot.melee_attack(pygame, screen, robots, arena, "heavy")
             player_robot.no_move = True  # charge attack no moving allowed
@@ -531,6 +543,9 @@ def keydown_handling(event):
             player_robot.ranged_cd += 1
         elif key == pygame.K_t and player_robot.ranged_cd == 0:
             player_robot.ranged_attack("explosive")
+            player_robot.ranged_cd += 1
+        elif key == pygame.K_z and player_robot.ranged_cd == 0:
+            player_robot.ranged_attack("bouncy")
             player_robot.ranged_cd += 1
         elif key == pygame.K_f:
             player_robot.take_damage_debug(10)
@@ -566,7 +581,7 @@ def joyaxis_handling(event):
         if joystick_id < len(robots):
             player_robot = robots[joystick_id]
             if (
-                event.axis == 5 and event.value > 0.2 and player_robot.melee_cd == 0
+                    event.axis == 5 and event.value > 0.2 and player_robot.melee_cd == 0
             ):  # we can attack if we have no cooldown and press the button
                 player_robot.melee_attack(pygame, screen, robots, arena, "light")
                 player_robot.melee_cd += 1
