@@ -19,6 +19,7 @@ for i in range(pygame.joystick.get_count()):
     joystick = pygame.joystick.Joystick(i)
     joystick.init()
     joysticks.append(joystick)
+    print(f"Joystick {i}: {joystick.get_name()} initialized.")
 
 display_resolution = (720, 720)
 available_resolutions = [(720, 720), (1280, 720), (1280, 1080), (1920, 1080)]
@@ -132,7 +133,6 @@ def handle_main_menu_events():
         map = True
         menu = False
     elif build_arena_item.pressed:
-        use_controller = False
         build_arena = True
         menu = False
         reset_selected_item()
@@ -402,7 +402,7 @@ def robot_movement(robot):
 
 def robot_attacks(robot):
     # Player melee attack cooldown
-    if robot.melee_cd != 0 and (not robot.heavy_attack):
+    if robot.melee_cd != 0 and robot.light_attack:
         if robot.melee_cd == 60:  # reset cooldown
             robot.melee_cd = 0
         elif robot.melee_cd < 30:  # attack will stay for a certain duration
@@ -418,6 +418,14 @@ def robot_attacks(robot):
             robot.melee_cd += 1
         else:
             robot.no_move = False  # after 60 Frames, attack is finished , we are allowed to move again
+            robot.melee_cd += 1
+    elif robot.melee_cd != 0 and robot.flame_attack:
+        if robot.melee_cd == 180:  # reset cooldown
+            robot.melee_cd = 0
+        elif 5 < robot.melee_cd < 60:  # attack will stay for a certain duration
+            robot.melee_attack(pygame, screen, robots, arena, "flame")
+            robot.melee_cd += 1
+        else:
             robot.melee_cd += 1
     # Player ranged attack cooldown
     if robot.ranged_cd != 0 and (not robot.ranged_explodes and not player_robot.ranged_bounces):
@@ -547,6 +555,9 @@ def keydown_handling(event):
         elif key == pygame.K_z and player_robot.ranged_cd == 0:
             player_robot.ranged_attack("bouncy")
             player_robot.ranged_cd += 1
+        elif key == pygame.K_k and player_robot.melee_cd == 0:
+            player_robot.melee_attack(pygame, screen, robots, arena, "flame")
+            player_robot.melee_cd += 1
         elif key == pygame.K_f:
             player_robot.take_damage_debug(10)
         elif key == pygame.K_SPACE and (not player_robot.no_move):
