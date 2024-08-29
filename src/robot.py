@@ -344,6 +344,7 @@ class Robot:
             elif type == "laser":
                 self.ranged_explodes = False
                 self.ranged_laser = True
+                self.ranged_bounces = False
             else:
                 print("invalid type default to normal")
                 self.ranged_explodes = False
@@ -358,7 +359,7 @@ class Robot:
             if type == "laser":
                 pass  # if we fire a laser, we do not want another projectile added
             else:
-                self.projectiles.append(Projectile(x, y, c, r, xs, ys, d, pn, 0, t))  # this append must be the reason
+                self.projectiles.append(Projectile(x, y, c, r, xs, ys, d, pn, b, t))  # this append must be the reason
         if type == "laser":
             (len_x, len_y) = self.find_closest_block(screen, arena)  # x,y cords of nearest collision in front
             max_range = self.radius * 10  # this is the maximum range of the laser
@@ -417,7 +418,7 @@ class Robot:
         t = "tracer"
         d = 0
         c = "black"
-        self.projectiles.append(Projectile(x, y, c, r, xs, ys, d, pn, t))
+        self.projectiles.append(Projectile(x, y, c, r, xs, ys, d, pn, 0, t))
         # this projectile will be used to find a possibly existing closest block
 
         # now we must find distance to the edges of the arena

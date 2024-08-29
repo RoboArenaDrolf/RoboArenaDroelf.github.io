@@ -428,11 +428,11 @@ def robot_attacks(robot):
         else:
             robot.melee_cd += 1
     # Player ranged attack cooldown
-    if robot.ranged_cd != 0 and (not robot.ranged_explodes and not player_robot.ranged_bounces):
+    if robot.ranged_cd != 0 and (not robot.ranged_explodes and not robot.ranged_bounces and not robot.ranged_laser):
         if robot.ranged_cd == 60:
             robot.ranged_cd = 0
         elif robot.ranged_cd <= 10:  # second ranged attack at ranged_cd == 10
-            robot.ranged_attack("normal")
+            robot.ranged_attack(screen, robots, arena, "normal")
             robot.ranged_cd += 1
         else:
             robot.ranged_cd += 1
@@ -441,7 +441,7 @@ def robot_attacks(robot):
             robot.ranged_cd = 0
         else:
             robot.ranged_cd += 1
-    elif player_robot.ranged_cd != 0 and player_robot.ranged_bounces:
+    elif player_robot.ranged_cd != 0 and robot.ranged_bounces:
         if player_robot.ranged_cd == 60:
             player_robot.ranged_cd = 0
         else:
@@ -555,13 +555,13 @@ def keydown_handling(event):
             player_robot.no_move = True  # charge attack no moving allowed
             player_robot.melee_cd += 1
         elif key == pygame.K_r and player_robot.ranged_cd == 0:
-            player_robot.ranged_attack("normal")
+            player_robot.ranged_attack(screen, robots, arena, "normal")
             player_robot.ranged_cd += 1
         elif key == pygame.K_t and player_robot.ranged_cd == 0:
-            player_robot.ranged_attack("explosive")
+            player_robot.ranged_attack(screen, robots, arena, "explosive")
             player_robot.ranged_cd += 1
         elif key == pygame.K_z and player_robot.ranged_cd == 0:
-            player_robot.ranged_attack("bouncy")
+            player_robot.ranged_attack(screen, robots, arena, "bouncy")
             player_robot.ranged_cd += 1
         elif key == pygame.K_k and player_robot.melee_cd == 0:
             player_robot.melee_attack(pygame, screen, robots, arena, "flame")
@@ -608,7 +608,7 @@ def joyaxis_handling(event):
                 player_robot.melee_attack(pygame, screen, robots, arena, "light")
                 player_robot.melee_cd += 1
             if event.axis == 4 and event.value > 0.2 and (player_robot.ranged_cd == 0 or player_robot.ranged_cd == 10):
-                player_robot.ranged_attack("normal")
+                player_robot.ranged_attack(screen, robots, arena, "normal")
                 player_robot.ranged_cd += 1
     else:
         if event.axis == 1:
