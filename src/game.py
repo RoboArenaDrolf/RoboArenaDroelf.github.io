@@ -70,6 +70,16 @@ initial_window_pos = window.position
 
 clock = pygame.time.Clock()
 
+pygame.mixer.init()
+jumping_sound = pygame.mixer.Sound("Sounds/jumping.mp3")
+jumping_sound.set_volume(0.7)
+death_sound = pygame.mixer.Sound("Sounds/death.mp3")
+death_sound.set_volume(0.7)
+footsteps_sound = pygame.mixer.Sound("Sounds/footsteps.mp3")
+click_sound = pygame.mixer.Sound("Sounds/click.mp3")
+fight_sound = pygame.mixer.Sound("Sounds/fight.mp3")
+fight_sound.set_volume(0.7)
+music = pygame.mixer.Sound("Sounds/music.mp3")
 
 def get_json_filenames(directory):
     json_files = []
@@ -129,18 +139,22 @@ def handle_main_menu_events():
     global robots, map, menu, build_arena, settings, run, use_controller
 
     if play_item.pressed:
+        click_sound.play()
         robots = []
         map = True
         menu = False
     elif build_arena_item.pressed:
+        click_sound.play()
         build_arena = True
         menu = False
         reset_selected_item()
     elif settings_item.pressed:
+        click_sound.play()
         settings = True
         menu = False
         reset_selected_item()
     elif exit_item.pressed:
+        click_sound.play()
         run = False
 
 
@@ -190,18 +204,22 @@ def handle_settings_menu_events():
     dis_res_changed = False
 
     if controller_on_off_item.pressed:
+        click_sound.play()
         use_controller = not use_controller
     elif fullscreen_item.pressed:
+        click_sound.play()
         display_resolution = fullscreen_res
         fullscreen = True
         dis_res_changed = True
     elif back_item.pressed:
+        click_sound.play()
         menu = True
         settings = False
         reset_selected_item()
 
     for i, res_item in enumerate(resolution_items):
         if res_item.pressed:
+            click_sound.play()
             display_resolution = available_resolutions[i]
             fullscreen = False
             dis_res_changed = True
@@ -271,15 +289,19 @@ def handle_start_game_menu_events():
         )
 
     if one_player_item.pressed:
+        click_sound.play()
         robots = [robot1]
         single_player = True
     elif two_player_item.pressed:
+        click_sound.play()
         robots = [robot1, robot2]
         single_player = False
     elif three_player_item.pressed:
+        click_sound.play()
         robots = [robot1, robot2, robot3]
         single_player = False
     elif four_player_item.pressed:
+        click_sound.play()
         robots = [robot1, robot2, robot3, robot4]
         single_player = False
     if robots:
@@ -296,12 +318,13 @@ def handle_start_game_menu_events():
 
 def handle_death_or_win_screen_events():
     global menu, death, win
-
     if main_menu_item.pressed:
+        click_sound.play()
         menu = True
         death = False
         win = False
     elif quit_item.pressed:
+        click_sound.play()
         pygame.quit()
         sys.exit()
 
@@ -310,13 +333,16 @@ def handle_pause_screen_events():
     global game_paused, menu, playing
 
     if resume_item.pressed:
+        click_sound.play()
         game_paused = False
     elif main_menu_item.pressed:
+        click_sound.play()
         menu = True
         playing = False
         game_paused = False
         reset_selected_item()
     elif quit_item.pressed:
+        click_sound.play()
         pygame.quit()
         sys.exit()
 
@@ -326,6 +352,7 @@ def handle_map_screen_events():
 
     for i, level_item in enumerate(level_items):
         if level_item.pressed:
+            click_sound.play()
             map_filename = maps[i]
             arena = Arena(map_filename, pygame)
             recalculate_robot_values()
@@ -403,9 +430,10 @@ def robot_movement(robot):
 def robot_attacks(robot):
     # Player melee attack cooldown
     if robot.melee_cd != 0 and robot.light_attack:
-        if robot.melee_cd == 60:  # reset cooldown
+        if robot.melee_cd == 60:  # reset cooldown     
             robot.melee_cd = 0
         elif robot.melee_cd < 30:  # attack will stay for a certain duration
+            fight_sound.play()
             robot.melee_attack(pygame, screen, robots, arena, "light")
             robot.melee_cd += 1
         else:
@@ -583,6 +611,7 @@ def keydown_handling(event):
         elif key == pygame.K_f:
             player_robot.take_damage_debug(10)
         elif key == pygame.K_SPACE and (not player_robot.no_move):
+            jumping_sound.play()
             if player_robot.jump_counter <= 1:
                 player_robot.jump = True
     elif build_arena:
@@ -662,6 +691,7 @@ def screens_painting():
         resume_item, main_menu_item, quit_item = menu_items[0], menu_items[1], menu_items[2]
         handle_pause_screen_events()
     elif death:
+        death_sound.play()
         menu_items = screens.death_screen(pygame, screen)
         main_menu_item, quit_item = menu_items[0], menu_items[1]
         handle_death_or_win_screen_events()

@@ -1,7 +1,7 @@
 import math
 import pygame
 
-from src.projectiles import Projectile
+from projectiles import Projectile
 
 
 class Robot:
@@ -23,7 +23,7 @@ class Robot:
     projectiles = []
     melee_cd = 0
     ranged_cd = 0
-    robots_base_path = "./../Robots/"
+    robots_base_path = "Robots/"
     recoil_percent = 0.1
     hit_cooldown = 0
     attack_start: int
@@ -62,6 +62,12 @@ class Robot:
         self.second_robot = pygame.image.load(self.robots_base_path + "secondRobot.png")
         self.second_robot = pygame.transform.scale(self.second_robot, (self.radius * 2, self.radius * 2))
         self.second_robot_flipped = pygame.transform.flip(self.second_robot, True, False)
+        self.third_robot = pygame.image.load(self.robots_base_path + "thirdRobot.png")
+        self.third_robot = pygame.transform.scale(self.third_robot, (self.radius * 2.3, self.radius * 2.3))
+        self.third_robot_flipped = pygame.transform.flip(self.third_robot, True, False)
+        self.fourth_robot = pygame.image.load(self.robots_base_path + "fourthRobot.png")
+        self.fourth_robot = pygame.transform.scale(self.fourth_robot, (self.radius * 2.3, self.radius * 2.3))
+        self.fourth_robot_flipped = pygame.transform.flip(self.fourth_robot, True, False)
         self.tile_below = 0
 
     def change_acceleration(self, a):
@@ -111,6 +117,10 @@ class Robot:
         self.vel = va
 
     def take_damage_debug(self, d):
+        pygame.mixer.init()
+        damage_sound = pygame.mixer.Sound("Sounds/damage.mp3")
+        damage_sound.set_volume(0.6)
+        damage_sound.play()
         if d <= self.health:
             self.health = self.health - d
         else:
@@ -340,6 +350,8 @@ class Robot:
             self.hit_reg_rect(robots, arena, hit_box2, 2, self.player_number)
 
     def ranged_attack(self, screen, robots, arena, type):
+        pygame.mixer.init()
+        shooting_sound = pygame.mixer.Sound("Sounds/shooting.mp3")
         if self.ranged_cd == 0 or self.ranged_cd == 10:
             r = self.radius / 4
             if self.alpha == 0:  # right
@@ -347,21 +359,25 @@ class Robot:
                 ys = 0
                 x = self.posx + self.radius + r
                 y = self.posy
+                shooting_sound.play()
             elif self.alpha == 90:  # down
                 xs = 0
                 ys = self.vel_max
                 x = self.posx
                 y = self.posy + self.radius + r
+                shooting_sound.play()
             elif self.alpha == 180:  # left
                 xs = -self.vel_max
                 ys = 0
                 x = self.posx - self.radius - r
                 y = self.posy
+                shooting_sound.play()
             elif self.alpha == 270:  # up
                 xs = 0
                 ys = -self.vel_max
                 x = self.posx
                 y = self.posy - self.radius - r
+                shooting_sound.play()
             else:  # failsafe
                 print("how did you do this? alpha=", self.alpha)
             pn = self.player_number  # projectile created by player number x
@@ -686,14 +702,14 @@ class Robot:
                 screen.blit(self.second_robot_flipped, image_rect)
         elif pn == 2:
             if not self.direction_left:
-                screen.blit(self.first_robot, image_rect)
+                screen.blit(self.third_robot, image_rect)
             elif self.direction_left:
-                screen.blit(self.first_robot_flipped, image_rect)
+                screen.blit(self.third_robot_flipped, image_rect)
         elif pn == 3:
             if not self.direction_left:
-                screen.blit(self.first_robot, image_rect)
+                screen.blit(self.fourth_robot, image_rect)
             elif self.direction_left:
-                screen.blit(self.first_robot_flipped, image_rect)
+                screen.blit(self.fourths_robot_flipped, image_rect)
         # corresponding health UI
         health_font = pygame.font.Font(None, int(pygame.display.get_window_size()[1] / 25))
         player_health = health_font.render(f"{self.health}", True, f"{self.color}")

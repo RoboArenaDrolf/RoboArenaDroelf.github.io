@@ -47,7 +47,10 @@ class Projectile:
 
     def paint_projectile(self, pygame, screen):
         # if self.type == "small":
-        pygame.draw.circle(screen, self.color, (self.x, self.y), self.radius)
+        #pygame.draw.circle(screen, self.color, (self.x, self.y), self.radius)
+        projectile = pygame.image.load('Animation/projektil.png')
+        projectile = pygame.transform.scale(projectile, (10,10))
+        screen.blit(projectile,(self.x, self.y))
         # if self.type == "big":
 
     def check_collision_y(self, arena):

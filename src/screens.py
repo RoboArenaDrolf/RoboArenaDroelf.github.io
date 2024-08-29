@@ -199,7 +199,7 @@ class Screens:
 
     def start_screen(self, pygame, screen):
         screen.fill(self._white)
-
+    
         font = pygame.font.Font(None, self._font_size_big)
         text = font.render("Wie viele Spieler?", True, self._black)
         screen.blit(
