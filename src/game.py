@@ -775,6 +775,8 @@ while run:
             mouse_visible = True
             mouse_visibility_counter = 0
         else:
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                game_paused = True
             if use_controller:
                 if event.type == pygame.JOYBUTTONDOWN:
                     joybuttons_handling(event)
