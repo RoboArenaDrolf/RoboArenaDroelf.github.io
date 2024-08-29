@@ -38,6 +38,10 @@ class Robot:
     no_move = False  # false = moving allowed true = moving not allowed, start with allowed movement
     explosions = []
     robot_type = 0
+    light_melee: str
+    heavy_melee: str
+    light_ranged: str
+    heavy_ranged: str
 
     tile_below: int
     # Normal/No effect = 0
@@ -684,7 +688,6 @@ class Robot:
     def paint_robot(self, pygame, screen):
         # Bild des Roboters zeichnen
         image_rect = self.first_robot.get_rect(center=(self.posx, self.posy))
-        pn = self.player_number
         if self.robot_type == 1:
             if not self.direction_left:
                 screen.blit(self.first_robot, image_rect)
