@@ -375,7 +375,7 @@ class Robot:
         t = "tracer"
         d = 0
         c = "black"
-        self.projectiles.append(Projectile(x, y, c, r, xs, ys, d, pn, t))
+        self.projectiles.append(Projectile(x, y, c, r, xs, ys, d, pn, 0, t))
         # this projectile will be used to find a possibly existing closest block
 
         # now we must find distance to the edges of the arena
