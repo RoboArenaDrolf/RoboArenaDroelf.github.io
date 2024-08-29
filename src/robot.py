@@ -34,6 +34,7 @@ class Robot:
     light_attack: bool
     flame_attack: bool
     ranged_laser: bool  # false = normal true = laser
+    stab_attack: bool
     no_move = False  # false = moving allowed true = moving not allowed, start with allowed movement
     explosions = []
 
@@ -178,9 +179,10 @@ class Robot:
             self.heavy_attack = True
             self.light_attack = False
             self.flame_attack = False
+            self.stab_attack = False
             if 30 <= self.melee_cd <= 60:
-                hit_box_height = 2 * self.radius
-                hit_box_width = 2 * self.radius
+                hit_box_height = 2*self.radius
+                hit_box_width = 2*self.radius
                 if self.alpha == 0:  # right
                     rect_left_x = self.posx + 0.5 * hit_box_width
                     rect_top_y = self.posy - 0.5 * hit_box_height
@@ -202,6 +204,7 @@ class Robot:
             self.heavy_attack = False
             self.light_attack = True
             self.flame_attack = False
+            self.stab_attack = False
             if self.melee_cd == 0:
                 if self.alpha == 0:  # right
                     self.attack_start = 315
@@ -237,10 +240,58 @@ class Robot:
                 pygame.draw.line(screen, "red", line_start, line_end, width=4)
                 self.hit_reg_line(robots, arena, line_start, line_end, 1)
                 self.attack_buffer -= 1
+        elif type == "stab":
+            self.heavy_attack = False
+            self.light_attack = False
+            self.stab_attack = True
+            self.flame_attack = False
+            if self.melee_cd == 0:
+                self.attack_start = self.alpha
+                new_x = self.radius * (math.cos(math.radians(self.attack_start)))
+                new_y = self.radius * (math.sin(math.radians(self.attack_start)))
+                line_start = (self.posx + new_x, self.posy + new_y)
+                line_end = (self.posx + new_x * 2, self.posy + new_y * 2)
+                pygame.draw.line(screen, "red", line_start, line_end, width=4)
+                self.attack_buffer = 9
+                self.hit_reg_line(robots, arena, line_start, line_end, 1)
+            elif self.attack_buffer == 0:
+                if self.melee_cd % 3 == 0:
+                    self.attack_start = self.alpha
+                    # print(1)
+                elif self.melee_cd % 3 == 1:
+                    self.attack_start = (self.alpha + 30) % 360
+                    # print(2)
+                else:
+                    self.attack_start = (self.alpha - 30) % 360
+                    # print(3)
+                new_x = self.radius * (math.cos(math.radians(self.attack_start)))
+                new_y = self.radius * (math.sin(math.radians(self.attack_start)))
+                line_start = (self.posx + new_x, self.posy + new_y)
+                line_end = (self.posx + new_x * 1.5, self.posy + new_y * 1.5)
+                pygame.draw.line(screen, "red", line_start, line_end, width=4)
+                self.hit_reg_line(robots, arena, line_start, line_end, 1)
+                self.attack_buffer = 9
+            elif self.attack_buffer > 5:
+                new_x = self.radius * (math.cos(math.radians(self.attack_start)))
+                new_y = self.radius * (math.sin(math.radians(self.attack_start)))
+                line_start = (self.posx + new_x, self.posy + new_y)
+                line_end = (self.posx + new_x * 1.5, self.posy + new_y * 1.5)
+                pygame.draw.line(screen, "red", line_start, line_end, width=4)
+                self.hit_reg_line(robots, arena, line_start, line_end, 1)
+                self.attack_buffer -= 1
+            elif self.attack_buffer > 0:
+                new_x = self.radius * (math.cos(math.radians(self.attack_start)))
+                new_y = self.radius * (math.sin(math.radians(self.attack_start)))
+                line_start = (self.posx + new_x, self.posy + new_y)
+                line_end = (self.posx + new_x * 2, self.posy + new_y * 2)
+                pygame.draw.line(screen, "red", line_start, line_end, width=4)
+                self.hit_reg_line(robots, arena, line_start, line_end, 1)
+                self.attack_buffer -= 1
         elif type == "flame":
             self.heavy_attack = False
             self.light_attack = False
             self.flame_attack = True
+            self.stab_attack = False
             (len_x, len_y) = self.find_closest_block(screen, arena)  # x,y cords of nearest collision in front
             max_range = self.radius * 4  # this is the maximum range of the flames
             # calculate the rectangle based on viewing direction

@@ -427,6 +427,14 @@ def robot_attacks(robot):
             robot.melee_cd += 1
         else:
             robot.melee_cd += 1
+    elif robot.melee_cd != 0 and robot.stab_attack:
+        if robot.melee_cd == 40:  # reset cooldown
+            robot.melee_cd = 0
+        elif robot.melee_cd < 40:  # attack will stay for a certain duration
+            robot.melee_attack(pygame, screen, robots, arena, "stab")
+            robot.melee_cd += 1
+        else:
+            robot.melee_cd += 1
     # Player ranged attack cooldown
     if robot.ranged_cd != 0 and (not robot.ranged_explodes and not robot.ranged_bounces and not robot.ranged_laser):
         if robot.ranged_cd == 60:
@@ -569,6 +577,9 @@ def keydown_handling(event):
         elif key == pygame.K_u and player_robot.ranged_cd == 0:
             player_robot.ranged_attack(screen, robots, arena, "laser")
             player_robot.ranged_cd += 1
+        elif key == pygame.K_j and player_robot.melee_cd == 0:
+            player_robot.melee_attack(pygame, screen, robots, arena, "stab")
+            player_robot.melee_cd += 1
         elif key == pygame.K_f:
             player_robot.take_damage_debug(10)
         elif key == pygame.K_SPACE and (not player_robot.no_move):
