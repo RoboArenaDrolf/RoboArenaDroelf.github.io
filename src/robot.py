@@ -33,6 +33,7 @@ class Robot:
     heavy_attack: bool  # true = heavy
     light_attack: bool
     flame_attack: bool
+    ranged_laser: bool  # false = normal true = laser
     no_move = False  # false = moving allowed true = moving not allowed, start with allowed movement
     explosions = []
 
@@ -147,7 +148,10 @@ class Robot:
         # Vektoren berechnen
         px, py = x2 - x1, y2 - y1
         norm = px * px + py * py
-
+        if norm == 0:  # x1=x2, y1=y2 -> not a line, but a point
+            # now we don't have a distance form a line to a point but from a point to another point
+            distance = math.sqrt((x3-x1)*(x3-x1)+(y3-y1)*(y3-y1))
+            return distance
         # Punkt auf die Linie projizieren
         u = ((x3 - x1) * px + (y3 - y1) * py) / norm
 
@@ -284,7 +288,7 @@ class Robot:
             pygame.draw.rect(screen, "red", hit_box2, width=2)
             self.hit_reg_rect(robots, arena, hit_box2, 2, self.player_number)
 
-    def ranged_attack(self, type):
+    def ranged_attack(self, screen, robots, arena, type):
         if self.ranged_cd == 0 or self.ranged_cd == 10:
             r = self.radius / 4
             if self.alpha == 0:  # right
@@ -313,6 +317,7 @@ class Robot:
             if type == "normal":
                 self.ranged_explodes = False
                 self.ranged_bounces = False
+                self.ranged_laser = False
                 t = type
                 d = 1
                 c = "black"
@@ -320,12 +325,14 @@ class Robot:
             elif type == "bouncy":
                 self.ranged_explodes = False
                 self.ranged_bounces = True
+                self.ranged_laser = False
                 t = type
                 d = 1
                 c = "blue"
                 b = 2
             elif type == "explosive":
                 self.ranged_explodes = True
+                self.ranged_laser = False
                 self.ranged_bounces = False
                 t = type
                 r = r * 2
@@ -334,17 +341,52 @@ class Robot:
                 d = 5
                 c = "gray"
                 b = 0
+            elif type == "laser":
+                self.ranged_explodes = False
+                self.ranged_laser = True
             else:
                 print("invalid type default to normal")
                 self.ranged_explodes = False
                 self.ranged_bounces = False
+                self.ranged_laser = False
                 t = "normal"
                 d = 1
                 c = "black"
                 b = 0
             # this shouldn't be needed since the robot that owns the projectiles array has this number,
             # but I used this as a fix in ranged_hit_reg, in order to be unable to hit yourself
-            self.projectiles.append(Projectile(x, y, c, r, xs, ys, d, pn, b, t))  # this append must be the reason
+            if type == "laser":
+                pass  # if we fire a laser, we do not want another projectile added
+            else:
+                self.projectiles.append(Projectile(x, y, c, r, xs, ys, d, pn, 0, t))  # this append must be the reason
+        if type == "laser":
+            (len_x, len_y) = self.find_closest_block(screen, arena)  # x,y cords of nearest collision in front
+            max_range = self.radius * 10  # this is the maximum range of the laser
+            # calculate the rectangle based on viewing direction
+            if self.alpha == 0:  # right
+                hit_box_height = 2*self.radius
+                hit_box_width = min(abs(len_x - self.posx), max_range)
+                rect_left_x = self.posx+self.radius
+                rect_top_y = self.posy-self.radius
+            elif self.alpha == 90:  # down
+                hit_box_height = min(abs(len_y - self.posy), max_range)
+                hit_box_width = 2*self.radius
+                rect_left_x = self.posx-self.radius
+                rect_top_y = self.posy+self.radius
+            elif self.alpha == 180:  # left
+                hit_box_height = 2*self.radius
+                hit_box_width = min(abs(len_x - self.posx), max_range)
+                rect_left_x = self.posx-self.radius-hit_box_width
+                rect_top_y = self.posy-self.radius
+            elif self.alpha == 270:  # up
+                hit_box_height = min(abs(len_y - self.posy), max_range)
+                hit_box_width = 2*self.radius
+                rect_left_x = self.posx-self.radius
+                rect_top_y = self.posy-self.radius-hit_box_height
+            # now we have the rectangle, so we draw it and calculate the hit_reg
+            hit_box = pygame.Rect(rect_left_x, rect_top_y, hit_box_width, hit_box_height)
+            pygame.draw.rect(screen, "red", hit_box, width=2)
+            self.hit_reg_rect(robots, arena, hit_box, 10, self.player_number)
 
     def find_closest_block(self, screen, arena):
         r = 0  # this looks like it works, a projectile with radius 0
@@ -375,7 +417,7 @@ class Robot:
         t = "tracer"
         d = 0
         c = "black"
-        self.projectiles.append(Projectile(x, y, c, r, xs, ys, d, pn, 0, t))
+        self.projectiles.append(Projectile(x, y, c, r, xs, ys, d, pn, t))
         # this projectile will be used to find a possibly existing closest block
 
         # now we must find distance to the edges of the arena
@@ -522,35 +564,23 @@ class Robot:
                     self.recoil(arena, robots[i], direction)
 
     def hit_reg_rect(self, robots, arena, rect, dmg, exception):
-        # we use exception to exclude one robot
+        # exception is used to exclude one robot
         # if we change our collision to be a hit box, we could use some builtin functions
         tl = rect.topleft
         tr = rect.topright
         bl = rect.bottomleft
         br = rect.bottomright
         for i in range(0, len(robots)):  # check all robots
-            if i == self.player_number:
-                continue
-            if i != exception:  # except for j, use -1 for no exception
-                if (
-                    (bl[1] < robots[i].posy < tl[1] and bl[0] < robots[i].posx < br[0])  # inside of rect
-                    or (
-                        self.distance_from_segment(tl[0], tl[1], tr[0], tr[1], robots[i].posx, robots[i].posy)
-                        <= robots[i].radius
-                    )
-                    or (
-                        self.distance_from_segment(tl[0], tl[1], bl[0], bl[1], robots[i].posx, robots[i].posy)
-                        <= robots[i].radius
-                    )
-                    or (
-                        self.distance_from_segment(br[0], br[1], tr[0], tr[1], robots[i].posx, robots[i].posy)
-                        <= robots[i].radius
-                    )
-                    or (
-                        self.distance_from_segment(br[0], br[1], bl[0], bl[1], robots[i].posx, robots[i].posy)
-                        <= robots[i].radius
-                    )
-                ):  # or distance from robot to the sides of the rect is < robot radius
+            if i != exception:  # use -1 for no exception
+                if ((bl[1] < robots[i].posy < tl[1] and bl[0] < robots[i].posx < br[0])  # inside of rect
+                        or (self.distance_from_segment(tl[0], tl[1], tr[0], tr[1], robots[i].posx, robots[i].posy)
+                            <= robots[i].radius)
+                        or (self.distance_from_segment(tl[0], tl[1], bl[0], bl[1], robots[i].posx, robots[i].posy)
+                            <= robots[i].radius)
+                        or (self.distance_from_segment(br[0], br[1], tr[0], tr[1], robots[i].posx, robots[i].posy)
+                            <= robots[i].radius)
+                        or (self.distance_from_segment(br[0], br[1], bl[0], bl[1], robots[i].posx, robots[i].posy)
+                            <= robots[i].radius)):  # or distance from robot to the sides of the rect is < robot radius
                     robots[i].take_damage_debug(dmg)
                     if robots[i].hit_cooldown <= 0:
                         self.recoil(arena, robots[i], Projectile.Direction.UP)
