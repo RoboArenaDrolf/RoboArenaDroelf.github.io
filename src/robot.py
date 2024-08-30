@@ -805,11 +805,5 @@ class Robot:
         for i in self.projectiles:  # each robot will paint and update the projectiles it has created
             # print(self.player_number, i.player_number)  # why do all robots share the projectiles?
             if self.player_number == i.player_number:  # this should fix it
-                if  self.ranged_explodes:
-                    i.paint_missle(pygame, screen)
-                if self.ranged_bounces:
-                     i.paint_bounce(screen)
-                if not self.ranged_explodes and not self.ranged_bounces:
-                    pass
-                    i.paint_projectile(screen)
+                i.paint_projectile(pygame, screen)
                 i.move_projectile()

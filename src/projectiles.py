@@ -58,7 +58,15 @@ class Projectile:
         self.x_speed = -self.x_speed
         self.y_speed = -self.y_speed
 
-    def paint_projectile(self, screen):
+    def paint_projectile(self, pygame, screen):
+        if self.type == "normal":
+            self.paint_normal_projectile(screen)
+        elif self.type == "bouncy":
+            self.paint_bounce(screen)
+        elif self.type == "explosive":
+            self.paint_missle(pygame, screen)
+
+    def paint_normal_projectile(self, screen):
         top_left_x = self.x - self.projectile.get_width() // 2
         top_left_y = self.y - self.projectile.get_height() // 2
         screen.blit(self.projectile, (top_left_x, top_left_y))
