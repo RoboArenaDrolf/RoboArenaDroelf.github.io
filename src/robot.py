@@ -82,6 +82,12 @@ class Robot:
         self.flammenwerfer_sound = pygame.mixer.Sound("../Sounds/flammenwerfer.mp3")
         self.flammenwerfer_sound.set_volume(0.7)
 
+        self.shooting_sound = pygame.mixer.Sound("../Sounds/shooting.mp3")
+        self.laser_sound = pygame.mixer.Sound("../Sounds/laser.mp3")
+        self.missle_sound = pygame.mixer.Sound("../Sounds/missle.mp3")
+        self.laser = pygame.image.load('../Animation/laser.png')
+        self.scaled_laser = None # pygame.transform.scale(laser,(170,170))
+
 
     def change_acceleration(self, a):
         if abs(a) <= self.accel_max:
@@ -406,12 +412,6 @@ class Robot:
             #flammenwerfer_sound.play()
 
     def ranged_attack(self, screen, robots, arena, type):
-        pygame.mixer.init()
-        shooting_sound = pygame.mixer.Sound("../Sounds/shooting.mp3")
-        laser_sound = pygame.mixer.Sound("../Sounds/laser.mp3")
-        missle_sound = pygame.mixer.Sound("../Sounds/missle.mp3")
-        laser = pygame.image.load('../Animation/laser.png')
-        laser = pygame.transform.scale(laser,(170,170))
         if self.ranged_cd == 0 or self.ranged_cd == 10:
             r = self.radius / 4
             if self.alpha == 0:  # right
@@ -438,7 +438,7 @@ class Robot:
                 print("how did you do this? alpha=", self.alpha)
             pn = self.player_number  # projectile created by player number x
             if type == "normal":
-                shooting_sound.play()
+                self.shooting_sound.play()
                 self.ranged_explodes = False
                 self.ranged_bounces = False
                 self.ranged_laser = False
@@ -455,7 +455,7 @@ class Robot:
                 c = "blue"
                 b = 2
             elif type == "explosive":
-                missle_sound.play()
+                self.missle_sound.play()
                 self.ranged_explodes = True
                 self.ranged_laser = False
                 self.ranged_bounces = False
@@ -512,7 +512,7 @@ class Robot:
             # now we have the rectangle, so we draw it and calculate the hit_reg
             hit_box = pygame.Rect(rect_left_x, rect_top_y, hit_box_width, hit_box_height)
             pygame.draw.rect(screen, "red", hit_box, width=2)
-            screen.blit(laser, hit_box)
+            screen.blit(self.laser, hit_box)
             self.hit_reg_rect(robots, arena, hit_box, 10, self.player_number)
 
     def find_closest_block(self, screen, arena):
@@ -808,7 +808,8 @@ class Robot:
                 if  self.ranged_explodes:
                     i.paint_missle(pygame, screen)
                 if self.ranged_bounces:
-                     i.paint_bounce(pygame, screen)
+                     i.paint_bounce(screen)
                 if not self.ranged_explodes and not self.ranged_bounces:
-                    i.paint_projectile(pygame, screen)
+                    pass
+                    i.paint_projectile(screen)
                 i.move_projectile()

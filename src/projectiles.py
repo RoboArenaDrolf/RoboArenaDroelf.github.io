@@ -41,6 +41,14 @@ class Projectile:
         scale_factor = self.radius * 3 / missle.get_width()
         self.missle = pygame.transform.scale(missle,(int(self.radius * 3), int(missle.get_height() * scale_factor)))
 
+        projectile = pygame.image.load('../Animation/projektil.png')
+        scale_factor = self.radius * 3 / projectile.get_width()
+        self.projectile = pygame.transform.scale(projectile,(int(self.radius * 3), int(projectile.get_height() * scale_factor)))
+
+        bounce_projectile = pygame.image.load('../Animation/bounce.png')
+        scale_factor = self.radius * 4 / bounce_projectile.get_width()
+        self.bounce_projectile = pygame.transform.scale(bounce_projectile, (int(self.radius * 4), int(bounce_projectile.get_height() * scale_factor)))
+
     def move_projectile(self):
         self.x = self.x + self.x_speed
         self.y = self.y + self.y_speed
@@ -50,13 +58,10 @@ class Projectile:
         self.x_speed = -self.x_speed
         self.y_speed = -self.y_speed
 
-    def paint_projectile(self, pygame, screen):
-        # if self.type == "small":
-        #pygame.draw.circle(screen, self.color, (self.x, self.y), self.radius)
-        projectile = pygame.image.load('../Animation/projektil.png')
-        projectile = pygame.transform.scale(projectile, (10,10))
-        screen.blit(projectile,(self.x, self.y))
-        # if self.type == "big":
+    def paint_projectile(self, screen):
+        top_left_x = self.x - self.projectile.get_width() // 2
+        top_left_y = self.y - self.projectile.get_height() // 2
+        screen.blit(self.projectile, (top_left_x, top_left_y))
 
     def paint_missle(self, pygame, screen):
         if self.x_speed < 0 and self.y_speed == 0:
@@ -73,10 +78,10 @@ class Projectile:
 
 
 
-    def paint_bounce(self,pygame,screen):
-        bounce = pygame.image.load('../Animation/bounce.png')
-        bounce = pygame.transform.scale(bounce, (20,20))
-        screen.blit(bounce,(self.x, self.y))
+    def paint_bounce(self, screen):
+        top_left_x = self.x - self.bounce_projectile.get_width() // 2
+        top_left_y = self.y - self.bounce_projectile.get_height() // 2
+        screen.blit(self.bounce_projectile, (top_left_x, top_left_y))
 
 
     def check_collision_y(self, arena):
