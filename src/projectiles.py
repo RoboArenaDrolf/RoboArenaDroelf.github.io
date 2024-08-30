@@ -38,8 +38,8 @@ class Projectile:
         self.type = t
 
         missle = pygame.image.load('../Animation/missle.png')
-        scale_factor = self.radius * 2 / missle.get_width()
-        self.missle = pygame.transform.scale(missle,(int(self.radius * 2), int(missle.get_height() * scale_factor)))
+        scale_factor = self.radius * 3 / missle.get_width()
+        self.missle = pygame.transform.scale(missle,(int(self.radius * 3), int(missle.get_height() * scale_factor)))
 
     def move_projectile(self):
         self.x = self.x + self.x_speed
@@ -67,7 +67,9 @@ class Projectile:
             missle = pygame.transform.rotate(self.missle,180)
         elif self.x_speed > 0 and self.y_speed == 0:
             missle = pygame.transform.rotate(self.missle,-90)
-        screen.blit(missle,(self.x, self.y))
+        top_left_x = self.x - self.missle.get_width() // 2
+        top_left_y = self.y - self.missle.get_height() // 2
+        screen.blit(missle, (top_left_x, top_left_y))
 
 
 
