@@ -53,6 +53,27 @@ class Projectile:
         screen.blit(projectile,(self.x, self.y))
         # if self.type == "big":
 
+    def paint_missle(self,pygame,screen,direction_left,direction_up,direction_down,direction_right):
+        missle = pygame.image.load('Animation/missle.png')
+        missle = pygame.transform.scale(missle, (20,20))
+        if direction_left:
+            missle = pygame.transform.rotate(missle,90)
+        elif direction_up:
+            missle = pygame.transform.rotate(missle,0)
+        elif direction_down:
+            missle = pygame.transform.rotate(missle,180)
+        elif direction_right:
+            missle = pygame.transform.rotate(missle,-90)
+        screen.blit(missle,(self.x, self.y))
+
+
+
+    def paint_bounce(self,pygame,screen):
+        bounce = pygame.image.load('Animation/bounce.png')
+        bounce = pygame.transform.scale(bounce, (20,20))
+        screen.blit(bounce,(self.x, self.y))
+
+
     def check_collision_y(self, arena):
         # Überprüfen, ob der Roboter mit einem festen Tile kollidiert auf y-Achse
         x_positions = [
