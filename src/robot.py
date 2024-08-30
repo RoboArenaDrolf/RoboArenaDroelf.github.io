@@ -79,7 +79,7 @@ class Robot:
         self.kreissäge_sound.set_volume(0.45)
         self.fight_sound = pygame.mixer.Sound("../Sounds/fight.mp3")
         self.fight_sound.set_volume(0.7)
-        self.flammenwerfer_sound = pygame.mixer.Sound("Sounds/flammenwerfer.mp3")
+        self.flammenwerfer_sound = pygame.mixer.Sound("../Sounds/flammenwerfer.mp3")
         self.flammenwerfer_sound.set_volume(0.7)
 
 

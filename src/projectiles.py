@@ -54,7 +54,7 @@ class Projectile:
         # if self.type == "big":
 
     def paint_missle(self,pygame,screen,direction_left,direction_up,direction_down,direction_right):
-        missle = pygame.image.load('Animation/missle.png')
+        missle = pygame.image.load('../Animation/missle.png')
         missle = pygame.transform.scale(missle, (20,20))
         if direction_left:
             missle = pygame.transform.rotate(missle,90)
@@ -69,7 +69,7 @@ class Projectile:
 
 
     def paint_bounce(self,pygame,screen):
-        bounce = pygame.image.load('Animation/bounce.png')
+        bounce = pygame.image.load('../Animation/bounce.png')
         bounce = pygame.transform.scale(bounce, (20,20))
         screen.blit(bounce,(self.x, self.y))
 
