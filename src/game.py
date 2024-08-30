@@ -77,8 +77,6 @@ death_sound = pygame.mixer.Sound("Sounds/death.mp3")
 death_sound.set_volume(0.7)
 footsteps_sound = pygame.mixer.Sound("Sounds/footsteps.mp3")
 click_sound = pygame.mixer.Sound("Sounds/click.mp3")
-fight_sound = pygame.mixer.Sound("Sounds/fight.mp3")
-fight_sound.set_volume(0.7)
 music = pygame.mixer.Sound("Sounds/music.mp3")
 
 def get_json_filenames(directory):
@@ -433,7 +431,6 @@ def robot_attacks(robot):
         if robot.melee_cd == 60:  # reset cooldown     
             robot.melee_cd = 0
         elif robot.melee_cd < 30:  # attack will stay for a certain duration
-            fight_sound.play()
             robot.melee_attack(pygame, screen, robots, arena, "light")
             robot.melee_cd += 1
         else:
@@ -507,6 +504,7 @@ def check_robot_death(robot):
         robot.health = 0
     # Check if player is dead:
     if robot.health <= 0:
+        death_sound.play()
         if single_player:
             death = True
             playing = False
@@ -691,7 +689,6 @@ def screens_painting():
         resume_item, main_menu_item, quit_item = menu_items[0], menu_items[1], menu_items[2]
         handle_pause_screen_events()
     elif death:
-        death_sound.play()
         menu_items = screens.death_screen(pygame, screen)
         main_menu_item, quit_item = menu_items[0], menu_items[1]
         handle_death_or_win_screen_events()
