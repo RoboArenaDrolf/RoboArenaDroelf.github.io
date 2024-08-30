@@ -75,6 +75,8 @@ class Robot:
         self.scaled_schwert = None
         self.flammenwerfer = pygame.image.load('../Animation/flammenwerfer.png')
         self.scaled_flammenwerfer = None
+        self.heavy_sword = pygame.image.load('../Animation/massive_sword.png')
+        self.scaled_heavy_sword = None
         self.kreissäge_sound = pygame.mixer.Sound("../Sounds/säge.mp3")
         self.kreissäge_sound.set_volume(0.45)
         self.fight_sound = pygame.mixer.Sound("../Sounds/fight.mp3")
@@ -229,6 +231,7 @@ class Robot:
                 hit_box = pygame.Rect(rect_left_x, rect_top_y, hit_box_width, hit_box_height)
                 pygame.draw.rect(screen, "red", hit_box, width=2)
                 self.hit_reg_rect(robots, arena, hit_box, 10, self.player_number)
+                screen.blit(self.heavy_sword, hit_box)
         elif type == "light":
             self.heavy_attack = False
             self.light_attack = True
