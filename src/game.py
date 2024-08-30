@@ -8,6 +8,7 @@ from movement import Movement
 from arena import Arena
 from arenaBuilder import ArenaBuilder
 from screens import Screens
+from robot import Robot
 
 pygame.init()
 pygame.joystick.init()
@@ -31,8 +32,6 @@ framerate = 120
 
 screen = pygame.display.set_mode(display_resolution)
 pygame.display.set_caption("Robo Arena")
-
-from robot import Robot
 
 white = (255, 255, 255)
 

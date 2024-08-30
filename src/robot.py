@@ -806,9 +806,9 @@ class Robot:
             # print(self.player_number, i.player_number)  # why do all robots share the projectiles?
             if self.player_number == i.player_number:  # this should fix it
                 if  self.ranged_explodes:
-                    i.paint_missle(pygame,screen,self.direction_left,self.direction_up,self.direction_down,self.direction_right)
+                    i.paint_missle(pygame, screen)
                 if self.ranged_bounces:
-                     i.paint_bounce(pygame,screen)
+                     i.paint_bounce(pygame, screen)
                 if not self.ranged_explodes and not self.ranged_bounces:
                     i.paint_projectile(pygame, screen)
                 i.move_projectile()

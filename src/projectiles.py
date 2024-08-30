@@ -1,4 +1,5 @@
 from enum import Enum
+import pygame
 
 
 class Projectile:
@@ -36,6 +37,10 @@ class Projectile:
         self.bounce_count = b
         self.type = t
 
+        missle = pygame.image.load('../Animation/missle.png')
+        scale_factor = self.radius * 2 / missle.get_width()
+        self.missle = pygame.transform.scale(missle,(int(self.radius * 2), int(missle.get_height() * scale_factor)))
+
     def move_projectile(self):
         self.x = self.x + self.x_speed
         self.y = self.y + self.y_speed
@@ -53,17 +58,15 @@ class Projectile:
         screen.blit(projectile,(self.x, self.y))
         # if self.type == "big":
 
-    def paint_missle(self,pygame,screen,direction_left,direction_up,direction_down,direction_right):
-        missle = pygame.image.load('../Animation/missle.png')
-        missle = pygame.transform.scale(missle, (20,20))
-        if direction_left:
-            missle = pygame.transform.rotate(missle,90)
-        elif direction_up:
-            missle = pygame.transform.rotate(missle,0)
-        elif direction_down:
-            missle = pygame.transform.rotate(missle,180)
-        elif direction_right:
-            missle = pygame.transform.rotate(missle,-90)
+    def paint_missle(self, pygame, screen):
+        if self.x_speed < 0 and self.y_speed == 0:
+            missle = pygame.transform.rotate(self.missle,90)
+        elif self.x_speed == 0 and self.y_speed < 0:
+            missle = pygame.transform.rotate(self.missle,0)
+        elif self.x_speed == 0 and self.y_speed > 0:
+            missle = pygame.transform.rotate(self.missle,180)
+        elif self.x_speed > 0 and self.y_speed == 0:
+            missle = pygame.transform.rotate(self.missle,-90)
         screen.blit(missle,(self.x, self.y))
 
 
