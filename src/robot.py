@@ -331,13 +331,12 @@ class Robot:
                 #pygame.draw.line(screen, "red", line_start, line_end, width=4)
                 self.hit_reg_line(robots, arena, line_start, line_end, 1)
                 self.attack_buffer = 9
-                #fight_sound.play()
+                self.fight_sound.play()
                 screen.blit(schwert_rotated, schwert_rect)
             elif self.attack_buffer > 5:
                 #pygame.draw.line(screen, "red", line_start, line_end, width=4)
                 self.hit_reg_line(robots, arena, line_start, line_end, 1)
                 self.attack_buffer -= 1
-                #fight_sound.play()
                 screen.blit(schwert_rotated, schwert_rect)
             elif self.attack_buffer > 0:
                 new_x = self.radius * (math.cos(math.radians(self.attack_start)))
@@ -347,7 +346,6 @@ class Robot:
                 #pygame.draw.line(screen, "red", line_start, line_end, width=4)
                 self.hit_reg_line(robots, arena, line_start, line_end, 1)
                 self.attack_buffer -= 1
-                #fight_sound.play()
                 screen.blit(schwert_rotated, schwert_rect)
         elif type == "flame":
             self.heavy_attack = False
