@@ -7,7 +7,6 @@ import sys
 from movement import Movement
 from arena import Arena
 from arenaBuilder import ArenaBuilder
-from robot import Robot
 from screens import Screens
 
 pygame.init()
@@ -33,6 +32,8 @@ framerate = 120
 screen = pygame.display.set_mode(display_resolution)
 pygame.display.set_caption("Robo Arena")
 
+from robot import Robot
+
 white = (255, 255, 255)
 
 map_filename = "secondMap.json"
@@ -51,7 +52,7 @@ settings = False
 playing = False
 map = False
 robots = []
-use_controller = True
+use_controller = False
 single_player = False
 death = False
 win = False
@@ -71,13 +72,13 @@ initial_window_pos = window.position
 clock = pygame.time.Clock()
 
 pygame.mixer.init()
-jumping_sound = pygame.mixer.Sound("Sounds/jumping.mp3")
+jumping_sound = pygame.mixer.Sound("../Sounds/jumping.mp3")
 jumping_sound.set_volume(0.7)
-death_sound = pygame.mixer.Sound("Sounds/death.mp3")
+death_sound = pygame.mixer.Sound("../Sounds/death.mp3")
 death_sound.set_volume(0.7)
-footsteps_sound = pygame.mixer.Sound("Sounds/footsteps.mp3")
-click_sound = pygame.mixer.Sound("Sounds/click.mp3")
-music = pygame.mixer.Sound("Sounds/music.mp3")
+footsteps_sound = pygame.mixer.Sound("../Sounds/footsteps.mp3")
+click_sound = pygame.mixer.Sound("../Sounds/click.mp3")
+music = pygame.mixer.Sound("../Sounds/music.mp3")
 
 def get_json_filenames(directory):
     json_files = []
