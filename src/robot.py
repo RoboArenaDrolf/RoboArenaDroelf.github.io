@@ -2,6 +2,7 @@ import math
 import pygame
 
 from src.projectiles import Projectile
+from src.explosions import Explosion
 
 
 class Robot:
@@ -578,8 +579,7 @@ class Robot:
                     recty = robots[i].projectiles[n].y
                     rectr = robots[i].projectiles[n].radius
                     explosive_rect = pygame.Rect(rectx - 4 * rectr, recty - 4 * rectr, 8 * rectr, 8 * rectr)
-                    self.explosions.append(explosive_rect)  # add the explosion
-                    self.explosions.append(5)  # add the duration
+                    self.explosions.append(Explosion(5, 5, explosive_rect))
                     # could be consolidated into an object
 
                     # tested with this, we do identify explosions correctly
@@ -660,15 +660,13 @@ class Robot:
         robot.recoil_percent += 0.05
 
     def handle_explosions(self, screen, arena, robots):
-        for i in range(0, len(self.explosions) - 1):
-            if self.explosions[i + 1] > 0:
-                pygame.draw.rect(screen, "red", self.explosions[i], 1)
-                self.hit_reg_rect(robots, arena, self.explosions[i], 5, -1)  # explosive damage is 5 for now
-                self.explosions[i + 1] -= 1
-            elif self.explosions[i + 1] == 0:
-                self.explosions.pop(i + 1)
+        for i in range(0, len(self.explosions)):
+            if self.explosions[i].duration > 0:
+                pygame.draw.rect(screen, "red", self.explosions[i].rectangle, 1)
+                self.hit_reg_rect(robots, arena, self.explosions[i].rectangle, self.explosions[i].damage, -1)
+                self.explosions[i].reduce_duration()
+            elif self.explosions[i].duration == 0:
                 self.explosions.pop(i)
-            i = i + 1  # we want to jump 2 at a time
 
     def paint_robot(self, pygame, screen):
         # Bild des Roboters zeichnen
