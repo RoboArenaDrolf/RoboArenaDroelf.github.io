@@ -22,6 +22,7 @@ class Robot:
     jump_counter = 0
     direction_left = False
     projectiles = []
+    explosions = []
     melee_cd = 0
     ranged_cd = 0
     robots_base_path = "./../Robots/"
@@ -29,15 +30,15 @@ class Robot:
     hit_cooldown = 0
     attack_start: int
     attack_buffer: int
-    ranged_explodes: bool  # false = normal true = explosive
+    ranged_normal: bool  # true = normal
+    ranged_explodes: bool
     ranged_bounces: bool
+    ranged_laser: bool
+    light_attack: bool  # true = light
     heavy_attack: bool  # true = heavy
-    light_attack: bool
-    flame_attack: bool
-    ranged_laser: bool  # false = normal true = laser
     stab_attack: bool
+    flame_attack: bool
     no_move = False  # false = moving allowed true = moving not allowed, start with allowed movement
-    explosions = []
 
     tile_below: int
     # Normal/No effect = 0
@@ -367,6 +368,7 @@ class Robot:
                 print("how did you do this? alpha=", self.alpha)
             pn = self.player_number  # projectile created by player number x
             if type == "normal":
+                self.ranged_normal = True
                 self.ranged_explodes = False
                 self.ranged_bounces = False
                 self.ranged_laser = False
@@ -375,6 +377,7 @@ class Robot:
                 c = "black"
                 b = 0
             elif type == "bouncy":
+                self.ranged_normal = False
                 self.ranged_explodes = False
                 self.ranged_bounces = True
                 self.ranged_laser = False
@@ -383,6 +386,7 @@ class Robot:
                 c = "blue"
                 b = 2
             elif type == "explosive":
+                self.ranged_normal = False
                 self.ranged_explodes = True
                 self.ranged_laser = False
                 self.ranged_bounces = False
@@ -394,11 +398,13 @@ class Robot:
                 c = "gray"
                 b = 0
             elif type == "laser":
+                self.ranged_normal = False
                 self.ranged_explodes = False
                 self.ranged_laser = True
                 self.ranged_bounces = False
             else:
                 print("invalid type default to normal")
+                self.ranged_normal = True
                 self.ranged_explodes = False
                 self.ranged_bounces = False
                 self.ranged_laser = False

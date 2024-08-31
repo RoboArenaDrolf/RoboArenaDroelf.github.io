@@ -440,7 +440,7 @@ def robot_attacks(robot):
         else:
             robot.melee_cd += 1
     # Player ranged attack cooldown
-    if robot.ranged_cd != 0 and (not robot.ranged_explodes and not robot.ranged_bounces and not robot.ranged_laser):
+    if robot.ranged_cd != 0 and robot.ranged_normal:
         if robot.ranged_cd == 60:
             robot.ranged_cd = 0
         elif robot.ranged_cd <= 10:  # second ranged attack at ranged_cd == 10
