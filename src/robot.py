@@ -668,6 +668,10 @@ class Robot:
             elif self.explosions[i].duration == 0:
                 self.explosions.pop(i)
 
+    def reset_explosions(self):
+        for i in range(0, len(self.explosions)):
+            self.explosions.pop(0)
+
     def paint_robot(self, pygame, screen):
         # Bild des Roboters zeichnen
         image_rect = self.first_robot.get_rect(center=(self.posx, self.posy))

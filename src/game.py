@@ -289,9 +289,13 @@ def handle_start_game_menu_events():
         # print("purging")
         # when we start a new round delete all projectiles that may still exist
         robot1.reset_projectiles()
+        robot1.reset_explosions()
         robot2.reset_projectiles()
+        robot2.reset_explosions()
         robot3.reset_projectiles()
+        robot3.reset_explosions()
         robot4.reset_projectiles()
+        robot4.reset_explosions()
 
 
 def handle_death_or_win_screen_events():
