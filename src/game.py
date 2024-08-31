@@ -581,8 +581,8 @@ def keydown_handling(event):
         elif key == pygame.K_u and player_robot.ranged_cd == 0:
             player_robot.ranged_attack(screen, robots, arena, "laser")
             player_robot.ranged_cd += 1
-        elif key == pygame.K_f:
-            player_robot.take_damage_debug(10)
+        #  elif key == pygame.K_f:
+        #    player_robot.take_damage_debug(10)
         elif key == pygame.K_SPACE and (not player_robot.no_move):
             if player_robot.jump_counter <= 1:
                 player_robot.jump = True
