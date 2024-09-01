@@ -268,7 +268,7 @@ class Robot:
                 line_start = (self.posx + new_x, self.posy + new_y)
                 line_end = (self.posx + new_x * 2.5, self.posy + new_y * 2.5)
                 pygame.draw.line(screen, "red", line_start, line_end, width=4)
-                self.hit_reg_line(robots, arena, line_start, line_end, 1)
+                self.hit_reg_line(robots, arena, line_start, line_end, 5)
                 self.attack_buffer = 4
             elif self.attack_buffer > 0:
                 new_x = self.radius * (math.cos(math.radians(self.attack_start)))
@@ -323,7 +323,7 @@ class Robot:
                 line_start = (self.posx + new_x, self.posy + new_y)
                 line_end = (self.posx + new_x * 2, self.posy + new_y * 2)
                 pygame.draw.line(screen, "red", line_start, line_end, width=4)
-                self.hit_reg_line(robots, arena, line_start, line_end, 1)
+                self.hit_reg_line(robots, arena, line_start, line_end, 5)
                 self.attack_buffer -= 1
         elif type == "flame":
             self.heavy_attack = False
