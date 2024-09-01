@@ -115,7 +115,8 @@ class Robot:
         self.vel = va
 
     def take_damage_debug(self, d):
-        if self.i_frames == 0:  # no i-frames we are allowed to take damage
+        if (self.i_frames == 0  # no i-frames we are allowed to take damage
+                and d != 0):  # workarround for 0 damage projectiles to not add i-frames on hit
             if d <= self.health:
                 self.health = self.health - d
                 self.i_frames = 10
@@ -406,7 +407,7 @@ class Robot:
                 r = r * 2
                 xs = xs / 2
                 ys = ys / 2
-                d = 5
+                d = 0
                 c = "gray"
                 b = 0
             elif type == "laser":
@@ -598,7 +599,7 @@ class Robot:
                     recty = robots[i].projectiles[n].y
                     rectr = robots[i].projectiles[n].radius
                     explosive_rect = pygame.Rect(rectx - 4 * rectr, recty - 4 * rectr, 8 * rectr, 8 * rectr)
-                    self.explosions.append(Explosion(5, 5, explosive_rect))
+                    self.explosions.append(Explosion(5, 10, explosive_rect))
                     # could be consolidated into an object
 
                     # tested with this, we do identify explosions correctly
