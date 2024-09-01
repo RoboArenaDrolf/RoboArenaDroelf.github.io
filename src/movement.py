@@ -60,7 +60,7 @@ class Movement:
                         direction = Projectile.Direction.RIGHT
                     else:
                         direction = Projectile.Direction.LEFT
-                    robot.recoil(arena, robot, direction)
+                    robot.recoil(arena, robot, direction, 0.05)
             if x > 0:
                 robot.posx = (
                     ((robot.posx - arena.x_offset) // arena.tile_size + 1) * arena.tile_size

@@ -181,7 +181,7 @@ class Robot:
                         direction = Projectile.Direction.UP
                     else:
                         direction = Projectile.Direction.DOWN
-                    self.recoil(arena, robots[i], direction)
+                    self.recoil(arena, robots[i], direction, 0.05)
 
     def distance_from_segment(self, x1, y1, x2, y2, x3, y3):
         # Vektoren berechnen
@@ -237,7 +237,7 @@ class Robot:
                     print("how did you do this? alpha=", self.alpha)
                 hit_box = pygame.Rect(rect_left_x, rect_top_y, hit_box_width, hit_box_height)
                 pygame.draw.rect(screen, "red", hit_box, width=2)
-                self.hit_reg_rect(robots, arena, hit_box, 10, self.player_number, 0)
+                self.hit_reg_rect(robots, arena, hit_box, 10, self.player_number, 0, 0.1)
         elif type == "light":
             self.heavy_attack = False
             self.light_attack = True
@@ -260,7 +260,7 @@ class Robot:
                 line_end = (self.posx + new_x * 2.5, self.posy + new_y * 2.5)
                 pygame.draw.line(screen, "red", line_start, line_end, width=4)
                 self.attack_buffer = 0
-                self.hit_reg_line(robots, arena, line_start, line_end, 1)
+                self.hit_reg_line(robots, arena, line_start, line_end, 5, 0.05)
             elif self.melee_cd % 5 == 0 and self.melee_cd <= 30:
                 self.attack_start = (self.attack_start + 15) % 360
                 new_x = self.radius * (math.cos(math.radians(self.attack_start)))
@@ -268,7 +268,7 @@ class Robot:
                 line_start = (self.posx + new_x, self.posy + new_y)
                 line_end = (self.posx + new_x * 2.5, self.posy + new_y * 2.5)
                 pygame.draw.line(screen, "red", line_start, line_end, width=4)
-                self.hit_reg_line(robots, arena, line_start, line_end, 5)
+                self.hit_reg_line(robots, arena, line_start, line_end, 5, 0.05)
                 self.attack_buffer = 4
             elif self.attack_buffer > 0:
                 new_x = self.radius * (math.cos(math.radians(self.attack_start)))
@@ -276,7 +276,7 @@ class Robot:
                 line_start = (self.posx + new_x, self.posy + new_y)
                 line_end = (self.posx + new_x * 2.5, self.posy + new_y * 2.5)
                 pygame.draw.line(screen, "red", line_start, line_end, width=4)
-                self.hit_reg_line(robots, arena, line_start, line_end, 1)
+                self.hit_reg_line(robots, arena, line_start, line_end, 5, 0.05)
                 self.attack_buffer -= 1
         elif type == "stab":
             self.heavy_attack = False
@@ -291,7 +291,7 @@ class Robot:
                 line_end = (self.posx + new_x * 2, self.posy + new_y * 2)
                 pygame.draw.line(screen, "red", line_start, line_end, width=4)
                 self.attack_buffer = 9
-                self.hit_reg_line(robots, arena, line_start, line_end, 1)
+                self.hit_reg_line(robots, arena, line_start, line_end, 5, 0.05)
             elif self.attack_buffer == 0:
                 if self.melee_cd % 3 == 0:
                     self.attack_start = self.alpha
@@ -307,7 +307,7 @@ class Robot:
                 line_start = (self.posx + new_x, self.posy + new_y)
                 line_end = (self.posx + new_x * 1.5, self.posy + new_y * 1.5)
                 pygame.draw.line(screen, "red", line_start, line_end, width=4)
-                self.hit_reg_line(robots, arena, line_start, line_end, 1)
+                self.hit_reg_line(robots, arena, line_start, line_end, 5, 0.05)
                 self.attack_buffer = 9
             elif self.attack_buffer > 5:
                 new_x = self.radius * (math.cos(math.radians(self.attack_start)))
@@ -315,7 +315,7 @@ class Robot:
                 line_start = (self.posx + new_x, self.posy + new_y)
                 line_end = (self.posx + new_x * 1.5, self.posy + new_y * 1.5)
                 pygame.draw.line(screen, "red", line_start, line_end, width=4)
-                self.hit_reg_line(robots, arena, line_start, line_end, 1)
+                self.hit_reg_line(robots, arena, line_start, line_end, 5, 0.05)
                 self.attack_buffer -= 1
             elif self.attack_buffer > 0:
                 new_x = self.radius * (math.cos(math.radians(self.attack_start)))
@@ -323,7 +323,7 @@ class Robot:
                 line_start = (self.posx + new_x, self.posy + new_y)
                 line_end = (self.posx + new_x * 2, self.posy + new_y * 2)
                 pygame.draw.line(screen, "red", line_start, line_end, width=4)
-                self.hit_reg_line(robots, arena, line_start, line_end, 5)
+                self.hit_reg_line(robots, arena, line_start, line_end, 5, 0.05)
                 self.attack_buffer -= 1
         elif type == "flame":
             self.heavy_attack = False
@@ -372,10 +372,10 @@ class Robot:
             # now we have the rectangle, so we draw it and calculate the hit_reg
             hit_box = pygame.Rect(rect_left_x, rect_top_y, hit_box_width, hit_box_height)
             pygame.draw.rect(screen, "red", hit_box, width=2)
-            self.hit_reg_rect(robots, arena, hit_box, 4, self.player_number, 20)
+            self.hit_reg_rect(robots, arena, hit_box, 4, self.player_number, 20, 0.05)
             hit_box2 = pygame.Rect(rect_left2_x, rect_top2_y, hit_box2_width, hit_box2_height)
             pygame.draw.rect(screen, "red", hit_box2, width=2)
-            self.hit_reg_rect(robots, arena, hit_box2, 2, self.player_number, 40)
+            self.hit_reg_rect(robots, arena, hit_box2, 2, self.player_number, 40, 0.05)
 
     def ranged_attack(self, screen, robots, arena, type):
         if self.ranged_cd == 0 or self.ranged_cd == 10:
@@ -412,6 +412,7 @@ class Robot:
                 d = 4
                 c = "black"
                 b = 0
+                rec = 0.025
             elif type == "bouncy":
                 self.ranged_normal = False
                 self.ranged_explodes = False
@@ -421,6 +422,7 @@ class Robot:
                 d = 3
                 c = "blue"
                 b = 2
+                rec = 0.025
             elif type == "explosive":
                 self.ranged_normal = False
                 self.ranged_explodes = True
@@ -433,6 +435,7 @@ class Robot:
                 d = 0
                 c = "gray"
                 b = 0
+                rec = 0
             elif type == "laser":
                 self.ranged_normal = False
                 self.ranged_explodes = False
@@ -448,12 +451,13 @@ class Robot:
                 d = 1
                 c = "black"
                 b = 0
+                rec = 0.025
             # this shouldn't be needed since the robot that owns the projectiles array has this number,
             # but I used this as a fix in ranged_hit_reg, in order to be unable to hit yourself
             if type == "laser":
                 pass  # if we fire a laser, we do not want another projectile added
             else:
-                self.projectiles.append(Projectile(x, y, c, r, xs, ys, d, pn, b, t))  # this append must be the reason
+                self.projectiles.append(Projectile(x, y, c, r, xs, ys, d, pn, b, t, rec))
         if type == "laser":
             if 30 <= self.ranged_cd <= 60:
                 (len_x, len_y) = self.find_closest_block(screen, arena)  # x,y cords of nearest collision in front
@@ -482,7 +486,7 @@ class Robot:
                 # now we have the rectangle, so we draw it and calculate the hit_reg
                 hit_box = pygame.Rect(rect_left_x, rect_top_y, hit_box_width, hit_box_height)
                 pygame.draw.rect(screen, "red", hit_box, width=2)
-                self.hit_reg_rect(robots, arena, hit_box, 10, self.player_number, 0)
+                self.hit_reg_rect(robots, arena, hit_box, 10, self.player_number, 0, 0.1)
 
     def find_closest_block(self, screen, arena):
         r = 0  # this looks like it works, a projectile with radius 0
@@ -513,7 +517,7 @@ class Robot:
         t = "tracer"
         d = 0
         c = "black"
-        self.projectiles.append(Projectile(x, y, c, r, xs, ys, d, pn, 0, t))
+        self.projectiles.append(Projectile(x, y, c, r, xs, ys, d, pn, 0, t, 0))
         # this projectile will be used to find a possibly existing closest block
 
         # now we must find distance to the edges of the arena
@@ -581,7 +585,7 @@ class Robot:
                                 direction = Projectile.Direction.DOWN
                             else:
                                 direction = Projectile.Direction.UP
-                            self.recoil(arena, robots[i], direction)
+                            self.recoil(arena, robots[i], direction, robots[i].projectiles[j].recoil)
                         # DO NOT REMOVE PROJECTILES INSIDE THE LOOP instead
                         to_delete.append(j)  # save the index (might be multiple)
                 # Überprüfen, ob die Projectile die seitlichen Grenzen der Arena erreicht hat
@@ -633,7 +637,7 @@ class Robot:
             self.projectiles.pop(0)
         # self.projectiles = [] # this does not work properly :(
 
-    def hit_reg_line(self, robots, arena, line_start, line_end, dmg):
+    def hit_reg_line(self, robots, arena, line_start, line_end, dmg, recoil):
         for i in range(0, len(robots)):  # old hitreg should still work
             if i == self.player_number:
                 continue
@@ -656,9 +660,9 @@ class Robot:
                         direction = Projectile.Direction.UP
                     else:
                         direction = Projectile.Direction.DOWN
-                    self.recoil(arena, robots[i], direction)
+                    self.recoil(arena, robots[i], direction, recoil)
 
-    def hit_reg_rect(self, robots, arena, rect, dmg, exception, fire):
+    def hit_reg_rect(self, robots, arena, rect, dmg, exception, fire, recoil):
         # exception is used to exclude one robot
         # if we change our collision to be a hit box, we could use some builtin functions
         tl = rect.topleft
@@ -678,7 +682,7 @@ class Robot:
                             <= robots[i].radius)):  # or distance from robot to the sides of the rect is < robot radius
                     robots[i].take_damage_debug(dmg, fire)
                     if robots[i].hit_cooldown <= 0:
-                        self.recoil(arena, robots[i], Projectile.Direction.UP)
+                        self.recoil(arena, robots[i], Projectile.Direction.UP, recoil)
 
     def decrease_hit_cooldown(self):
         if self.hit_cooldown > 0:
@@ -688,7 +692,7 @@ class Robot:
         if self.i_frames > 0:
             self.i_frames -= 1
 
-    def recoil(self, arena, robot, direction):
+    def recoil(self, arena, robot, direction, recoil):
         robot.hit_cooldown = 20  # setting this so the robot doesn't get launched into space
 
         if direction == Projectile.Direction.UP:
@@ -704,13 +708,14 @@ class Robot:
             robot.change_acceleration(robot.accel + (arena.tile_size / 3) * robot.recoil_percent)  # recoil right
             robot.change_velocity_cap(robot.vel + robot.accel)
 
-        robot.recoil_percent += 0.05
+        robot.recoil_percent += recoil
 
     def handle_explosions(self, screen, arena, robots):
         for i in range(0, len(self.explosions)):
             if self.explosions[i].duration > 0:
                 pygame.draw.rect(screen, "red", self.explosions[i].rectangle, 1)
-                self.hit_reg_rect(robots, arena, self.explosions[i].rectangle, self.explosions[i].damage, -1, 0)
+                self.hit_reg_rect(robots, arena, self.explosions[i].rectangle, self.explosions[i].damage, -1, 0,
+                                  0.1)
                 self.explosions[i].reduce_duration()
             elif self.explosions[i].duration == 0:
                 self.explosions.pop(i)

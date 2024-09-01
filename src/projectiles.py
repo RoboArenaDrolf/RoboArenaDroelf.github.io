@@ -23,8 +23,9 @@ class Projectile:
     type: str
     bounce_count: int
     player_number: int
+    recoil: int
 
-    def __init__(self, x, y, c, r, xs, ys, d, pn, b, t):
+    def __init__(self, x, y, c, r, xs, ys, d, pn, b, t, rec):
         self.x = x
         self.y = y
         self.color = c
@@ -35,6 +36,7 @@ class Projectile:
         self.player_number = pn
         self.bounce_count = b
         self.type = t
+        self.recoil = rec
 
     def move_projectile(self):
         self.x = self.x + self.x_speed
