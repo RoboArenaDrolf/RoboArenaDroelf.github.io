@@ -348,6 +348,7 @@ def game_loop():
     for player_robot in robots:
         robot_handling(player_robot)
         player_robot.decrease_hit_cooldown()
+        player_robot.decrease_i_frames()
     # moved hit_reg here since it only should be done once
     robots[0].ranged_hit_reg(pygame, screen, robots, arena)
     # Multiplayer: Check if only one is left
@@ -426,7 +427,7 @@ def robot_attacks(robot):
     elif robot.melee_cd != 0 and robot.flame_attack:
         if robot.melee_cd == 180:  # reset cooldown
             robot.melee_cd = 0
-        elif 5 < robot.melee_cd < 60:  # attack will stay for a certain duration
+        elif robot.melee_cd < 60:  # attack will stay for a certain duration
             robot.melee_attack(pygame, screen, robots, arena, "flame")
             robot.melee_cd += 1
         else:

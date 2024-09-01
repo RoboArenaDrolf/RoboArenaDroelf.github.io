@@ -28,6 +28,7 @@ class Robot:
     robots_base_path = "./../Robots/"
     recoil_percent = 0.1
     hit_cooldown = 0
+    i_frames: int
     attack_start: int
     attack_buffer: int
     ranged_normal: bool  # true = normal
@@ -65,6 +66,7 @@ class Robot:
         self.second_robot = pygame.transform.scale(self.second_robot, (self.radius * 2, self.radius * 2))
         self.second_robot_flipped = pygame.transform.flip(self.second_robot, True, False)
         self.tile_below = 0
+        self.i_frames = 0
 
     def change_acceleration(self, a):
         if abs(a) <= self.accel_max:
@@ -113,11 +115,21 @@ class Robot:
         self.vel = va
 
     def take_damage_debug(self, d):
+        if self.i_frames == 0:  # no i-frames we are allowed to take damage
+            if d <= self.health:
+                self.health = self.health - d
+                self.i_frames = 10
+            else:
+                self.health = 0
+        else:  # we have i-frames we cannot take damage
+            pass
+
+    def take_damage_force(self, d):
+        #  here we do not care for i-frames we force the robot to take damage
         if d <= self.health:
             self.health = self.health - d
         else:
             self.health = 0
-
     def melee_attack_old(self, pygame, screen, robots, arena):  # keep this for now -Björn
         new_x = self.radius * (math.cos(math.radians(self.alpha)))
         new_y = self.radius * (math.sin(math.radians(self.alpha)))
@@ -646,6 +658,10 @@ class Robot:
     def decrease_hit_cooldown(self):
         if self.hit_cooldown > 0:
             self.hit_cooldown -= 1
+
+    def decrease_i_frames(self):
+        if self.i_frames > 0:
+            self.i_frames -= 1
 
     def recoil(self, arena, robot, direction):
         robot.hit_cooldown = 20  # setting this so the robot doesn't get launched into space
