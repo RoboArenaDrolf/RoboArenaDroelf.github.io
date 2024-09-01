@@ -40,6 +40,7 @@ class Robot:
     stab_attack: bool
     flame_attack: bool
     no_move = False  # false = moving allowed true = moving not allowed, start with allowed movement
+    fire_timer = int
 
     tile_below: int
     # Normal/No effect = 0
@@ -67,6 +68,7 @@ class Robot:
         self.second_robot_flipped = pygame.transform.flip(self.second_robot, True, False)
         self.tile_below = 0
         self.i_frames = 0
+        self.fire_timer = 0
 
     def change_acceleration(self, a):
         if abs(a) <= self.accel_max:
@@ -131,6 +133,13 @@ class Robot:
             self.health = self.health - d
         else:
             self.health = 0
+
+    def fire_damage(self):
+        if self.fire_timer > 0:
+            if self.fire_timer % 2 == 0:  # every 2 frames
+                self.take_damage_force(1)  # take 1 damage from fire
+            self.fire_timer -= 1  # reduce fire timer by 1
+
     def melee_attack_old(self, pygame, screen, robots, arena):  # keep this for now -Björn
         new_x = self.radius * (math.cos(math.radians(self.alpha)))
         new_y = self.radius * (math.sin(math.radians(self.alpha)))
