@@ -116,12 +116,13 @@ class Robot:
     def change_turn_velocity(self, va):
         self.vel = va
 
-    def take_damage_debug(self, d):
+    def take_damage_debug(self, d, fire):
         if (self.i_frames == 0  # no i-frames we are allowed to take damage
                 and d != 0):  # workarround for 0 damage projectiles to not add i-frames on hit
             if d <= self.health:
                 self.health = self.health - d
                 self.i_frames = 10
+                self.apply_fire(fire)
             else:
                 self.health = 0
         else:  # we have i-frames we cannot take damage
@@ -136,9 +137,22 @@ class Robot:
 
     def fire_damage(self):
         if self.fire_timer > 0:
-            if self.fire_timer % 2 == 0:  # every 2 frames
+            if self.fire_timer % 5 == 0:  # every 3 frames
                 self.take_damage_force(1)  # take 1 damage from fire
+                print(self.player_number, "you are burning", self.fire_timer)
             self.fire_timer -= 1  # reduce fire timer by 1
+
+    def apply_fire(self, t):
+        if t > 0:  # increase time on fire
+            if self.fire_timer + t < 120:
+                self.fire_timer = self.fire_timer + t
+            else:
+                self.fire_timer = 60  # maximum time a robot can be on fire
+        else:  # decrease time on fire
+            if self.fire_timer + t > 0:
+                self.fire_timer = self.fire_timer + t
+            else:
+                self.fire_timer = 0  # minimum time is 0
 
     def melee_attack_old(self, pygame, screen, robots, arena):  # keep this for now -Björn
         new_x = self.radius * (math.cos(math.radians(self.alpha)))
@@ -157,7 +171,7 @@ class Robot:
                 <= robots[i].radius
             ):  # if the distance from this line to the center of a robot
                 # is smaller than it's radius, we have a hit and that robot takes some damage
-                robots[i].take_damage_debug(1)
+                robots[i].take_damage_debug(1, 0)
                 if robots[i].hit_cooldown <= 0:
                     if self.alpha == 180:
                         direction = Projectile.Direction.LEFT
@@ -223,7 +237,7 @@ class Robot:
                     print("how did you do this? alpha=", self.alpha)
                 hit_box = pygame.Rect(rect_left_x, rect_top_y, hit_box_width, hit_box_height)
                 pygame.draw.rect(screen, "red", hit_box, width=2)
-                self.hit_reg_rect(robots, arena, hit_box, 10, self.player_number)
+                self.hit_reg_rect(robots, arena, hit_box, 10, self.player_number, 0)
         elif type == "light":
             self.heavy_attack = False
             self.light_attack = True
@@ -358,10 +372,10 @@ class Robot:
             # now we have the rectangle, so we draw it and calculate the hit_reg
             hit_box = pygame.Rect(rect_left_x, rect_top_y, hit_box_width, hit_box_height)
             pygame.draw.rect(screen, "red", hit_box, width=2)
-            self.hit_reg_rect(robots, arena, hit_box, 4, self.player_number)
+            self.hit_reg_rect(robots, arena, hit_box, 4, self.player_number, 20)
             hit_box2 = pygame.Rect(rect_left2_x, rect_top2_y, hit_box2_width, hit_box2_height)
             pygame.draw.rect(screen, "red", hit_box2, width=2)
-            self.hit_reg_rect(robots, arena, hit_box2, 2, self.player_number)
+            self.hit_reg_rect(robots, arena, hit_box2, 2, self.player_number, 40)
 
     def ranged_attack(self, screen, robots, arena, type):
         if self.ranged_cd == 0 or self.ranged_cd == 10:
@@ -468,7 +482,7 @@ class Robot:
                 # now we have the rectangle, so we draw it and calculate the hit_reg
                 hit_box = pygame.Rect(rect_left_x, rect_top_y, hit_box_width, hit_box_height)
                 pygame.draw.rect(screen, "red", hit_box, width=2)
-                self.hit_reg_rect(robots, arena, hit_box, 10, self.player_number)
+                self.hit_reg_rect(robots, arena, hit_box, 10, self.player_number, 0)
 
     def find_closest_block(self, screen, arena):
         r = 0  # this looks like it works, a projectile with radius 0
@@ -557,7 +571,7 @@ class Robot:
                     )
                     if distance < (robots[i].radius + robots[i].projectiles[j].radius):
                         # we have a direct hit
-                        robots[i].take_damage_debug(robots[i].projectiles[j].damage)
+                        robots[i].take_damage_debug(robots[i].projectiles[j].damage, 0)
                         if robots[i].hit_cooldown <= 0:
                             if robots[i].projectiles[j].x_speed > 0:
                                 direction = Projectile.Direction.RIGHT
@@ -632,7 +646,7 @@ class Robot:
                 <= robots[i].radius
             ):  # if the distance from this line to the center of a robot
                 # is smaller than it's radius, we have a hit and that robot takes some damage
-                robots[i].take_damage_debug(dmg)
+                robots[i].take_damage_debug(dmg, 0)
                 if robots[i].hit_cooldown <= 0:
                     if self.alpha == 180:
                         direction = Projectile.Direction.LEFT
@@ -644,7 +658,7 @@ class Robot:
                         direction = Projectile.Direction.DOWN
                     self.recoil(arena, robots[i], direction)
 
-    def hit_reg_rect(self, robots, arena, rect, dmg, exception):
+    def hit_reg_rect(self, robots, arena, rect, dmg, exception, fire):
         # exception is used to exclude one robot
         # if we change our collision to be a hit box, we could use some builtin functions
         tl = rect.topleft
@@ -662,7 +676,7 @@ class Robot:
                             <= robots[i].radius)
                         or (self.distance_from_segment(br[0], br[1], bl[0], bl[1], robots[i].posx, robots[i].posy)
                             <= robots[i].radius)):  # or distance from robot to the sides of the rect is < robot radius
-                    robots[i].take_damage_debug(dmg)
+                    robots[i].take_damage_debug(dmg, fire)
                     if robots[i].hit_cooldown <= 0:
                         self.recoil(arena, robots[i], Projectile.Direction.UP)
 
@@ -696,7 +710,7 @@ class Robot:
         for i in range(0, len(self.explosions)):
             if self.explosions[i].duration > 0:
                 pygame.draw.rect(screen, "red", self.explosions[i].rectangle, 1)
-                self.hit_reg_rect(robots, arena, self.explosions[i].rectangle, self.explosions[i].damage, -1)
+                self.hit_reg_rect(robots, arena, self.explosions[i].rectangle, self.explosions[i].damage, -1, 0)
                 self.explosions[i].reduce_duration()
             elif self.explosions[i].duration == 0:
                 self.explosions.pop(i)

@@ -20,8 +20,8 @@ class Movement:
 
         # Kollisionen in y-Richtung überprüfen und behandeln
         if self.check_collision_y(robot, arena):
-            if self.check_tile_type_y(robot, arena) == 1:  # if we touch lava-> take dmg
-                robot.take_damage_debug(1)
+            if self.check_tile_type_y(robot, arena) == 1:  # if we touch lava-> take dmg and apply fire
+                robot.take_damage_debug(2, 40)  # 2 damage instantly and 40 frames of fire
                 if robot.hit_cooldown <= 0:
                     if robot.vertical_speed < 0:
                         direction = Projectile.Direction.DOWN
@@ -54,7 +54,7 @@ class Movement:
         # Kollisionen in x-Richtung überprüfen und behandeln
         if self.check_collision_x(robot, arena):
             if self.check_tile_type_x(robot, arena) == 1:  # if we touch lava-> take dmg
-                robot.take_damage_debug(1)
+                robot.take_damage_debug(2, 40)
                 if robot.hit_cooldown <= 0:
                     if x < 0:
                         direction = Projectile.Direction.RIGHT

@@ -349,6 +349,7 @@ def game_loop():
         robot_handling(player_robot)
         player_robot.decrease_hit_cooldown()
         player_robot.decrease_i_frames()
+        player_robot.fire_damage()
     # moved hit_reg here since it only should be done once
     robots[0].ranged_hit_reg(pygame, screen, robots, arena)
     # Multiplayer: Check if only one is left
