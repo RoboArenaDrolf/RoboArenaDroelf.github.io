@@ -628,7 +628,7 @@ class Robot:
         bl = rect.bottomleft
         br = rect.bottomright
         for i in range(0, len(robots)):  # check all robots
-            if i != exception:  # use -1 for no exception
+            if i != exception:  # except for j, use -1 for no exception
                 if (
                     (bl[1] < robots[i].posy < tl[1] and bl[0] < robots[i].posx < br[0])  # inside of rect
                     or (
@@ -698,41 +698,57 @@ class Robot:
                 screen.blit(self.second_robot, image_rect)
             elif self.direction_left:
                 screen.blit(self.second_robot_flipped, image_rect)
-        # corresponding health UI
-        health_font = pygame.font.Font(None, int(pygame.display.get_window_size()[1] / 25))
-        player_health = health_font.render(f"{self.health}", True, f"{self.color}")
-        player_rect = player_health.get_rect(
-            center=(
-                pygame.display.get_window_size()[0] / 5
-                + (pygame.display.get_window_size()[0] / 5) * self.player_number,
-                pygame.display.get_window_size()[1] / 20,
-            )
-        )
-        pygame.draw.rect(
-            screen,
-            (0, 30, 50, 0.5),
-            player_rect.inflate(pygame.display.get_window_size()[0] / 33, pygame.display.get_window_size()[1] / 50),
-        )
-        screen.blit(player_health, player_rect)
-        # corresponding recoil ui
-        recoil_font = pygame.font.Font(None, int(pygame.display.get_window_size()[1] / 25))
-        player_recoil = recoil_font.render(f"{int(self.recoil_percent * 100)} %", True, f"{self.color}")
-        player_rect = player_recoil.get_rect(
-            center=(
-                pygame.display.get_window_size()[0] / 5
-                + (pygame.display.get_window_size()[0] / 5) * self.player_number,
-                pygame.display.get_window_size()[1] / 10,
-            )
-        )
-        pygame.draw.rect(
-            screen,
-            (0, 30, 50, 0.5),
-            player_rect.inflate(pygame.display.get_window_size()[0] / 33, pygame.display.get_window_size()[1] / 50),
-        )
-        screen.blit(player_recoil, player_rect)
+        self.draw_health_bar(screen, self.health, self.health_max, self.player_number, self.color)
+        self.draw_recoil_text(screen, self.recoil_percent, self.player_number, self.color)
         # projectiles
         for i in self.projectiles:  # each robot will paint and update the projectiles it has created
             # print(self.player_number, i.player_number)  # why do all robots share the projectiles?
             if self.player_number == i.player_number:  # this should fix it
                 i.paint_projectile(pygame, screen)
                 i.move_projectile()
+
+    # Lebenspunkte als Balken
+    def draw_health_bar(self, screen, health, max_health, player_number, color):
+        screen_width = pygame.display.get_window_size()[0]
+        screen_height = pygame.display.get_window_size()[1]
+        bar_width = screen_width / 6
+        bar_height = screen_height / 40
+        bar_x = screen_width / 3.42 + (screen_width / 4) * (player_number - 1)
+        bar_y = screen_height / 30
+
+        # Hintergrund des Balkens (für die maximalen Lebenspunkte)
+        pygame.draw.rect(screen, (0, 0, 0), (bar_x, bar_y, bar_width, bar_height))
+
+        # Füllung des Balkens (entsprechend der aktuellen Lebenspunkte)
+        health_width = (health / max_health) * bar_width
+        pygame.draw.rect(screen, color, (bar_x, bar_y, health_width, bar_height))
+
+        # Rahmen um den Balken
+        pygame.draw.rect(screen, (255, 255, 255), (bar_x, bar_y, bar_width, bar_height), 2)
+
+    # Rückstoßanzeige mit spezieller Schriftart
+    def draw_recoil_text(self, screen, recoil_percent, player_number, color):
+        screen_width = pygame.display.get_window_size()[0]
+        screen_height = pygame.display.get_window_size()[1]
+        font_path = "../fonts/Bigdex.ttf"
+        # Eine coole Schriftart laden
+        recoil_font = pygame.font.Font(font_path, int(screen_height / 20))
+        # Rückstoßprozente als Text rendern
+        recoil_text = recoil_font.render(f"{int(recoil_percent * 100)}%", True, color)
+        recoil_rect = recoil_text.get_rect(
+            center=(screen_width / 2.62 + (screen_width / 4) * (player_number - 1), screen_height / 13)
+        )
+
+        # Textumrandung (zum Beispiel ein leichtes Schwarz für besseren Kontrast)
+        outline_thickness = 2
+        outline_color = (0, 0, 0)
+        for dx in range(-outline_thickness, outline_thickness + 1):
+            for dy in range(-outline_thickness, outline_thickness + 1):
+                if dx != 0 or dy != 0:
+                    screen.blit(
+                        recoil_font.render(f"{int(recoil_percent * 100)}%", True, outline_color),
+                        recoil_rect.move(dx, dy),
+                    )
+
+        # Den eigentlichen Text rendern
+        screen.blit(recoil_text, recoil_rect)
