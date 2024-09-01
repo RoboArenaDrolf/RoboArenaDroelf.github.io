@@ -55,6 +55,8 @@ use_controller = True
 single_player = False
 death = False
 win = False
+robot_screen = False
+robots_selected = 0
 
 input_active_x = False
 input_active_y = False
@@ -219,7 +221,7 @@ def handle_settings_menu_events():
 
 
 def handle_start_game_menu_events():
-    global robots, start_game, playing, single_player
+    global robots, start_game, robot_screen, single_player
 
     robot1 = Robot(
         arena.spawn_positions[0][0] + robot_radius,
@@ -232,7 +234,7 @@ def handle_start_game_menu_events():
         100,
         "blue",
         0,
-        )
+    )
     robot2 = Robot(
         arena.spawn_positions[1][0] + robot_radius,
         arena.spawn_positions[1][1] + robot_radius,
@@ -244,7 +246,7 @@ def handle_start_game_menu_events():
         100,
         "red",
         1,
-        )
+    )
     robot3 = Robot(
         arena.spawn_positions[2][0] + robot_radius,
         arena.spawn_positions[2][1] + robot_radius,
@@ -256,7 +258,7 @@ def handle_start_game_menu_events():
         100,
         "green",
         2,
-        )
+    )
     robot4 = Robot(
         arena.spawn_positions[3][0] + robot_radius,
         arena.spawn_positions[3][1] + robot_radius,
@@ -268,7 +270,7 @@ def handle_start_game_menu_events():
         100,
         "yellow",
         3,
-        )
+    )
 
     if one_player_item.pressed:
         robots = [robot1]
@@ -285,7 +287,7 @@ def handle_start_game_menu_events():
     if robots:
         start_game = False
         reset_selected_item()
-        playing = True
+        robot_screen = True
         # print("purging")
         # when we start a new round delete all projectiles that may still exist
         robot1.reset_projectiles()
@@ -333,6 +335,30 @@ def handle_map_screen_events():
             start_game = True
             reset_selected_item()
             break
+
+
+def handle_robot_screen_events():
+    global playing, robot_screen, robots_selected
+
+    if robot1_item.pressed:
+        robots[robots_selected].robot_type = 1
+        robots[robots_selected].light_melee = "light"
+        robots[robots_selected].heavy_melee = "flame"
+        robots[robots_selected].light_ranged = "normal"
+        robots[robots_selected].heavy_ranged = "laser"
+        robots_selected += 1
+    elif robot2_item.pressed:
+        robots[robots_selected].robot_type = 2
+        robots[robots_selected].light_melee = "stab"
+        robots[robots_selected].heavy_melee = "heavy"
+        robots[robots_selected].light_ranged = "bouncy"
+        robots[robots_selected].heavy_ranged = "explosive"
+        robots_selected += 1
+    if robots_selected == len(robots):
+        playing = True
+        robot_screen = False
+        robots_selected = 0
+        reset_selected_item()
 
 
 def game_loop():
@@ -549,39 +575,18 @@ def keydown_handling(event):
     if playing and not game_paused:
         player_robot = robots[0]
         key = event.key
-        if key == pygame.K_ESCAPE:
-            game_paused = True
-        elif (
-                key == pygame.K_g and player_robot.melee_cd == 0
-        ):  # we can attack if we have no cooldown and press the button
-            player_robot.melee_attack(pygame, screen, robots, arena, "light")
+        if key == pygame.K_LSHIFT and player_robot.melee_cd == 0:
+            player_robot.melee_attack(pygame, screen, robots, arena, player_robot.light_melee)
             player_robot.melee_cd += 1
-        elif (
-                key == pygame.K_h and player_robot.melee_cd == 0
-        ):  # we can attack if we have no cooldown and press the button
-            player_robot.melee_attack(pygame, screen, robots, arena, "heavy")
-            player_robot.no_move = True  # charge attack no moving allowed
+        elif key == pygame.K_LCTRL and player_robot.ranged_cd == 0:
+            player_robot.ranged_attack(screen, robots, arena, player_robot.light_ranged)
+            player_robot.ranged_cd += 1
+        elif key == pygame.K_e and player_robot.melee_cd == 0:
+            player_robot.melee_attack(pygame, screen, robots, arena, player_robot.heavy_melee)
             player_robot.melee_cd += 1
         elif key == pygame.K_r and player_robot.ranged_cd == 0:
-            player_robot.ranged_attack(screen, robots, arena, "normal")
+            player_robot.ranged_attack(screen, robots, arena, player_robot.heavy_ranged)
             player_robot.ranged_cd += 1
-        elif key == pygame.K_t and player_robot.ranged_cd == 0:
-            player_robot.ranged_attack(screen, robots, arena, "explosive")
-            player_robot.ranged_cd += 1
-        elif key == pygame.K_z and player_robot.ranged_cd == 0:
-            player_robot.ranged_attack(screen, robots, arena, "bouncy")
-            player_robot.ranged_cd += 1
-        elif key == pygame.K_k and player_robot.melee_cd == 0:
-            player_robot.melee_attack(pygame, screen, robots, arena, "flame")
-            player_robot.melee_cd += 1
-        elif key == pygame.K_u and player_robot.ranged_cd == 0:
-            player_robot.ranged_attack(screen, robots, arena, "laser")
-            player_robot.ranged_cd += 1
-        elif key == pygame.K_j and player_robot.melee_cd == 0:
-            player_robot.melee_attack(pygame, screen, robots, arena, "stab")
-            player_robot.melee_cd += 1
-        elif key == pygame.K_f:
-            player_robot.take_damage_debug(10)
         elif key == pygame.K_SPACE and (not player_robot.no_move):
             if player_robot.jump_counter <= 1:
                 player_robot.jump = True
@@ -600,6 +605,12 @@ def joybuttons_handling(event):
                     player_robot.jump = True
             elif event.button == 7:
                 game_paused = True
+            elif event.button == 5:
+                player_robot.melee_attack(pygame, screen, robots, arena, player_robot.heavy_melee)
+                player_robot.melee_cd += 1
+            elif event.button == 4:
+                player_robot.ranged_attack(screen, robots, arena, player_robot.heavy_ranged)
+                player_robot.ranged_cd += 1
     else:
         if event.button == 1:
             menu_items[selected_item_index].pressed = True
@@ -614,12 +625,12 @@ def joyaxis_handling(event):
         if joystick_id < len(robots):
             player_robot = robots[joystick_id]
             if (
-                    event.axis == 5 and event.value > 0.2 and player_robot.melee_cd == 0
+                event.axis == 5 and event.value > 0.2 and player_robot.melee_cd == 0
             ):  # we can attack if we have no cooldown and press the button
-                player_robot.melee_attack(pygame, screen, robots, arena, "light")
+                player_robot.melee_attack(pygame, screen, robots, arena, player_robot.light_melee)
                 player_robot.melee_cd += 1
             if event.axis == 4 and event.value > 0.2 and (player_robot.ranged_cd == 0 or player_robot.ranged_cd == 10):
-                player_robot.ranged_attack(screen, robots, arena, "normal")
+                player_robot.ranged_attack(screen, robots, arena, player_robot.light_ranged)
                 player_robot.ranged_cd += 1
     else:
         if event.axis == 1:
@@ -652,10 +663,10 @@ def mouse_handling():
 
 
 def screens_painting():
-    global menu_items, resume_item, main_menu_item, quit_item, play_item, build_arena_item, \
-        settings_item, exit_item, controller_on_off_item, resolution_items, fullscreen_item, back_item, \
-        input_rect_x_tiles, input_rect_y_tiles, start_building_item, one_player_item, two_player_item, \
-        three_player_item, four_player_item, level_items
+    global menu_items, resume_item, main_menu_item, quit_item, play_item, build_arena_item, settings_item, \
+        exit_item, controller_on_off_item, resolution_items, fullscreen_item, back_item, input_rect_x_tiles, \
+        input_rect_y_tiles, start_building_item, one_player_item, two_player_item, three_player_item, \
+        four_player_item, level_items, robot1_item, robot2_item
 
     if game_paused:
         menu_items = screens.pause_screen(pygame, screen)
@@ -703,6 +714,11 @@ def screens_painting():
         menu_items = screens.maps_screen(pygame, screen)
         level_items = menu_items
         handle_map_screen_events()
+    elif robot_screen:
+        menu_items = screens.robot_screen(pygame, screen, robots_selected + 1)
+        robot1_item = menu_items[0]
+        robot2_item = menu_items[1]
+        handle_robot_screen_events()
 
 
 def item_selections():
@@ -755,6 +771,8 @@ while run:
             mouse_visible = True
             mouse_visibility_counter = 0
         else:
+            if playing and event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                game_paused = True
             if use_controller:
                 if event.type == pygame.JOYBUTTONDOWN:
                     joybuttons_handling(event)

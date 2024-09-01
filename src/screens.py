@@ -78,6 +78,10 @@ class Screens:
             self.MenuItem("Main Menu", self._white, font, 2, self._display_resolution),
             self.MenuItem("Quit Game", self._white, font, 3, self._display_resolution),
         ]
+        self.robot_screen_items = [
+            self.MenuItem("Robot 1", self._white, font, 1, self._display_resolution),
+            self.MenuItem("Robot 2", self._white, font, 2, self._display_resolution),
+        ]
 
     def death_screen(self, pygame, screen):
         screen.fill(self._black)
@@ -252,6 +256,24 @@ class Screens:
             item.draw(screen, pygame, self._black, self._display_resolution)
 
         return self.win_screen_items
+
+    def robot_screen(self, pygame, screen, player_number):
+        screen.fill(self._white)
+
+        font = pygame.font.Font(None, self._font_size_big)
+        text = font.render("Wähle einen Roboter Spieler " + str(player_number), True, self._black)
+        screen.blit(
+            text,
+            (
+                self._display_resolution[0] // 2 - text.get_width() // 2,
+                self._display_resolution[1] // 2 - text.get_height() // 2 - 2 * self._dist_between_elements,
+            ),
+        )
+
+        for item in self.robot_screen_items:
+            item.draw(screen, pygame, self._black, self._display_resolution)
+
+        return self.robot_screen_items
 
     @staticmethod
     def show_popup(message):

@@ -37,6 +37,11 @@ class Robot:
     stab_attack: bool
     no_move = False  # false = moving allowed true = moving not allowed, start with allowed movement
     explosions = []
+    robot_type = 0
+    light_melee: str
+    heavy_melee: str
+    light_ranged: str
+    heavy_ranged: str
 
     tile_below: int
     # Normal/No effect = 0
@@ -151,7 +156,7 @@ class Robot:
         norm = px * px + py * py
         if norm == 0:  # x1=x2, y1=y2 -> not a line, but a point
             # now we don't have a distance form a line to a point but from a point to another point
-            distance = math.sqrt((x3-x1)*(x3-x1)+(y3-y1)*(y3-y1))
+            distance = math.sqrt((x3 - x1) * (x3 - x1) + (y3 - y1) * (y3 - y1))
             return distance
         # Punkt auf die Linie projizieren
         u = ((x3 - x1) * px + (y3 - y1) * py) / norm
@@ -297,40 +302,40 @@ class Robot:
             # calculate the rectangle based on viewing direction
             if self.alpha == 0:  # right
                 hit_box_height = self.radius
-                hit_box_width = min(abs(len_x - self.posx), max_range)-self.radius
-                rect_left_x = self.posx+self.radius
-                rect_top_y = self.posy-0.5*self.radius
-                hit_box2_height = 2*self.radius
+                hit_box_width = min(abs(len_x - self.posx), max_range) - self.radius
+                rect_left_x = self.posx + self.radius
+                rect_top_y = self.posy - 0.5 * self.radius
+                hit_box2_height = 2 * self.radius
                 hit_box2_width = self.radius
-                rect_left2_x = self.posx+self.radius+min(abs(len_x - self.posx), max_range)-self.radius
-                rect_top2_y = self.posy-1.5*self.radius
+                rect_left2_x = self.posx + self.radius + min(abs(len_x - self.posx), max_range) - self.radius
+                rect_top2_y = self.posy - 1.5 * self.radius
             elif self.alpha == 90:  # down
-                hit_box_height = min(abs(len_y - self.posy), max_range)-self.radius
+                hit_box_height = min(abs(len_y - self.posy), max_range) - self.radius
                 hit_box_width = self.radius
-                rect_left_x = self.posx-0.5*self.radius
-                rect_top_y = self.posy+self.radius
+                rect_left_x = self.posx - 0.5 * self.radius
+                rect_top_y = self.posy + self.radius
                 hit_box2_height = self.radius
-                hit_box2_width = 3*self.radius
-                rect_left2_x = self.posx-1.5*self.radius
-                rect_top2_y = self.posy+self.radius+hit_box_height
+                hit_box2_width = 3 * self.radius
+                rect_left2_x = self.posx - 1.5 * self.radius
+                rect_top2_y = self.posy + self.radius + hit_box_height
             elif self.alpha == 180:  # left
                 hit_box_height = self.radius
-                hit_box_width = min(abs(len_x - self.posx), max_range)-self.radius
-                rect_left_x = self.posx-self.radius-hit_box_width
-                rect_top_y = self.posy-0.5*self.radius
-                hit_box2_height = 2*self.radius
+                hit_box_width = min(abs(len_x - self.posx), max_range) - self.radius
+                rect_left_x = self.posx - self.radius - hit_box_width
+                rect_top_y = self.posy - 0.5 * self.radius
+                hit_box2_height = 2 * self.radius
                 hit_box2_width = self.radius
-                rect_left2_x = self.posx-self.radius-hit_box_width-self.radius
-                rect_top2_y = self.posy-1.5*self.radius
+                rect_left2_x = self.posx - self.radius - hit_box_width - self.radius
+                rect_top2_y = self.posy - 1.5 * self.radius
             elif self.alpha == 270:  # up
-                hit_box_height = min(abs(len_y - self.posy), max_range)-self.radius
+                hit_box_height = min(abs(len_y - self.posy), max_range) - self.radius
                 hit_box_width = self.radius
-                rect_left_x = self.posx-0.5*self.radius
-                rect_top_y = self.posy-self.radius-hit_box_height
+                rect_left_x = self.posx - 0.5 * self.radius
+                rect_top_y = self.posy - self.radius - hit_box_height
                 hit_box2_height = self.radius
-                hit_box2_width = 3*self.radius
-                rect_left2_x = self.posx-1.5*self.radius
-                rect_top2_y = self.posy-self.radius-hit_box_height-self.radius
+                hit_box2_width = 3 * self.radius
+                rect_left2_x = self.posx - 1.5 * self.radius
+                rect_top2_y = self.posy - self.radius - hit_box_height - self.radius
             # now we have the rectangle, so we draw it and calculate the hit_reg
             hit_box = pygame.Rect(rect_left_x, rect_top_y, hit_box_width, hit_box_height)
             pygame.draw.rect(screen, "red", hit_box, width=2)
@@ -416,25 +421,25 @@ class Robot:
             max_range = self.radius * 10  # this is the maximum range of the laser
             # calculate the rectangle based on viewing direction
             if self.alpha == 0:  # right
-                hit_box_height = 2*self.radius
+                hit_box_height = 2 * self.radius
                 hit_box_width = min(abs(len_x - self.posx), max_range)
-                rect_left_x = self.posx+self.radius
-                rect_top_y = self.posy-self.radius
+                rect_left_x = self.posx + self.radius
+                rect_top_y = self.posy - self.radius
             elif self.alpha == 90:  # down
                 hit_box_height = min(abs(len_y - self.posy), max_range)
-                hit_box_width = 2*self.radius
-                rect_left_x = self.posx-self.radius
-                rect_top_y = self.posy+self.radius
+                hit_box_width = 2 * self.radius
+                rect_left_x = self.posx - self.radius
+                rect_top_y = self.posy + self.radius
             elif self.alpha == 180:  # left
-                hit_box_height = 2*self.radius
+                hit_box_height = 2 * self.radius
                 hit_box_width = min(abs(len_x - self.posx), max_range)
-                rect_left_x = self.posx-self.radius-hit_box_width
-                rect_top_y = self.posy-self.radius
+                rect_left_x = self.posx - self.radius - hit_box_width
+                rect_top_y = self.posy - self.radius
             elif self.alpha == 270:  # up
                 hit_box_height = min(abs(len_y - self.posy), max_range)
-                hit_box_width = 2*self.radius
-                rect_left_x = self.posx-self.radius
-                rect_top_y = self.posy-self.radius-hit_box_height
+                hit_box_width = 2 * self.radius
+                rect_left_x = self.posx - self.radius
+                rect_top_y = self.posy - self.radius - hit_box_height
             # now we have the rectangle, so we draw it and calculate the hit_reg
             hit_box = pygame.Rect(rect_left_x, rect_top_y, hit_box_width, hit_box_height)
             pygame.draw.rect(screen, "red", hit_box, width=2)
@@ -683,27 +688,16 @@ class Robot:
     def paint_robot(self, pygame, screen):
         # Bild des Roboters zeichnen
         image_rect = self.first_robot.get_rect(center=(self.posx, self.posy))
-        pn = self.player_number
-        if pn == 0:
+        if self.robot_type == 1:
             if not self.direction_left:
                 screen.blit(self.first_robot, image_rect)
             elif self.direction_left:
                 screen.blit(self.first_robot_flipped, image_rect)
-        elif pn == 1:
+        elif self.robot_type == 2:
             if not self.direction_left:
                 screen.blit(self.second_robot, image_rect)
             elif self.direction_left:
                 screen.blit(self.second_robot_flipped, image_rect)
-        elif pn == 2:
-            if not self.direction_left:
-                screen.blit(self.first_robot, image_rect)
-            elif self.direction_left:
-                screen.blit(self.first_robot_flipped, image_rect)
-        elif pn == 3:
-            if not self.direction_left:
-                screen.blit(self.first_robot, image_rect)
-            elif self.direction_left:
-                screen.blit(self.first_robot_flipped, image_rect)
         self.draw_health_bar(screen, self.health, self.health_max, self.player_number, self.color)
         self.draw_recoil_text(screen, self.recoil_percent, self.player_number, self.color)
         # projectiles
