@@ -229,7 +229,7 @@ def handle_start_game_menu_events():
         arena.tile_size / 50.0,
         arena.tile_size / 50.0,
         arena.tile_size / 10.0,
-        100,
+        200,
         "blue",
         0,
         )
@@ -241,7 +241,7 @@ def handle_start_game_menu_events():
         arena.tile_size / 50.0,
         arena.tile_size / 50.0,
         arena.tile_size / 10.0,
-        100,
+        200,
         "red",
         1,
         )
@@ -253,7 +253,7 @@ def handle_start_game_menu_events():
         arena.tile_size / 50.0,
         arena.tile_size / 50.0,
         arena.tile_size / 10.0,
-        100,
+        200,
         "green",
         2,
         )
@@ -265,7 +265,7 @@ def handle_start_game_menu_events():
         arena.tile_size / 50.0,
         arena.tile_size / 50.0,
         arena.tile_size / 10.0,
-        100,
+        200,
         "yellow",
         3,
         )
