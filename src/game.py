@@ -462,11 +462,12 @@ def robot_attacks(robot):
     elif robot.ranged_cd != 0 and robot.ranged_laser:
         if robot.ranged_cd == 240:  # long cooldown
             robot.ranged_cd = 0
-        elif robot.ranged_cd <= 30:  # laser stays until ranged_cd == 30
+        elif robot.ranged_cd <= 60:  # laser stays until ranged_cd == 30
             robot.ranged_attack(screen, robots, arena, "laser")
             robot.ranged_cd += 1
         else:
             robot.ranged_cd += 1
+            robot.no_move = False
     robot.handle_explosions(screen, arena, robots)
 
 
@@ -589,6 +590,7 @@ def keydown_handling(event):
         elif key == pygame.K_u and player_robot.ranged_cd == 0 and (
                 player_robot.melee_cd > 20 or player_robot.melee_cd == 0):
             player_robot.ranged_attack(screen, robots, arena, "laser")
+            player_robot.no_move = True  # charge attack no moving allowed
             player_robot.ranged_cd += 1
         #  elif key == pygame.K_f:
         #    player_robot.take_damage_debug(10)
