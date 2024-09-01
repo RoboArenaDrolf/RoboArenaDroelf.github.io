@@ -409,7 +409,7 @@ class Robot:
                 self.ranged_bounces = False
                 self.ranged_laser = False
                 t = type
-                d = 1
+                d = 4
                 c = "black"
                 b = 0
             elif type == "bouncy":
@@ -418,7 +418,7 @@ class Robot:
                 self.ranged_bounces = True
                 self.ranged_laser = False
                 t = type
-                d = 1
+                d = 3
                 c = "blue"
                 b = 2
             elif type == "explosive":
