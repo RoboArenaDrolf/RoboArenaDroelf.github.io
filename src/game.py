@@ -575,9 +575,7 @@ def keydown_handling(event):
     if playing and not game_paused:
         player_robot = robots[0]
         key = event.key
-        if key == pygame.K_ESCAPE:
-            game_paused = True
-        elif key == pygame.K_LSHIFT and player_robot.melee_cd == 0:
+        if key == pygame.K_LSHIFT and player_robot.melee_cd == 0:
             player_robot.melee_attack(pygame, screen, robots, arena, player_robot.light_melee)
             player_robot.melee_cd += 1
         elif key == pygame.K_LCTRL and player_robot.ranged_cd == 0:
@@ -773,7 +771,7 @@ while run:
             mouse_visible = True
             mouse_visibility_counter = 0
         else:
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+            if playing and event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 game_paused = True
             if use_controller:
                 if event.type == pygame.JOYBUTTONDOWN:
