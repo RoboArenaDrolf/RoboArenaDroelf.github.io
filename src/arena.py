@@ -40,7 +40,7 @@ class Arena:
                 )
 
     blocks_base_path = "../Tiles/"
-    maps_base_path = "../Maps/"
+    maps_base_path = "./../Maps/"
 
     def __init__(self, filename, pygame):
         self.load_map_from_json(filename, pygame)
