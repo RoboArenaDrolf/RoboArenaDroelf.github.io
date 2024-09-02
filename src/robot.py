@@ -524,28 +524,25 @@ class Robot:
                 hit_box_width = min(abs(len_x - self.posx), max_range)
                 rect_left_x = self.posx+self.radius
                 rect_top_y = self.posy-self.radius
-                laser_rotated = self.laser
             elif self.alpha == 90:  # down
                 hit_box_height = min(abs(len_y - self.posy), max_range)
                 hit_box_width = 2*self.radius
                 rect_left_x = self.posx-self.radius
                 rect_top_y = self.posy+self.radius
-                laser_rotated = pygame.transform.rotate(self.laser, -90)
             elif self.alpha == 180:  # left
                 hit_box_height = 2*self.radius
                 hit_box_width = min(abs(len_x - self.posx), max_range)
                 rect_left_x = self.posx-self.radius-hit_box_width
                 rect_top_y = self.posy-self.radius
-                laser_rotated = pygame.transform.rotate(self.laser, -180)
             elif self.alpha == 270:  # up
                 hit_box_height = min(abs(len_y - self.posy), max_range)
                 hit_box_width = 2*self.radius
                 rect_left_x = self.posx-self.radius
                 rect_top_y = self.posy - self.radius - hit_box_height
-                laser_rotated = pygame.transform.rotate(self.laser, -270)
 
             laser_len = int(max(hit_box_width, hit_box_height))
             if laser_len * 1.3 < self.laser_len or laser_len * 0.7 > self.laser_len or self.old_alpha != self.alpha:
+                laser_rotated = pygame.transform.rotate(self.laser, -self.alpha)
                 self.old_alpha = self.alpha
                 self.laser_len = laser_len
                 self.scaled_laser = pygame.transform.scale(laser_rotated, (int(hit_box_width), int(hit_box_height)))
