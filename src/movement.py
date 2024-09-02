@@ -10,10 +10,10 @@ class Movement:
         dt_scaled = dt / 15.0
 
         # Bewegung in x-Richtung
-        robot.posx += x * dt_scaled
+        robot.posx += x * 0.6
 
         # Vertikale Bewegung
-        robot.vertical_speed += self.gravity * dt_scaled
+        robot.vertical_speed += self.gravity * 0.6
 
         # Bewegung in y-Richtung
         robot.posy += robot.vertical_speed
@@ -78,7 +78,8 @@ class Movement:
         if robot.jump:
             robot.vertical_speed = (
                 -arena.tile_size / 3.5
-            ) * dt_scaled  # Vertikale Geschwindigkeit für den ersten Sprung setzen
+            ) * 0.6  # Vertikale Geschwindigkeit für den ersten Sprung setzen
+            #  print(robot.vertical_speed, dt_scaled, dt, arena.tile_size, self.gravity)  # dt scaled changes
             robot.jump_counter += 1
             robot.jump = False
             robot.tile_below = 0  # if we jump we no longer stand on a tile, might not be needed

@@ -38,7 +38,7 @@ white = (255, 255, 255)
 map_filename = "secondMap.json"
 maps = []
 arena = Arena(map_filename, pygame)
-movement = Movement(arena.tile_size / 120.0)
+movement = Movement(7/60)  # static value for starting resolution of 720*720
 
 robot_radius = arena.tile_size * 0.5
 
@@ -742,7 +742,10 @@ def item_selections():
 ##################################
 while run:
     pygame.time.delay(0)
-    dt = clock.tick(framerate)
+    dt = clock.tick(framerate)  # dt = milliseconds since last call
+    #  print(dt)
+    #  clock.tick(framerate) with framerate = 120 makes sure that we don't run faster than 120 frames per second
+    #  we can still experience slowdowns
 
     if mouse_visible:
         mouse_visibility_counter += 1
