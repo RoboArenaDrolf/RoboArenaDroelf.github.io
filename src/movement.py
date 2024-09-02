@@ -6,8 +6,7 @@ class Movement:
     def __init__(self, gravity):
         self.gravity = gravity
 
-    def move_robot(self, robot, x, arena, dt):
-        dt_scaled = dt / 15.0
+    def move_robot(self, robot, x, arena):
 
         # Bewegung in x-Richtung
         robot.posx += x * 0.6
@@ -79,7 +78,6 @@ class Movement:
             robot.vertical_speed = (
                 -arena.tile_size / 3.5
             ) * 0.6  # Vertikale Geschwindigkeit für den ersten Sprung setzen
-            #  print(robot.vertical_speed, dt_scaled, dt, arena.tile_size, self.gravity)  # dt scaled changes
             robot.jump_counter += 1
             robot.jump = False
             robot.tile_below = 0  # if we jump we no longer stand on a tile, might not be needed

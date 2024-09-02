@@ -403,7 +403,7 @@ def robot_movement(robot):
         # we can at best move half as fast as on a normal tile
     else:
         robot.change_velocity_cap(robot.vel + robot.accel)
-    movement.move_robot(robot, robot.vel, arena, dt)
+    movement.move_robot(robot, robot.vel, arena)
 
 
 def robot_attacks(robot):
