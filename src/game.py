@@ -490,20 +490,26 @@ def check_robot_death(robot):
 
 def move_robot_keys(robot, keys):
     if keys[pygame.K_a] and (not robot.no_move):
+        robot.change_alpha(180)
+        robot.direction_left = True
         if robot.tile_below == 2:  # if we stand on ice
             robot.change_acceleration(robot.accel - (arena.tile_size / 1000.0) / 2)
             # we accelerate half as fast as normal
         else:
             robot.change_acceleration(robot.accel - arena.tile_size / 1000.0)
     elif keys[pygame.K_d] and (not robot.no_move):
+        robot.change_alpha(0)
+        robot.direction_left = False
         if robot.tile_below == 2:  # if we stand on ice
             robot.change_acceleration(robot.accel + (arena.tile_size / 1000.0) / 2)
             # we accelerate half as fast as normal
         else:
             robot.change_acceleration(robot.accel + arena.tile_size / 1000.0)
     elif keys[pygame.K_s] and (not robot.no_move):
+        robot.change_alpha(90)
         return False
     elif keys[pygame.K_w] and (not robot.no_move):
+        robot.change_alpha(270)
         return False
     else:
         return False
@@ -527,20 +533,26 @@ def move_robot_controller(robot, joystick):
     value_x = joystick.get_axis(0)
     value_y = joystick.get_axis(1)
     if value_x < -0.2 and (not robot.no_move):
+        robot.change_alpha(180)
+        robot.direction_left = True
         if robot.tile_below == 2:  # if we stand on ice
             robot.change_acceleration(robot.accel - (arena.tile_size / 1000.0) / 2)
             # we accelerate half as fast as normal
         else:
             robot.change_acceleration(robot.accel - arena.tile_size / 1000.0)
     elif value_x > 0.2 and (not robot.no_move):
+        robot.change_alpha(0)
+        robot.direction_left = False
         if robot.tile_below == 2:  # if we stand on ice
             robot.change_acceleration(robot.accel + (arena.tile_size / 1000.0) / 2)
             # we accelerate half as fast as normal
         else:
             robot.change_acceleration(robot.accel + arena.tile_size / 1000.0)
     elif value_y > 0.2 and (not robot.no_move):
+        robot.change_alpha(90)
         return False
     elif value_y < -0.2 and (not robot.no_move):
+        robot.change_alpha(270)
         return False
     else:
         return False
