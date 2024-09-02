@@ -521,8 +521,6 @@ def move_robot_keys(robot, keys):
             robot.change_acceleration(robot.accel - arena.tile_size / 1000.0)
         robot.change_alpha(180)
         robot.direction_left = True
-        robot.direction_up = False
-        robot.direction_down = False
     elif keys[pygame.K_RIGHT] and (not robot.no_move):
         if robot.tile_below == 2:  # if we stand on ice
             robot.change_acceleration(robot.accel + (arena.tile_size / 1000.0) / 2)
@@ -531,22 +529,11 @@ def move_robot_keys(robot, keys):
             robot.change_acceleration(robot.accel + arena.tile_size / 1000.0)
         robot.change_alpha(0)
         robot.direction_left = False
-        robot.direction_right = True 
-        robot.direction_up = False
-        robot.direction_down = False
     elif keys[pygame.K_DOWN] and (not robot.no_move):
         robot.change_alpha(90)
-        robot.direction_down = True
-        robot.direction_up = False
-        robot.direction_left = False
-        robot.direction_right = False
         return False
     elif keys[pygame.K_UP] and (not robot.no_move):
         robot.change_alpha(270)
-        robot.direction_up = True
-        robot.direction_down = False
-        robot.direction_left = False
-        robot.direction_right = False
         return False
     else:
         return False
