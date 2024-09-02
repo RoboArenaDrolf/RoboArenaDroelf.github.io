@@ -27,7 +27,7 @@ class Movement:
                         direction = Projectile.Direction.DOWN
                     else:
                         direction = Projectile.Direction.UP
-                    robot.recoil(arena, robot, direction)
+                    robot.recoil(arena, robot, direction, 0.05)
             if robot.vertical_speed > 0:  # Kollision von oben
                 # we stand on some tile -> find out which one
                 if self.check_tile_type_y(robot, arena) == 1:  # lava
