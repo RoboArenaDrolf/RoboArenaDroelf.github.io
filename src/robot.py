@@ -211,27 +211,45 @@ class Robot:
             self.light_attack = False
             self.flame_attack = False
             self.stab_attack = False
+
+            hit_box_height = 2 * self.radius
+            hit_box_width = 2 * self.radius
+
             if 30 <= self.melee_cd <= 60:
-                hit_box_height = 2*self.radius
-                hit_box_width = 2*self.radius
                 if self.alpha == 0:  # right
                     rect_left_x = self.posx + 0.5 * hit_box_width
                     rect_top_y = self.posy - 0.5 * hit_box_height
+                    heavy_sword_rotated = self.scaled_heavy_sword
                 elif self.alpha == 90:  # down
                     rect_left_x = self.posx - 0.5 * hit_box_width
                     rect_top_y = self.posy + 0.5 * hit_box_height
+                    heavy_sword_rotated = pygame.transform.rotate(self.scaled_heavy_sword, -90)
                 elif self.alpha == 180:  # left
                     rect_left_x = self.posx - 1.5 * hit_box_height
                     rect_top_y = self.posy - 0.5 * hit_box_height
+                    heavy_sword_rotated = pygame.transform.rotate(self.scaled_heavy_sword, -180)
                 elif self.alpha == 270:  # up
                     rect_left_x = self.posx - 0.5 * hit_box_height
                     rect_top_y = self.posy - 1.5 * hit_box_height
+                    heavy_sword_rotated = pygame.transform.rotate(self.scaled_heavy_sword, -270)
                 else:  # failsafe
                     print("how did you do this? alpha=", self.alpha)
+
+            if self.scaled_heavy_sword is None:
+                # Berechne die Länge der Linie
+                line_length = hit_box_width
+
+                # Skalieren der Kreissäge auf die Länge der Linie
+                original_width = self.heavy_sword.get_width()
+                original_height = self.heavy_sword.get_height()
+                scale_factor = line_length / original_width
+                self.scaled_heavy_sword = pygame.transform.scale(self.heavy_sword,
+                                                                 (int(line_length), int(original_height * scale_factor)))
+
+            if 30 <= self.melee_cd <= 60:
                 hit_box = pygame.Rect(rect_left_x, rect_top_y, hit_box_width, hit_box_height)
-                pygame.draw.rect(screen, "red", hit_box, width=2)
                 self.hit_reg_rect(robots, arena, hit_box, 10, self.player_number)
-                screen.blit(self.heavy_sword, hit_box)
+                screen.blit(heavy_sword_rotated, hit_box)
         elif type == "light":
             self.heavy_attack = False
             self.light_attack = True
