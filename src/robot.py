@@ -40,6 +40,8 @@ class Robot:
     stab_attack: bool
     no_move = False  # false = moving allowed true = moving not allowed, start with allowed movement
     explosions = []
+    laser_len: int
+    old_alpha = 0
 
     tile_below: int
     # Normal/No effect = 0
@@ -93,7 +95,7 @@ class Robot:
         self.heavy_sword_sound = pygame.mixer.Sound("../Sounds/heavy_sword.mp3")
         self.heavy_sword_sound.set_volume(0.5)
         self.laser = pygame.image.load('../Animation/laser.png')
-        self.scaled_laser = None # pygame.transform.scale(laser,(170,170))
+        self.scaled_laser = self.laser
 
 
     def change_acceleration(self, a):
@@ -440,6 +442,7 @@ class Robot:
 
     def ranged_attack(self, screen, robots, arena, type):
         if self.ranged_cd == 0 or self.ranged_cd == 10:
+            self.laser_len = 0
             r = self.radius / 4
             if self.alpha == 0:  # right
                 xs = self.vel_max
@@ -521,25 +524,36 @@ class Robot:
                 hit_box_width = min(abs(len_x - self.posx), max_range)
                 rect_left_x = self.posx+self.radius
                 rect_top_y = self.posy-self.radius
+                laser_rotated = self.laser
             elif self.alpha == 90:  # down
                 hit_box_height = min(abs(len_y - self.posy), max_range)
                 hit_box_width = 2*self.radius
                 rect_left_x = self.posx-self.radius
                 rect_top_y = self.posy+self.radius
+                laser_rotated = pygame.transform.rotate(self.laser, -90)
             elif self.alpha == 180:  # left
                 hit_box_height = 2*self.radius
                 hit_box_width = min(abs(len_x - self.posx), max_range)
                 rect_left_x = self.posx-self.radius-hit_box_width
                 rect_top_y = self.posy-self.radius
+                laser_rotated = pygame.transform.rotate(self.laser, -180)
             elif self.alpha == 270:  # up
                 hit_box_height = min(abs(len_y - self.posy), max_range)
                 hit_box_width = 2*self.radius
                 rect_left_x = self.posx-self.radius
-                rect_top_y = self.posy-self.radius-hit_box_height
+                rect_top_y = self.posy - self.radius - hit_box_height
+                laser_rotated = pygame.transform.rotate(self.laser, -270)
+
+            laser_len = int(max(hit_box_width, hit_box_height))
+            if laser_len * 1.3 < self.laser_len or laser_len * 0.7 > self.laser_len or self.old_alpha != self.alpha:
+                self.old_alpha = self.alpha
+                self.laser_len = laser_len
+                self.scaled_laser = pygame.transform.scale(laser_rotated, (int(hit_box_width), int(hit_box_height)))
+
             # now we have the rectangle, so we draw it and calculate the hit_reg
             hit_box = pygame.Rect(rect_left_x, rect_top_y, hit_box_width, hit_box_height)
             pygame.draw.rect(screen, "red", hit_box, width=2)
-            screen.blit(self.laser, hit_box)
+            screen.blit(self.scaled_laser, hit_box)
             self.hit_reg_rect(robots, arena, hit_box, 10, self.player_number)
 
     def find_closest_block(self, screen, arena):
