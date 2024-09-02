@@ -679,10 +679,25 @@ class Robot:
                         or (self.distance_from_segment(br[0], br[1], tr[0], tr[1], robots[i].posx, robots[i].posy)
                             <= robots[i].radius)
                         or (self.distance_from_segment(br[0], br[1], bl[0], bl[1], robots[i].posx, robots[i].posy)
-                            <= robots[i].radius)):  # or distance from robot to the sides of the rect is < robot radius
+                            <= robots[i].radius)):
+                    # or distance from robot to the sides of the rect is < robot radius
                     robots[i].take_damage_debug(dmg, fire)
+                    if (self.distance_from_segment(tl[0], tl[1], tr[0], tr[1], robots[i].posx, robots[i].posy)
+                            <= robots[i].radius):  # top side
+                        direction = Projectile.Direction.UP
+                    elif (self.distance_from_segment(tl[0], tl[1], bl[0], bl[1], robots[i].posx, robots[i].posy)
+                            <= robots[i].radius):  # left side
+                        direction = Projectile.Direction.LEFT
+                    elif (self.distance_from_segment(br[0], br[1], tr[0], tr[1], robots[i].posx, robots[i].posy)
+                          <= robots[i].radius):  # right side
+                        direction = Projectile.Direction.RIGHT
+                    elif (self.distance_from_segment(br[0], br[1], bl[0], bl[1], robots[i].posx, robots[i].posy)
+                          <= robots[i].radius):    # bottom side
+                        direction = Projectile.Direction.DOWN
+                    else:
+                        direction = Projectile.Direction.UP
                     if robots[i].hit_cooldown <= 0:
-                        self.recoil(arena, robots[i], Projectile.Direction.UP, recoil)
+                        self.recoil(arena, robots[i], direction, recoil)
 
     def decrease_hit_cooldown(self):
         if self.hit_cooldown > 0:
