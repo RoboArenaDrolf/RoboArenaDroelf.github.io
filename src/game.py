@@ -38,7 +38,7 @@ white = (255, 255, 255)
 map_filename = "secondMap.json"
 maps = []
 arena = Arena(map_filename, pygame)
-movement = Movement(7/60)  # static value for starting resolution of 720*720
+movement = Movement(arena.tile_size / 120.0)
 
 robot_radius = arena.tile_size * 0.5
 
@@ -326,12 +326,13 @@ def handle_pause_screen_events():
 
 
 def handle_map_screen_events():
-    global map, start_game, arena, map_filename
+    global map, start_game, arena, map_filename, movement
 
     for i, level_item in enumerate(level_items):
         if level_item.pressed:
             map_filename = maps[i]
             arena = Arena(map_filename, pygame)
+            movement = Movement(arena.tile_size / 120.0)
             recalculate_robot_values()
             map = False
             start_game = True
