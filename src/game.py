@@ -395,10 +395,12 @@ def robot_movement(robot):
         if robot.player_number < len(joysticks):
             joystick = joysticks[robot.player_number]
             moved = move_robot_controller(robot, joystick)
+            turn_robot_controller(robot, joystick)
     else:
         if robot.player_number == 0:
             keys = pygame.key.get_pressed()
             moved = move_robot_keys(robot, keys)
+            turn_robot_keys(robot, keys)
     if not moved:
         if robot.vel < 0:
             if robot.tile_below == 2:
@@ -513,26 +515,26 @@ def check_robot_death(robot):
 
 
 def move_robot_keys(robot, keys):
-    if keys[pygame.K_LEFT] and (not robot.no_move):
+    if keys[pygame.K_a] and (not robot.no_move):
+        robot.change_alpha(180)
+        robot.direction_left = True
         if robot.tile_below == 2:  # if we stand on ice
             robot.change_acceleration(robot.accel - (arena.tile_size / 1000.0) / 2)
             # we accelerate half as fast as normal
         else:
             robot.change_acceleration(robot.accel - arena.tile_size / 1000.0)
-        robot.change_alpha(180)
-        robot.direction_left = True
-    elif keys[pygame.K_RIGHT] and (not robot.no_move):
+    elif keys[pygame.K_d] and (not robot.no_move):
+        robot.change_alpha(0)
+        robot.direction_left = False
         if robot.tile_below == 2:  # if we stand on ice
             robot.change_acceleration(robot.accel + (arena.tile_size / 1000.0) / 2)
             # we accelerate half as fast as normal
         else:
             robot.change_acceleration(robot.accel + arena.tile_size / 1000.0)
-        robot.change_alpha(0)
-        robot.direction_left = False
-    elif keys[pygame.K_DOWN] and (not robot.no_move):
+    elif keys[pygame.K_s] and (not robot.no_move):
         robot.change_alpha(90)
         return False
-    elif keys[pygame.K_UP] and (not robot.no_move):
+    elif keys[pygame.K_w] and (not robot.no_move):
         robot.change_alpha(270)
         return False
     else:
@@ -540,25 +542,38 @@ def move_robot_keys(robot, keys):
     return True
 
 
+def turn_robot_keys(robot, keys):
+    if keys[pygame.K_LEFT]:
+        robot.change_alpha(180)
+        robot.direction_left = True
+    elif keys[pygame.K_RIGHT]:
+        robot.change_alpha(0)
+        robot.direction_left = False
+    elif keys[pygame.K_DOWN]:
+        robot.change_alpha(90)
+    elif keys[pygame.K_UP]:
+        robot.change_alpha(270)
+
+
 def move_robot_controller(robot, joystick):
     value_x = joystick.get_axis(0)
     value_y = joystick.get_axis(1)
     if value_x < -0.2 and (not robot.no_move):
+        robot.change_alpha(180)
+        robot.direction_left = True
         if robot.tile_below == 2:  # if we stand on ice
             robot.change_acceleration(robot.accel - (arena.tile_size / 1000.0) / 2)
             # we accelerate half as fast as normal
         else:
             robot.change_acceleration(robot.accel - arena.tile_size / 1000.0)
-        robot.change_alpha(180)
-        robot.direction_left = True
     elif value_x > 0.2 and (not robot.no_move):
+        robot.change_alpha(0)
+        robot.direction_left = False
         if robot.tile_below == 2:  # if we stand on ice
             robot.change_acceleration(robot.accel + (arena.tile_size / 1000.0) / 2)
             # we accelerate half as fast as normal
         else:
             robot.change_acceleration(robot.accel + arena.tile_size / 1000.0)
-        robot.change_alpha(0)
-        robot.direction_left = False
     elif value_y > 0.2 and (not robot.no_move):
         robot.change_alpha(90)
         return False
@@ -568,6 +583,21 @@ def move_robot_controller(robot, joystick):
     else:
         return False
     return True
+
+
+def turn_robot_controller(robot, joystick):
+    value_x = joystick.get_axis(2)
+    value_y = joystick.get_axis(3)
+    if value_x < -0.2:
+        robot.change_alpha(180)
+        robot.direction_left = True
+    elif value_x > 0.2:
+        robot.change_alpha(0)
+        robot.direction_left = False
+    elif value_y > 0.2:
+        robot.change_alpha(90)
+    elif value_y < -0.2:
+        robot.change_alpha(270)
 
 
 def keydown_handling(event):
