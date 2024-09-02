@@ -139,7 +139,7 @@ class Robot:
         if self.fire_timer > 0:
             if self.fire_timer % 5 == 0:  # every 3 frames
                 self.take_damage_force(1)  # take 1 damage from fire
-                print(self.player_number, "you are burning", self.fire_timer)
+                #  print(self.player_number, "you are burning", self.fire_timer)
             self.fire_timer -= 1  # reduce fire timer by 1
 
     def apply_fire(self, t):
