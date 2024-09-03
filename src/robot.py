@@ -753,7 +753,6 @@ class Robot:
                     recty = robots[i].projectiles[n].y
                     rectr = robots[i].projectiles[n].radius
                     explosive_rect = pygame.Rect(rectx - 4 * rectr, recty - 4 * rectr, 8 * rectr, 8 * rectr)
-                    self.scaled_explosion = pygame.transform.scale(self.explosion, (int(8 * rectr), int(8 * rectr)))
                     self.explosions.append(explosive_rect)  # add the explosion
                     self.explosions.append(5)  # add the duration
                     self.missle_sound.stop()
@@ -852,6 +851,10 @@ class Robot:
         for i in range(0, len(self.explosions) - 1):
             if self.explosions[i + 1] > 0:
                 # pygame.draw.rect(screen, "red", self.explosions[i], 1)
+                if self.scaled_explosion is None:
+                    self.scaled_explosion = pygame.transform.scale(
+                        self.explosion, (int(self.explosions[i].width), int(self.explosions[i].height))
+                    )
                 screen.blit(self.scaled_explosion, self.explosions[i])
                 self.hit_reg_rect(robots, arena, self.explosions[i], 5, -1)  # explosive damage is 5 for now
                 self.explosions[i + 1] -= 1
