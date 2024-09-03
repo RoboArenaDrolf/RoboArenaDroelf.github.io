@@ -37,17 +37,18 @@ class Projectile:
         self.bounce_count = b
         self.type = t
 
-        missle = pygame.image.load('../Animation/missle.png')
-        scale_factor = self.radius * 3 / missle.get_width()
-        self.missle = pygame.transform.scale(missle,(int(self.radius * 3), int(missle.get_height() * scale_factor)))
+        if t != "tracer":
+            missle = pygame.image.load('../Animation/missle.png')
+            scale_factor = self.radius * 3 / missle.get_width()
+            self.missle = pygame.transform.scale(missle,(int(self.radius * 3), int(missle.get_height() * scale_factor)))
 
-        projectile = pygame.image.load('../Animation/projektil.png')
-        scale_factor = self.radius * 3 / projectile.get_width()
-        self.projectile = pygame.transform.scale(projectile,(int(self.radius * 3), int(projectile.get_height() * scale_factor)))
+            projectile = pygame.image.load('../Animation/projektil.png')
+            scale_factor = self.radius * 3 / projectile.get_width()
+            self.projectile = pygame.transform.scale(projectile,(int(self.radius * 3), int(projectile.get_height() * scale_factor)))
 
-        bounce_projectile = pygame.image.load('../Animation/bounce.png')
-        scale_factor = self.radius * 4 / bounce_projectile.get_width()
-        self.bounce_projectile = pygame.transform.scale(bounce_projectile, (int(self.radius * 4), int(bounce_projectile.get_height() * scale_factor)))
+            bounce_projectile = pygame.image.load('../Animation/bounce.png')
+            scale_factor = self.radius * 4 / bounce_projectile.get_width()
+            self.bounce_projectile = pygame.transform.scale(bounce_projectile, (int(self.radius * 4), int(bounce_projectile.get_height() * scale_factor)))
 
     def move_projectile(self):
         self.x = self.x + self.x_speed
