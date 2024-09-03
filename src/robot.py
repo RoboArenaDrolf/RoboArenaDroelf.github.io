@@ -89,11 +89,11 @@ class Robot:
         self.extra_flammen = None
         self.heavy_sword = pygame.image.load("../Animation/massive_sword.png")
         self.scaled_heavy_sword = None
+
         self.kreissäge_sound = pygame.mixer.Sound("../Sounds/säge.mp3")
         self.kreissäge_sound.set_volume(0.45)
         self.fight_sound = pygame.mixer.Sound("../Sounds/fight.mp3")
         self.fight_sound.set_volume(0.7)
-
         self.shooting_sound = pygame.mixer.Sound("../Sounds/shooting.mp3")
         self.laser_sound = pygame.mixer.Sound("../Sounds/laser.mp3")
         self.missle_sound = pygame.mixer.Sound("../Sounds/missle.mp3")
@@ -104,6 +104,12 @@ class Robot:
         self.scaled_laser = self.laser
         self.damage_sound = pygame.mixer.Sound("../Sounds/damage.mp3")
         self.damage_sound.set_volume(0.3)
+        self.heavy_sword_sound = pygame.mixer.Sound("../Sounds/heavy_sword.mp3")
+        self.heavy_sword_sound.set_volume(0.5)
+        self.laser_sound = pygame.mixer.Sound("../Sounds/laser.mp3")
+        self.laser_sound.set_volume(0.5)
+        self.fire_sound = pygame.mixer.Sound("../Sounds/fire.mp3")
+        self.fire_sound.set_volume(0.3)
 
     def change_acceleration(self, a):
         if abs(a) <= self.accel_max:
@@ -225,6 +231,9 @@ class Robot:
 
             hit_box_height = 2 * self.radius
             hit_box_width = 2 * self.radius
+
+            if 30 == self.melee_cd:
+                self.heavy_sword_sound.play()
 
             if 30 <= self.melee_cd <= 60:
                 hit_box_height = 2 * self.radius
@@ -398,6 +407,7 @@ class Robot:
             if self.melee_cd == 0:
                 self.flammen_len = 0
                 self.extra_flammen = None
+                self.fire_sound.play()
 
             (len_x, len_y) = self.find_closest_block(screen, arena)  # x,y cords of nearest collision in front
             max_range = self.radius * 4  # this is the maximum range of the flames
@@ -548,6 +558,8 @@ class Robot:
                 self.ranged_explodes = False
                 self.ranged_laser = True
                 self.ranged_bounces = False
+                if self.ranged_cd == 0:
+                    self.laser_sound.play()
             else:
                 print("invalid type default to normal")
                 self.ranged_explodes = False
