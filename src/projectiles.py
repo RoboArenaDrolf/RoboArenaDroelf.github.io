@@ -1,4 +1,5 @@
 from enum import Enum
+import pygame
 
 
 class Projectile:
@@ -38,6 +39,29 @@ class Projectile:
         self.type = t
         self.recoil = rec
 
+        if t != "tracer":
+            if t == "explosive":
+                missle = pygame.image.load("../Animation/missle.png")
+                scale_factor = self.radius * 3 / missle.get_width()
+                self.missle = pygame.transform.scale(
+                    missle, (int(self.radius * 3), int(missle.get_height() * scale_factor))
+                )
+            if t == "normal":
+                projectile = pygame.image.load("../Animation/projektil.png")
+                scale_factor = self.radius * 3 / projectile.get_width()
+                self.projectile = pygame.transform.scale(
+                    projectile, (int(self.radius * 3), int(projectile.get_height() * scale_factor))
+                )
+
+            if t == "bouncy":
+                bounce_projectile = pygame.image.load("../Animation/bounce.png")
+                scale_factor = self.radius * 4 / bounce_projectile.get_width()
+                self.bounce_projectile = pygame.transform.scale(
+                    bounce_projectile, (int(self.radius * 4), int(bounce_projectile.get_height() * scale_factor))
+                )
+                self.bounce_sound = pygame.mixer.Sound("../Sounds/bounce.mp3")
+                self.bounce_sound.set_volume(0.45)
+
     def move_projectile(self, dt_scaled):
         self.x = self.x + self.x_speed * dt_scaled
         self.y = self.y + self.y_speed * dt_scaled
@@ -46,11 +70,38 @@ class Projectile:
         self.bounce_count = self.bounce_count - 1
         self.x_speed = -self.x_speed
         self.y_speed = -self.y_speed
+        self.bounce_sound.play()
 
     def paint_projectile(self, pygame, screen):
-        # if self.type == "small":
-        pygame.draw.circle(screen, self.color, (self.x, self.y), self.radius)
-        # if self.type == "big":
+        if self.type == "normal":
+            self.paint_normal_projectile(screen)
+        elif self.type == "bouncy":
+            self.paint_bounce(screen)
+        elif self.type == "explosive":
+            self.paint_missle(pygame, screen)
+
+    def paint_normal_projectile(self, screen):
+        top_left_x = self.x - self.projectile.get_width() // 2
+        top_left_y = self.y - self.projectile.get_height() // 2
+        screen.blit(self.projectile, (top_left_x, top_left_y))
+
+    def paint_missle(self, pygame, screen):
+        if self.x_speed < 0 and self.y_speed == 0:
+            missle = pygame.transform.rotate(self.missle, 90)
+        elif self.x_speed == 0 and self.y_speed < 0:
+            missle = pygame.transform.rotate(self.missle, 0)
+        elif self.x_speed == 0 and self.y_speed > 0:
+            missle = pygame.transform.rotate(self.missle, 180)
+        elif self.x_speed > 0 and self.y_speed == 0:
+            missle = pygame.transform.rotate(self.missle, -90)
+        top_left_x = self.x - self.missle.get_width() // 2
+        top_left_y = self.y - self.missle.get_height() // 2
+        screen.blit(missle, (top_left_x, top_left_y))
+
+    def paint_bounce(self, screen):
+        top_left_x = self.x - self.bounce_projectile.get_width() // 2
+        top_left_y = self.y - self.bounce_projectile.get_height() // 2
+        screen.blit(self.bounce_projectile, (top_left_x, top_left_y))
 
     def check_collision_y(self, arena):
         # Überprüfen, ob der Roboter mit einem festen Tile kollidiert auf y-Achse
