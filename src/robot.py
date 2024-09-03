@@ -41,8 +41,8 @@ class Robot:
     no_move = False  # false = moving allowed true = moving not allowed, start with allowed movement
     explosions = []
     laser_len: int
+    flammen_len: int
     old_alpha = 0
-
     tile_below: int
     # Normal/No effect = 0
     # Lava = 1
@@ -75,8 +75,9 @@ class Robot:
         self.scaled_kreissäge = None
         self.schwert = pygame.image.load('../Animation/schwert.png')
         self.scaled_schwert = None
-        self.flammenwerfer = pygame.image.load('../Animation/flammenwerfer.png')
-        self.scaled_flammenwerfer = None
+        self.flammen = pygame.image.load('../Animation/flammen.png')
+        self.scaled_flammen = self.flammen
+        self.extra_flammen = None
         self.heavy_sword = pygame.image.load('../Animation/massive_sword.png')
         self.scaled_heavy_sword = None
         self.kreissäge_sound = pygame.mixer.Sound("../Sounds/säge.mp3")
@@ -383,6 +384,11 @@ class Robot:
             self.light_attack = False
             self.flame_attack = True
             self.stab_attack = False
+
+            if self.melee_cd == 0:
+                self.flammen_len = 0
+                self.extra_flammen = None
+
             (len_x, len_y) = self.find_closest_block(screen, arena)  # x,y cords of nearest collision in front
             max_range = self.radius * 4  # this is the maximum range of the flames
             # calculate the rectangle based on viewing direction
@@ -426,14 +432,49 @@ class Robot:
                 rect_left2_x = self.posx-1.5*self.radius
                 rect_top2_y = self.posy-self.radius-hit_box_height-self.radius
 
-            # now we have the rectangle, so we draw it and calculate the hit_reg
             hit_box = pygame.Rect(rect_left_x, rect_top_y, hit_box_width, hit_box_height)
+            hit_box2 = pygame.Rect(rect_left2_x, rect_top2_y, hit_box2_width, hit_box2_height)
+
+            flammen_len = int(max(hit_box_width, hit_box_height))
+            if self.old_alpha != self.alpha:
+                self.old_alpha = self.alpha
+                if hit_box_width > 0 and hit_box_height > 0:
+                    flammen_rotated = pygame.transform.rotate(self.flammen, -self.alpha)
+                    self.flammen_len = flammen_len
+                    self.scaled_flammen = pygame.transform.scale(flammen_rotated, (int(hit_box_width), int(hit_box_height)))
+                    screen.blit(self.scaled_flammen, hit_box)
+                if hit_box2_width > 0 and hit_box2_height > 0:
+                    if self.alpha == 0 or self.alpha == 180:
+                        extra_flammen_rotated = pygame.transform.rotate(self.flammen, 90)
+                    else:
+                        extra_flammen_rotated = self.flammen
+                    self.extra_flammen = pygame.transform.scale(extra_flammen_rotated,
+                                                                (int(hit_box2_width), int(hit_box2_height)))
+                    screen.blit(self.extra_flammen, hit_box2)
+            else:
+                if hit_box_width > 0 and hit_box_height > 0:
+                    if flammen_len * 1.3 < self.flammen_len or flammen_len * 0.7 > self.flammen_len:
+                        flammen_rotated = pygame.transform.rotate(self.flammen, -self.alpha)
+                        self.flammen_len = flammen_len
+                        self.scaled_flammen = pygame.transform.scale(flammen_rotated,
+                                                                     (int(hit_box_width), int(hit_box_height)))
+                    screen.blit(self.scaled_flammen, hit_box)
+                if hit_box2_width > 0 and hit_box2_height > 0:
+                    if self.extra_flammen is None:
+                        if self.alpha == 0 or self.alpha == 180:
+                            extra_flammen_rotated = pygame.transform.rotate(self.flammen, 90)
+                        else:
+                            extra_flammen_rotated = self.flammen
+                        self.extra_flammen = pygame.transform.scale(extra_flammen_rotated,
+                                                                    (int(hit_box2_width), int(hit_box2_height)))
+                    screen.blit(self.extra_flammen, hit_box2)
+
+
+            # now we have the rectangle, so we draw it and calculate the hit_reg
             pygame.draw.rect(screen, "red", hit_box, width=2)
             self.hit_reg_rect(robots, arena, hit_box, 4, self.player_number)
-            hit_box2 = pygame.Rect(rect_left2_x, rect_top2_y, hit_box2_width, hit_box2_height)
             pygame.draw.rect(screen, "red", hit_box2, width=2)
             self.hit_reg_rect(robots, arena, hit_box2, 2, self.player_number)
-            screen.blit(self.flammenwerfer,(rect_left_x - 7 ,rect_top_y - 13))
             #flammenwerfer_sound.play()
 
     def ranged_attack(self, screen, robots, arena, type):
@@ -537,11 +578,12 @@ class Robot:
                 rect_top_y = self.posy - self.radius - hit_box_height
 
             laser_len = int(max(hit_box_width, hit_box_height))
-            if laser_len * 1.3 < self.laser_len or laser_len * 0.7 > self.laser_len or self.old_alpha != self.alpha:
-                laser_rotated = pygame.transform.rotate(self.laser, -self.alpha)
-                self.old_alpha = self.alpha
-                self.laser_len = laser_len
-                self.scaled_laser = pygame.transform.scale(laser_rotated, (int(hit_box_width), int(hit_box_height)))
+            if hit_box_width > 0 and hit_box_height > 0:
+                if laser_len * 1.3 < self.laser_len or laser_len * 0.7 > self.laser_len or self.old_alpha != self.alpha:
+                    laser_rotated = pygame.transform.rotate(self.laser, -self.alpha)
+                    self.old_alpha = self.alpha
+                    self.laser_len = laser_len
+                    self.scaled_laser = pygame.transform.scale(laser_rotated, (int(hit_box_width), int(hit_box_height)))
 
             # now we have the rectangle, so we draw it and calculate the hit_reg
             hit_box = pygame.Rect(rect_left_x, rect_top_y, hit_box_width, hit_box_height)
