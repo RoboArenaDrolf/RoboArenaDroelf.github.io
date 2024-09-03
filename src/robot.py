@@ -281,6 +281,16 @@ class Robot:
             if 30 <= self.melee_cd <= 60:
                 hit_box_height = 2 * self.radius
                 hit_box_width = 2 * self.radius
+                if self.scaled_heavy_sword is None:
+                    # Berechne die Länge der Linie
+                    line_length = hit_box_width
+                    # Skalieren der Kreissäge auf die Länge der Linie
+                    original_width = self.heavy_sword.get_width()
+                    original_height = self.heavy_sword.get_height()
+                    scale_factor = line_length / original_width
+                    self.scaled_heavy_sword = pygame.transform.scale(
+                        self.heavy_sword, (int(line_length), int(original_height * scale_factor))
+                    )
                 if self.alpha == 0:  # right
                     rect_left_x = self.posx + 0.5 * hit_box_width
                     rect_top_y = self.posy - 0.5 * hit_box_height
@@ -299,17 +309,6 @@ class Robot:
                     heavy_sword_rotated = pygame.transform.rotate(self.scaled_heavy_sword, -270)
                 else:  # failsafe
                     print("how did you do this? alpha=", self.alpha)
-
-            if self.scaled_heavy_sword is None:
-                # Berechne die Länge der Linie
-                line_length = hit_box_width
-                # Skalieren der Kreissäge auf die Länge der Linie
-                original_width = self.heavy_sword.get_width()
-                original_height = self.heavy_sword.get_height()
-                scale_factor = line_length / original_width
-                self.scaled_heavy_sword = pygame.transform.scale(
-                    self.heavy_sword, (int(line_length), int(original_height * scale_factor))
-                )
 
             if 30 <= self.melee_cd <= 60:
                 hit_box = pygame.Rect(rect_left_x, rect_top_y, hit_box_width, hit_box_height)
