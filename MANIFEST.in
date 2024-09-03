@@ -2,3 +2,5 @@ recursive-include src/CyberClash/Maps *
 recursive-include src/CyberClash/fonts *
 recursive-include src/CyberClash/Robots *
 recursive-include src/CyberClash/Tiles *
+recursive-include src/CyberClash/Sounds *
+recursive-include src/CyberClash/Animation *
