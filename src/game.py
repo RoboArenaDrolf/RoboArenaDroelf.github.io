@@ -29,6 +29,7 @@ fullscreen = False
 mouse_visibility_counter = 0
 mouse_visible = True
 framerate = 120
+framearray = []
 
 screen = pygame.display.set_mode(display_resolution)
 pygame.display.set_caption("Robo Arena")
@@ -404,7 +405,7 @@ def robot_movement(robot):
         # we can at best move half as fast as on a normal tile
     else:
         robot.change_velocity_cap(robot.vel + robot.accel)
-    movement.move_robot(robot, robot.vel, arena)
+    movement.move_robot(robot, robot.vel, arena, framearray)
 
 
 def robot_attacks(robot):
@@ -744,6 +745,11 @@ def item_selections():
 while run:
     pygame.time.delay(0)
     dt = clock.tick(framerate)  # dt = milliseconds since last call
+    if len(framearray) < 30:
+        framearray.append(dt)
+    elif len(framearray) == 30:
+        framearray.pop(0)
+        framearray.append(dt)
     #  print(dt)
     #  clock.tick(framerate) with framerate = 120 makes sure that we don't run faster than 120 frames per second
     #  we can still experience slowdowns
