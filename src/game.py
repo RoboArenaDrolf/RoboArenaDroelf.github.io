@@ -651,9 +651,9 @@ def keydown_handling(event):
         elif key == pygame.K_f:
             player_robot.take_damage_debug(10)
         elif key == pygame.K_SPACE and (not player_robot.no_move):
-            jumping_sound.play()
             if player_robot.jump_counter <= 1:
                 player_robot.jump = True
+                jumping_sound.play()
     elif build_arena:
         handle_build_arena_menu_events(event)
 
@@ -667,6 +667,7 @@ def joybuttons_handling(event):
             if event.button == 0:
                 if player_robot.jump_counter <= 1:
                     player_robot.jump = True
+                    jumping_sound.play()
             elif event.button == 7:
                 game_paused = True
             elif event.button == 5:
