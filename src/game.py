@@ -72,7 +72,7 @@ clock = pygame.time.Clock()
 
 pygame.mixer.init()
 jumping_sound = pygame.mixer.Sound("../Sounds/jumping.mp3")
-jumping_sound.set_volume(0.7)
+jumping_sound.set_volume(0.6)
 death_sound = pygame.mixer.Sound("../Sounds/death.mp3")
 death_sound.set_volume(0.7)
 footsteps_sound = pygame.mixer.Sound("../Sounds/footsteps.mp3")
