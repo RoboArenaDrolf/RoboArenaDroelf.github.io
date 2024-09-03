@@ -477,9 +477,7 @@ class Robot:
 
 
             # now we have the rectangle, so we draw it and calculate the hit_reg
-            pygame.draw.rect(screen, "red", hit_box, width=2)
             self.hit_reg_rect(robots, arena, hit_box, 4, self.player_number)
-            pygame.draw.rect(screen, "red", hit_box2, width=2)
             self.hit_reg_rect(robots, arena, hit_box2, 2, self.player_number)
             #flammenwerfer_sound.play()
 
@@ -593,7 +591,6 @@ class Robot:
 
             # now we have the rectangle, so we draw it and calculate the hit_reg
             hit_box = pygame.Rect(rect_left_x, rect_top_y, hit_box_width, hit_box_height)
-            pygame.draw.rect(screen, "red", hit_box, width=2)
             screen.blit(self.scaled_laser, hit_box)
             self.hit_reg_rect(robots, arena, hit_box, 10, self.player_number)
 
