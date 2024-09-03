@@ -158,7 +158,6 @@ class Robot:
         self.vel = va
 
     def take_damage_debug(self, d):
-        self.damage_sound.play()
         if d <= self.health:
             self.health = self.health - d
         else:
@@ -827,6 +826,7 @@ class Robot:
             self.hit_cooldown -= 1
 
     def recoil(self, arena, robot, direction):
+        self.damage_sound.play()
         robot.hit_cooldown = 20  # setting this so the robot doesn't get launched into space
 
         if direction == Projectile.Direction.UP:
