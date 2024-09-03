@@ -92,8 +92,6 @@ class Robot:
         self.missle_sound.set_volume(0.45)
         self.explosion_sound = pygame.mixer.Sound("../Sounds/explosion.mp3")
         self.explosion_sound.set_volume(0.45)
-        self.heavy_sword_sound = pygame.mixer.Sound("../Sounds/heavy_sword.mp3")
-        self.heavy_sword_sound.set_volume(0.5)
         self.laser = pygame.image.load('../Animation/laser.png')
         self.scaled_laser = self.laser
 
