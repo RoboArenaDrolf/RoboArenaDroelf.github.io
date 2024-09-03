@@ -536,24 +536,24 @@ class Robot:
                 while i < x_right and not self.projectiles[proj_number].check_collision_x(arena):
                     # we take our tracer projectile and move it until we hit either a block, the edge of the map,
                     # or the maximum range
-                    self.projectiles[proj_number].move_projectile()
+                    self.projectiles[proj_number].move_projectile(1)
                     x_col += 1  # we save the x cord of our final point at the end of the loop
                     i += 1
             else:  # left
                 while i < x_left and not self.projectiles[proj_number].check_collision_x(arena):
-                    self.projectiles[proj_number].move_projectile()
+                    self.projectiles[proj_number].move_projectile(1)
                     x_col += 1
                     i += 1
             self.projectiles.pop(proj_number)  # once we have a collision we remove the projectile
         else:  # up or down
             if self.alpha == 90:  # down
                 while i < y_down and not self.projectiles[proj_number].check_collision_y(arena):
-                    self.projectiles[proj_number].move_projectile()
+                    self.projectiles[proj_number].move_projectile(1)
                     y_col += 1  # or y cord in these 2 cases
                     i += 1
             else:  # up
                 while i < y_up and not self.projectiles[proj_number].check_collision_y(arena):
-                    self.projectiles[proj_number].move_projectile()
+                    self.projectiles[proj_number].move_projectile(1)
                     y_col += 1
                     i += 1
             self.projectiles.pop(proj_number)  # once we are done here we can delete the projectile
@@ -753,7 +753,7 @@ class Robot:
         for i in range(0, len(self.explosions)):
             self.explosions.pop(0)
 
-    def paint_robot(self, pygame, screen):
+    def paint_robot(self, pygame, screen, dt_scaled):
         # Bild des Roboters zeichnen
         image_rect = self.first_robot.get_rect(center=(self.posx, self.posy))
         pn = self.player_number
@@ -814,4 +814,4 @@ class Robot:
             # print(self.player_number, i.player_number)  # why do all robots share the projectiles?
             if self.player_number == i.player_number:  # this should fix it
                 i.paint_projectile(pygame, screen)
-                i.move_projectile()
+                i.move_projectile(dt_scaled)

@@ -38,9 +38,9 @@ class Projectile:
         self.type = t
         self.recoil = rec
 
-    def move_projectile(self):
-        self.x = self.x + self.x_speed
-        self.y = self.y + self.y_speed
+    def move_projectile(self, dt_scaled):
+        self.x = self.x + self.x_speed * dt_scaled
+        self.y = self.y + self.y_speed * dt_scaled
 
     def bounce(self):
         self.bounce_count = self.bounce_count - 1

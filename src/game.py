@@ -366,7 +366,7 @@ def robot_handling(robot):
     # Robot movement
     robot_movement(robot)
     # Robot rendering
-    robot.paint_robot(pygame, screen)
+    robot.paint_robot(pygame, screen, (sum(framearray)/len(framearray))/15)
     # Check if robot dies
     check_robot_death(robot)
 
