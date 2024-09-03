@@ -68,6 +68,12 @@ class Robot:
         self.second_robot = pygame.image.load(self.robots_base_path + "secondRobot.png")
         self.second_robot = pygame.transform.scale(self.second_robot, (self.radius * 2, self.radius * 2))
         self.second_robot_flipped = pygame.transform.flip(self.second_robot, True, False)
+        self.third_robot = pygame.image.load(self.robots_base_path + "thirdRobot.png")
+        self.third_robot = pygame.transform.scale(self.third_robot, (self.radius * 2, self.radius * 2))
+        self.third_robot_flipped = pygame.transform.flip(self.third_robot, True, False)
+        self.fourth_robot = pygame.image.load(self.robots_base_path + "fourthRobot.png")
+        self.fourth_robot = pygame.transform.scale(self.fourth_robot, (self.radius * 2, self.radius * 2))
+        self.fourth_robot_flipped = pygame.transform.flip(self.fourth_robot, True, False)
 
         self.tile_below = 0
 
@@ -298,7 +304,7 @@ class Robot:
             if self.melee_cd == 0:
                 pygame.draw.line(screen, "red", line_start, line_end, width=4)
                 self.attack_buffer = 0
-                self.hit_reg_line(robots, arena, line_start, line_end, 1)#
+                self.hit_reg_line(robots, arena, line_start, line_end, 1)
                 self.kreissäge_sound.play()
                 screen.blit(kreissäge_rotated, kreissäge_rect)
             elif self.melee_cd % 5 == 0 and self.melee_cd <= 30:
@@ -803,7 +809,7 @@ class Robot:
             if not self.direction_left:
                 screen.blit(self.fourth_robot, image_rect)
             elif self.direction_left:
-                screen.blit(self.fourths_robot_flipped, image_rect)
+                screen.blit(self.fourth_robot_flipped, image_rect)
         # corresponding health UI
         health_font = pygame.font.Font(None, int(pygame.display.get_window_size()[1] / 25))
         player_health = health_font.render(f"{self.health}", True, f"{self.color}")
