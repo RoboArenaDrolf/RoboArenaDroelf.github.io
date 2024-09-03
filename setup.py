@@ -1,0 +1,16 @@
+from setuptools import setup, find_packages
+
+setup(
+    name="CyberClash",
+    version="1.0.0",
+    package_dir={"": "src"},
+    packages=find_packages(where="src"),
+    python_requires=">=3.0",
+    install_requires=["pygame", "screeninfo"],
+    include_package_data=True,
+    entry_points={
+        'console_scripts': [
+            'start-game=CyberClash.__main__:main',
+        ]
+    }
+)
