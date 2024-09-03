@@ -82,6 +82,8 @@ heavy_sword_sound = pygame.mixer.Sound("../Sounds/heavy_sword.mp3")
 heavy_sword_sound.set_volume(0.5)
 laser_sound = pygame.mixer.Sound("../Sounds/laser.mp3")
 laser_sound.set_volume(0.5)
+fire_sound = pygame.mixer.Sound("../Sounds/fire.mp3")
+fire_sound.set_volume(0.3)
 
 def get_json_filenames(directory):
     json_files = []
@@ -603,6 +605,7 @@ def keydown_handling(event):
             player_robot.ranged_attack(screen, robots, arena, "bouncy")
             player_robot.ranged_cd += 1
         elif key == pygame.K_k and player_robot.melee_cd == 0:
+            fire_sound.play()
             player_robot.melee_attack(pygame, screen, robots, arena, "flame")
             player_robot.melee_cd += 1
         elif key == pygame.K_u and player_robot.ranged_cd == 0:
