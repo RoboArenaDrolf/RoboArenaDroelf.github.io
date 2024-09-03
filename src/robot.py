@@ -1035,4 +1035,3 @@ class Robot:
 
         # Den eigentlichen Text rendern
         screen.blit(recoil_text, recoil_rect)
-
