@@ -245,7 +245,6 @@ class Robot:
             if self.scaled_heavy_sword is None:
                 # Berechne die Länge der Linie
                 line_length = hit_box_width
-
                 # Skalieren der Kreissäge auf die Länge der Linie
                 original_width = self.heavy_sword.get_width()
                 original_height = self.heavy_sword.get_height()
@@ -254,7 +253,6 @@ class Robot:
                                                                  (int(line_length), int(original_height * scale_factor)))
 
             if 30 <= self.melee_cd <= 60:
-                self.heavy_sword_sound.play()
                 hit_box = pygame.Rect(rect_left_x, rect_top_y, hit_box_width, hit_box_height)
                 self.hit_reg_rect(robots, arena, hit_box, 10, self.player_number)
                 screen.blit(heavy_sword_rotated, hit_box)
@@ -775,8 +773,7 @@ class Robot:
     def handle_explosions(self, screen, arena, robots):
         for i in range(0, len(self.explosions) - 1):
             if self.explosions[i + 1] > 0:
-                if not self.explosion_sound.play():
-                    self.explosion_sound.play()
+                self.explosion_sound.play()
                 #pygame.draw.rect(screen, "red", self.explosions[i], 1)
                 self.hit_reg_rect(robots, arena, self.explosions[i], 5, -1)  # explosive damage is 5 for now
                 self.explosions[i + 1] -= 1
