@@ -84,6 +84,9 @@ laser_sound = pygame.mixer.Sound("../Sounds/laser.mp3")
 laser_sound.set_volume(0.5)
 fire_sound = pygame.mixer.Sound("../Sounds/fire.mp3")
 fire_sound.set_volume(0.3)
+flammenwerfer_sound = pygame.mixer.Sound("../Sounds/flammenwerfer.mp3")
+flammenwerfer_sound.set_volume(0.7)
+
 
 def get_json_filenames(directory):
     json_files = []

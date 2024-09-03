@@ -90,8 +90,6 @@ class Robot:
         self.kreissäge_sound.set_volume(0.45)
         self.fight_sound = pygame.mixer.Sound("../Sounds/fight.mp3")
         self.fight_sound.set_volume(0.7)
-        self.flammenwerfer_sound = pygame.mixer.Sound("../Sounds/flammenwerfer.mp3")
-        self.flammenwerfer_sound.set_volume(0.7)
 
         self.shooting_sound = pygame.mixer.Sound("../Sounds/shooting.mp3")
         self.laser_sound = pygame.mixer.Sound("../Sounds/laser.mp3")
@@ -481,7 +479,6 @@ class Robot:
             self.hit_reg_rect(robots, arena, hit_box, 4, self.player_number)
             pygame.draw.rect(screen, "red", hit_box2, width=2)
             self.hit_reg_rect(robots, arena, hit_box2, 2, self.player_number)
-            #flammenwerfer_sound.play()
 
     def ranged_attack(self, screen, robots, arena, type):
         if self.ranged_cd == 0 or self.ranged_cd == 10:
@@ -737,6 +734,8 @@ class Robot:
                     explosive_rect = pygame.Rect(rectx - 4 * rectr, recty - 4 * rectr, 8 * rectr, 8 * rectr)
                     self.explosions.append(explosive_rect)  # add the explosion
                     self.explosions.append(5)  # add the duration
+                    self.missle_sound.stop()
+                    self.explosion_sound.play()
                     # could be consolidated into an object
 
                     # tested with this, we do identify explosions correctly
@@ -819,7 +818,6 @@ class Robot:
     def handle_explosions(self, screen, arena, robots):
         for i in range(0, len(self.explosions) - 1):
             if self.explosions[i + 1] > 0:
-                self.explosion_sound.play()
                 #pygame.draw.rect(screen, "red", self.explosions[i], 1)
                 self.hit_reg_rect(robots, arena, self.explosions[i], 5, -1)  # explosive damage is 5 for now
                 self.explosions[i + 1] -= 1
