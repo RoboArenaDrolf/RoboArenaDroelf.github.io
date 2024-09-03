@@ -17,8 +17,19 @@ class Movement:
 
         # Bewegung in y-Richtung
         robot.posy += robot.vertical_speed
+        no_reset = False
 
         # Kollisionen in y-Richtung überprüfen und behandeln
+        if self.check_tile_type_y(robot, arena) == 1:  # if we touch lava-> take dmg and apply fire
+            robot.take_damage_debug(2, 40)  # 2 damage instantly and 40 frames of fire
+            if robot.hit_cooldown <= 0:
+                if robot.vertical_speed < 0:
+                    direction = Projectile.Direction.DOWN
+                else:
+                    direction = Projectile.Direction.UP
+                robot.recoil(arena, robot, direction, 0.05)
+                no_reset = True
+
         if self.check_collision_y(robot, arena):
             if robot.vertical_speed > 0:  # Kollision von oben
                 # we stand on some tile -> find out which one
@@ -41,18 +52,23 @@ class Movement:
                 robot.posy = (
                     ((robot.posy - arena.y_offset) // arena.tile_size) * arena.tile_size + robot.radius + arena.y_offset
                 )
-            if self.check_tile_type_y(robot, arena) == 1:  # if we touch lava-> take dmg and apply fire
-                robot.take_damage_debug(2, 40)  # 2 damage instantly and 40 frames of fire
-                if robot.hit_cooldown <= 0:
-                    if robot.vertical_speed < 0:
-                        direction = Projectile.Direction.DOWN
-                    else:
-                        direction = Projectile.Direction.UP
-                    robot.recoil(arena, robot, direction, 0.05)
+            if no_reset:
+                pass
             else:
                 robot.vertical_speed = float(0)
+            no_reset = False
 
         # Kollisionen in x-Richtung überprüfen und behandeln
+        if self.check_tile_type_x(robot, arena) == 1:  # if we touch lava-> take dmg
+            robot.take_damage_debug(2, 40)
+            if robot.hit_cooldown <= 0:
+                if x < 0:
+                    direction = Projectile.Direction.RIGHT
+                else:
+                    direction = Projectile.Direction.LEFT
+                robot.recoil(arena, robot, direction, 0.05)
+                no_reset = True
+
         if self.check_collision_x(robot, arena):
             if x > 0:
                 robot.posx = (
@@ -64,17 +80,12 @@ class Movement:
                 robot.posx = (
                     ((robot.posx - arena.x_offset) // arena.tile_size) * arena.tile_size + robot.radius + arena.x_offset
                 )
-            robot.change_acceleration(0)
-            if self.check_tile_type_x(robot, arena) == 1:  # if we touch lava-> take dmg
-                robot.take_damage_debug(2, 40)
-                if robot.hit_cooldown <= 0:
-                    if x < 0:
-                        direction = Projectile.Direction.RIGHT
-                    else:
-                        direction = Projectile.Direction.LEFT
-                    robot.recoil(arena, robot, direction, 0.05)
+            if no_reset:
+                pass
             else:
+                robot.change_acceleration(0)
                 robot.change_velocity(0)
+            no_reset = False
 
         # Sprung
         if robot.jump:
