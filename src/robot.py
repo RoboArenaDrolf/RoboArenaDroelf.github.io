@@ -534,6 +534,7 @@ class Robot:
                 c = "black"
                 b = 0
             elif type == "bouncy":
+                self.shooting_sound.play()
                 self.ranged_explodes = False
                 self.ranged_bounces = True
                 self.ranged_laser = False

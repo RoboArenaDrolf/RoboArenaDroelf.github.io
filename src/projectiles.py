@@ -38,23 +38,27 @@ class Projectile:
         self.type = t
 
         if t != "tracer":
-            missle = pygame.image.load("../Animation/missle.png")
-            scale_factor = self.radius * 3 / missle.get_width()
-            self.missle = pygame.transform.scale(
-                missle, (int(self.radius * 3), int(missle.get_height() * scale_factor))
-            )
+            if t == "explosive":
+                missle = pygame.image.load("../Animation/missle.png")
+                scale_factor = self.radius * 3 / missle.get_width()
+                self.missle = pygame.transform.scale(
+                    missle, (int(self.radius * 3), int(missle.get_height() * scale_factor))
+                )
+            if t == "normal":
+                projectile = pygame.image.load("../Animation/projektil.png")
+                scale_factor = self.radius * 3 / projectile.get_width()
+                self.projectile = pygame.transform.scale(
+                    projectile, (int(self.radius * 3), int(projectile.get_height() * scale_factor))
+                )
 
-            projectile = pygame.image.load("../Animation/projektil.png")
-            scale_factor = self.radius * 3 / projectile.get_width()
-            self.projectile = pygame.transform.scale(
-                projectile, (int(self.radius * 3), int(projectile.get_height() * scale_factor))
-            )
-
-            bounce_projectile = pygame.image.load("../Animation/bounce.png")
-            scale_factor = self.radius * 4 / bounce_projectile.get_width()
-            self.bounce_projectile = pygame.transform.scale(
-                bounce_projectile, (int(self.radius * 4), int(bounce_projectile.get_height() * scale_factor))
-            )
+            if t == "bouncy":
+                bounce_projectile = pygame.image.load("../Animation/bounce.png")
+                scale_factor = self.radius * 4 / bounce_projectile.get_width()
+                self.bounce_projectile = pygame.transform.scale(
+                    bounce_projectile, (int(self.radius * 4), int(bounce_projectile.get_height() * scale_factor))
+                )
+                self.bounce_sound = pygame.mixer.Sound("../Sounds/bounce.mp3")
+                self.bounce_sound.set_volume(0.45)
 
     def move_projectile(self):
         self.x = self.x + self.x_speed
@@ -64,6 +68,7 @@ class Projectile:
         self.bounce_count = self.bounce_count - 1
         self.x_speed = -self.x_speed
         self.y_speed = -self.y_speed
+        self.bounce_sound.play()
 
     def paint_projectile(self, pygame, screen):
         if self.type == "normal":
