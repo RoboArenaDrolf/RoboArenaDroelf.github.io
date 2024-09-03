@@ -38,17 +38,23 @@ class Projectile:
         self.type = t
 
         if t != "tracer":
-            missle = pygame.image.load('../Animation/missle.png')
+            missle = pygame.image.load("../Animation/missle.png")
             scale_factor = self.radius * 3 / missle.get_width()
-            self.missle = pygame.transform.scale(missle,(int(self.radius * 3), int(missle.get_height() * scale_factor)))
+            self.missle = pygame.transform.scale(
+                missle, (int(self.radius * 3), int(missle.get_height() * scale_factor))
+            )
 
-            projectile = pygame.image.load('../Animation/projektil.png')
+            projectile = pygame.image.load("../Animation/projektil.png")
             scale_factor = self.radius * 3 / projectile.get_width()
-            self.projectile = pygame.transform.scale(projectile,(int(self.radius * 3), int(projectile.get_height() * scale_factor)))
+            self.projectile = pygame.transform.scale(
+                projectile, (int(self.radius * 3), int(projectile.get_height() * scale_factor))
+            )
 
-            bounce_projectile = pygame.image.load('../Animation/bounce.png')
+            bounce_projectile = pygame.image.load("../Animation/bounce.png")
             scale_factor = self.radius * 4 / bounce_projectile.get_width()
-            self.bounce_projectile = pygame.transform.scale(bounce_projectile, (int(self.radius * 4), int(bounce_projectile.get_height() * scale_factor)))
+            self.bounce_projectile = pygame.transform.scale(
+                bounce_projectile, (int(self.radius * 4), int(bounce_projectile.get_height() * scale_factor))
+            )
 
     def move_projectile(self):
         self.x = self.x + self.x_speed
@@ -74,24 +80,21 @@ class Projectile:
 
     def paint_missle(self, pygame, screen):
         if self.x_speed < 0 and self.y_speed == 0:
-            missle = pygame.transform.rotate(self.missle,90)
+            missle = pygame.transform.rotate(self.missle, 90)
         elif self.x_speed == 0 and self.y_speed < 0:
-            missle = pygame.transform.rotate(self.missle,0)
+            missle = pygame.transform.rotate(self.missle, 0)
         elif self.x_speed == 0 and self.y_speed > 0:
-            missle = pygame.transform.rotate(self.missle,180)
+            missle = pygame.transform.rotate(self.missle, 180)
         elif self.x_speed > 0 and self.y_speed == 0:
-            missle = pygame.transform.rotate(self.missle,-90)
+            missle = pygame.transform.rotate(self.missle, -90)
         top_left_x = self.x - self.missle.get_width() // 2
         top_left_y = self.y - self.missle.get_height() // 2
         screen.blit(missle, (top_left_x, top_left_y))
-
-
 
     def paint_bounce(self, screen):
         top_left_x = self.x - self.bounce_projectile.get_width() // 2
         top_left_y = self.y - self.bounce_projectile.get_height() // 2
         screen.blit(self.bounce_projectile, (top_left_x, top_left_y))
-
 
     def check_collision_y(self, arena):
         # Überprüfen, ob der Roboter mit einem festen Tile kollidiert auf y-Achse
