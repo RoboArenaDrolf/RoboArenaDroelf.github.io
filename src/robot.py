@@ -168,8 +168,9 @@ class Robot:
         self.vel = va
 
     def take_damage_debug(self, d, fire):
-        if (self.i_frames == 0  # no i-frames we are allowed to take damage
-                and d != 0):  # workarround for 0 damage projectiles to not add i-frames on hit
+        if (
+            self.i_frames == 0 and d != 0  # no i-frames we are allowed to take damage
+        ):  # workarround for 0 damage projectiles to not add i-frames on hit
             if d <= self.health:
                 self.health = self.health - d
                 self.i_frames = 10
@@ -945,9 +946,12 @@ class Robot:
     def handle_explosions(self, screen, arena, robots):
         for i in range(0, len(self.explosions)):
             if self.explosions[i].duration > 0:
-                screen.blit(self.scaled_explosion, self.explosions[i])
-                self.hit_reg_rect(robots, arena, self.explosions[i].rectangle, self.explosions[i].damage, -1, 0,
-                                  0.1)
+                if self.scaled_explosion is None:
+                    self.scaled_explosion = pygame.transform.scale(
+                        self.explosion, (self.explosions[i].rectangle.width, self.explosions[i].rectangle.height)
+                    )
+                screen.blit(self.scaled_explosion, self.explosions[i].rectangle)
+                self.hit_reg_rect(robots, arena, self.explosions[i].rectangle, self.explosions[i].damage, -1, 0, 0.1)
                 self.explosions[i].reduce_duration()
             elif self.explosions[i].duration == 0:
                 self.explosions.pop(i)

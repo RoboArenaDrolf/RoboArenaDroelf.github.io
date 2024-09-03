@@ -8,7 +8,7 @@ class Movement:
 
     def move_robot(self, robot, x, arena, frames):
 
-        dt_scaled = (sum(frames)/len(frames))/15
+        dt_scaled = (sum(frames) / len(frames)) / 15
         # Bewegung in x-Richtung
         robot.posx += x * dt_scaled
 

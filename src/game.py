@@ -419,7 +419,7 @@ def robot_handling(robot):
     # Robot movement
     robot_movement(robot)
     # Robot rendering
-    robot.paint_robot(pygame, screen, (sum(framearray)/len(framearray))/15)
+    robot.paint_robot(pygame, screen, (sum(framearray) / len(framearray)) / 15)
     # Check if robot dies
     check_robot_death(robot)
 
@@ -733,10 +733,10 @@ def mouse_handling():
 
 
 def screens_painting():
-    global menu_items, resume_item, main_menu_item, quit_item, play_item, build_arena_item, settings_item, \
-        exit_item, controller_on_off_item, resolution_items, fullscreen_item, back_item, input_rect_x_tiles, \
-        input_rect_y_tiles, start_building_item, one_player_item, two_player_item, three_player_item, \
-        four_player_item, level_items, robot1_item, robot2_item
+    global menu_items, resume_item, main_menu_item, quit_item, play_item, build_arena_item, settings_item, exit_item, \
+        controller_on_off_item, resolution_items, fullscreen_item, back_item, input_rect_x_tiles, input_rect_y_tiles, \
+        start_building_item, one_player_item, two_player_item, three_player_item, four_player_item, level_items, \
+        robot1_item, robot2_item
 
     if game_paused:
         menu_items = screens.pause_screen(pygame, screen)
