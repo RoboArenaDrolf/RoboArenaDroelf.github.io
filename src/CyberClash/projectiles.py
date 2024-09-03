@@ -1,4 +1,6 @@
 from enum import Enum
+
+import pkg_resources
 import pygame
 
 
@@ -39,25 +41,25 @@ class Projectile:
 
         if t != "tracer":
             if t == "explosive":
-                missle = pygame.image.load("../Animation/missle.png")
+                missle = pygame.image.load(self.get_file("Animation/missle.png"))
                 scale_factor = self.radius * 3 / missle.get_width()
                 self.missle = pygame.transform.scale(
                     missle, (int(self.radius * 3), int(missle.get_height() * scale_factor))
                 )
             if t == "normal":
-                projectile = pygame.image.load("../Animation/projektil.png")
+                projectile = pygame.image.load(self.get_file("Animation/projektil.png"))
                 scale_factor = self.radius * 3 / projectile.get_width()
                 self.projectile = pygame.transform.scale(
                     projectile, (int(self.radius * 3), int(projectile.get_height() * scale_factor))
                 )
 
             if t == "bouncy":
-                bounce_projectile = pygame.image.load("../Animation/bounce.png")
+                bounce_projectile = pygame.image.load(self.get_file("Animation/bounce.png"))
                 scale_factor = self.radius * 4 / bounce_projectile.get_width()
                 self.bounce_projectile = pygame.transform.scale(
                     bounce_projectile, (int(self.radius * 4), int(bounce_projectile.get_height() * scale_factor))
                 )
-                self.bounce_sound = pygame.mixer.Sound("../Sounds/bounce.mp3")
+                self.bounce_sound = pygame.mixer.Sound(self.get_file("Sounds/bounce.mp3"))
                 self.bounce_sound.set_volume(0.45)
 
     def move_projectile(self):
@@ -126,3 +128,7 @@ class Projectile:
             int((self.y - arena.y_offset - self.radius / 2) // arena.tile_size),
         ]
         return arena.is_solid(x_positions, y_positions)
+
+    @staticmethod
+    def get_file(filename):
+        return pkg_resources.resource_filename("CyberClash", filename)

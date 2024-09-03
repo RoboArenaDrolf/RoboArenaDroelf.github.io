@@ -37,7 +37,10 @@ class Arena:
             """
             for member in cls:
                 member.image = pygame.transform.scale(
-                    pygame.image.load(pkg_resources.resource_filename('CyberClash', base_path + member.filename)).convert(), (tile_size, tile_size)
+                    pygame.image.load(
+                        pkg_resources.resource_filename("CyberClash", base_path + member.filename)
+                    ).convert(),
+                    (tile_size, tile_size),
                 )
 
     blocks_base_path = "Tiles/"
@@ -72,13 +75,13 @@ class Arena:
             self._load_map_from_json_helper("emptyMap.json", pygame)
 
     def _load_map_from_json_helper(self, filename, pygame):
-        with open(pkg_resources.resource_filename('CyberClash', self.maps_base_path + filename), "r") as f:
+        with open(pkg_resources.resource_filename("CyberClash", self.maps_base_path + filename), "r") as f:
             data = json.load(f)
             self.num_tiles_x = data["num_tiles_x"]
             self.num_tiles_y = data["num_tiles_y"]
             self.tiles = [[Arena.TileType[tile] for tile in row] for row in data["tiles"]]
             self._background_image_unscaled = pygame.image.load(
-                pkg_resources.resource_filename('CyberClash', self.maps_base_path + data["background_image"])
+                pkg_resources.resource_filename("CyberClash", self.maps_base_path + data["background_image"])
             ).convert()
             self._background_image_filename = self.maps_base_path + data["background_image"]
             self._spawn_positions_unscaled = data["spawn_positions_unscaled"]

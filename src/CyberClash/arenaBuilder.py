@@ -469,5 +469,5 @@ class ArenaBuilder(Arena):
             "spawn_positions_unscaled": self._spawn_positions_unscaled,
             "tiles": [[tile.name for tile in row] for row in self.tiles],
         }
-        with open(pkg_resources.resource_filename('CyberClash', self.maps_base_path + filename), "w") as f:
+        with open(pkg_resources.resource_filename("CyberClash", self.maps_base_path + filename), "w") as f:
             json.dump(data, f)

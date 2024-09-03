@@ -65,52 +65,52 @@ class Robot:
         self.health = self.health_max
         self.color = c
         self.player_number = pn
-        self.first_robot = pygame.image.load(pkg_resources.resource_filename('CyberClash', self.robots_base_path + "firstRobot.png"))
+        self.first_robot = pygame.image.load(self.get_file(self.robots_base_path + "firstRobot.png"))
         self.first_robot = pygame.transform.scale(self.first_robot, (self.radius * 2, self.radius * 2))
         self.first_robot_flipped = pygame.transform.flip(self.first_robot, True, False)
-        self.second_robot = pygame.image.load(pkg_resources.resource_filename('CyberClash', self.robots_base_path + "secondRobot.png"))
+        self.second_robot = pygame.image.load(self.get_file(self.robots_base_path + "secondRobot.png"))
         self.second_robot = pygame.transform.scale(self.second_robot, (self.radius * 2, self.radius * 2))
         self.second_robot_flipped = pygame.transform.flip(self.second_robot, True, False)
-        self.third_robot = pygame.image.load(pkg_resources.resource_filename('CyberClash', self.robots_base_path + "thirdRobot.png"))
+        self.third_robot = pygame.image.load(self.get_file(self.robots_base_path + "thirdRobot.png"))
         self.third_robot = pygame.transform.scale(self.third_robot, (self.radius * 2, self.radius * 2))
         self.third_robot_flipped = pygame.transform.flip(self.third_robot, True, False)
-        self.fourth_robot = pygame.image.load(pkg_resources.resource_filename('CyberClash', self.robots_base_path + "fourthRobot.png"))
+        self.fourth_robot = pygame.image.load(self.get_file(self.robots_base_path + "fourthRobot.png"))
         self.fourth_robot = pygame.transform.scale(self.fourth_robot, (self.radius * 2, self.radius * 2))
         self.fourth_robot_flipped = pygame.transform.flip(self.fourth_robot, True, False)
 
         self.tile_below = 0
 
-        self.kreissäge = pygame.image.load("../Animation/kreissäge.png")
+        self.kreissäge = pygame.image.load(self.get_file("Animation/kreissäge.png"))
         self.scaled_kreissäge = None
-        self.schwert = pygame.image.load("../Animation/schwert.png")
+        self.schwert = pygame.image.load(self.get_file("Animation/schwert.png"))
         self.scaled_schwert = None
-        self.flammen = pygame.image.load("../Animation/flammen.png")
+        self.flammen = pygame.image.load(self.get_file("Animation/flammen.png"))
         self.scaled_flammen = self.flammen
         self.extra_flammen = None
-        self.heavy_sword = pygame.image.load("../Animation/massive_sword.png")
+        self.heavy_sword = pygame.image.load(self.get_file("Animation/massive_sword.png"))
         self.scaled_heavy_sword = None
-        self.explosion = pygame.image.load("../Animation/explosion.png")
+        self.explosion = pygame.image.load(self.get_file("Animation/explosion.png"))
         self.scaled_explosion = None
 
-        self.kreissäge_sound = pygame.mixer.Sound("../Sounds/säge.mp3")
+        self.kreissäge_sound = pygame.mixer.Sound(self.get_file("Sounds/säge.mp3"))
         self.kreissäge_sound.set_volume(0.45)
-        self.fight_sound = pygame.mixer.Sound("../Sounds/fight.mp3")
+        self.fight_sound = pygame.mixer.Sound(self.get_file("Sounds/fight.mp3"))
         self.fight_sound.set_volume(0.7)
-        self.shooting_sound = pygame.mixer.Sound("../Sounds/shooting.mp3")
-        self.laser_sound = pygame.mixer.Sound("../Sounds/laser.mp3")
-        self.missle_sound = pygame.mixer.Sound("../Sounds/missle.mp3")
+        self.shooting_sound = pygame.mixer.Sound(self.get_file("Sounds/shooting.mp3"))
+        self.laser_sound = pygame.mixer.Sound(self.get_file("Sounds/laser.mp3"))
+        self.missle_sound = pygame.mixer.Sound(self.get_file("Sounds/missle.mp3"))
         self.missle_sound.set_volume(0.45)
-        self.explosion_sound = pygame.mixer.Sound("../Sounds/explosion.mp3")
+        self.explosion_sound = pygame.mixer.Sound(self.get_file("Sounds/explosion.mp3"))
         self.explosion_sound.set_volume(0.45)
-        self.laser = pygame.image.load("../Animation/laser.png")
+        self.laser = pygame.image.load(self.get_file("Animation/laser.png"))
         self.scaled_laser = self.laser
-        self.damage_sound = pygame.mixer.Sound("../Sounds/damage.mp3")
+        self.damage_sound = pygame.mixer.Sound(self.get_file("Sounds/damage.mp3"))
         self.damage_sound.set_volume(0.3)
-        self.heavy_sword_sound = pygame.mixer.Sound("../Sounds/heavy_sword.mp3")
+        self.heavy_sword_sound = pygame.mixer.Sound(self.get_file("Sounds/heavy_sword.mp3"))
         self.heavy_sword_sound.set_volume(0.5)
-        self.laser_sound = pygame.mixer.Sound("../Sounds/laser.mp3")
+        self.laser_sound = pygame.mixer.Sound(self.get_file("Sounds/laser.mp3"))
         self.laser_sound.set_volume(0.5)
-        self.fire_sound = pygame.mixer.Sound("../Sounds/fire.mp3")
+        self.fire_sound = pygame.mixer.Sound(self.get_file("Sounds/fire.mp3"))
         self.fire_sound.set_volume(0.3)
 
     def change_acceleration(self, a):
@@ -921,7 +921,9 @@ class Robot:
         screen_height = pygame.display.get_window_size()[1]
         font_path = "fonts/Bigdex.ttf"
         # Eine coole Schriftart laden
-        recoil_font = pygame.font.Font(pkg_resources.resource_filename('CyberClash', font_path), int(screen_height / 20))
+        recoil_font = pygame.font.Font(
+            pkg_resources.resource_filename("CyberClash", font_path), int(screen_height / 20)
+        )
         # Rückstoßprozente als Text rendern
         recoil_text = recoil_font.render(f"{int(recoil_percent * 100)}%", True, color)
         recoil_rect = recoil_text.get_rect(
@@ -941,3 +943,7 @@ class Robot:
 
         # Den eigentlichen Text rendern
         screen.blit(recoil_text, recoil_rect)
+
+    @staticmethod
+    def get_file(filename):
+        return pkg_resources.resource_filename("CyberClash", filename)

@@ -74,20 +74,25 @@ initial_window_pos = window.position
 
 clock = pygame.time.Clock()
 
+
+def get_file(filename):
+    return pkg_resources.resource_filename("CyberClash", filename)
+
+
 pygame.mixer.init()
-jumping_sound = pygame.mixer.Sound("../Sounds/jumping.mp3")
+jumping_sound = pygame.mixer.Sound(get_file("Sounds/jumping.mp3"))
 jumping_sound.set_volume(0.6)
-death_sound = pygame.mixer.Sound("../Sounds/death.mp3")
+death_sound = pygame.mixer.Sound(get_file("Sounds/death.mp3"))
 death_sound.set_volume(0.7)
-footsteps_sound = pygame.mixer.Sound("../Sounds/footsteps.mp3")
-click_sound = pygame.mixer.Sound("../Sounds/click.mp3")
-music = pygame.mixer.Sound("../Sounds/music.mp3")
+footsteps_sound = pygame.mixer.Sound(get_file("Sounds/footsteps.mp3"))
+click_sound = pygame.mixer.Sound(get_file("Sounds/click.mp3"))
+music = pygame.mixer.Sound(get_file("Sounds/music.mp3"))
 
 
 def get_json_filenames(directory):
     json_files = []
     # Gehe durch alle Dateien im angegebenen Verzeichnis
-    for filename in pkg_resources.resource_listdir('CyberClash', directory):
+    for filename in pkg_resources.resource_listdir("CyberClash", directory):
         # Überprüfe, ob die Datei die Endung .json hat
         if filename.endswith(".json"):
             # Überprüfe, ob es nicht die emptyMap ist, denn diese wird ausgeschlossen
@@ -730,10 +735,10 @@ def mouse_handling():
 
 
 def screens_painting():
-    global menu_items, resume_item, main_menu_item, quit_item, play_item, build_arena_item, settings_item, \
-        exit_item, controller_on_off_item, resolution_items, fullscreen_item, back_item, input_rect_x_tiles, \
-        input_rect_y_tiles, start_building_item, one_player_item, two_player_item, three_player_item, \
-        four_player_item, level_items, robot1_item, robot2_item
+    global menu_items, resume_item, main_menu_item, quit_item, play_item, build_arena_item, settings_item, exit_item, \
+        controller_on_off_item, resolution_items, fullscreen_item, back_item, input_rect_x_tiles, input_rect_y_tiles, \
+        start_building_item, one_player_item, two_player_item, three_player_item, four_player_item, level_items, \
+        robot1_item, robot2_item
 
     if game_paused:
         menu_items = screens.pause_screen(pygame, screen)
