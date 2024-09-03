@@ -31,6 +31,7 @@ fullscreen = False
 mouse_visibility_counter = 0
 mouse_visible = True
 framerate = 120
+framearray = []
 
 screen = pygame.display.set_mode(display_resolution)
 pygame.display.set_caption("Robo Arena")
@@ -255,7 +256,7 @@ def handle_start_game_menu_events():
         arena.tile_size / 50.0,
         arena.tile_size / 50.0,
         arena.tile_size / 10.0,
-        100,
+        200,
         "blue",
         0,
     )
@@ -267,7 +268,7 @@ def handle_start_game_menu_events():
         arena.tile_size / 50.0,
         arena.tile_size / 50.0,
         arena.tile_size / 10.0,
-        100,
+        200,
         "red",
         1,
     )
@@ -279,7 +280,7 @@ def handle_start_game_menu_events():
         arena.tile_size / 50.0,
         arena.tile_size / 50.0,
         arena.tile_size / 10.0,
-        100,
+        200,
         "green",
         2,
     )
@@ -291,7 +292,7 @@ def handle_start_game_menu_events():
         arena.tile_size / 50.0,
         arena.tile_size / 50.0,
         arena.tile_size / 10.0,
-        100,
+        200,
         "yellow",
         3,
     )
@@ -319,9 +320,13 @@ def handle_start_game_menu_events():
         # print("purging")
         # when we start a new round delete all projectiles that may still exist
         robot1.reset_projectiles()
+        robot1.reset_explosions()
         robot2.reset_projectiles()
+        robot2.reset_explosions()
         robot3.reset_projectiles()
+        robot3.reset_explosions()
         robot4.reset_projectiles()
+        robot4.reset_explosions()
 
 
 def handle_death_or_win_screen_events():
@@ -357,13 +362,14 @@ def handle_pause_screen_events():
 
 
 def handle_map_screen_events():
-    global map, start_game, arena, map_filename
+    global map, start_game, arena, map_filename, movement
 
     for i, level_item in enumerate(level_items):
         if level_item.pressed:
             click_sound.play()
             map_filename = maps[i]
             arena = Arena(map_filename, pygame)
+            movement = Movement(arena.tile_size / 120.0)
             recalculate_robot_values()
             map = False
             start_game = True
@@ -404,6 +410,8 @@ def game_loop():
     for player_robot in robots:
         robot_handling(player_robot)
         player_robot.decrease_hit_cooldown()
+        player_robot.decrease_i_frames()
+        player_robot.fire_damage()
     # moved hit_reg here since it only should be done once
     robots[0].ranged_hit_reg(pygame, screen, robots, arena)
     # Multiplayer: Check if only one is left
@@ -418,7 +426,7 @@ def robot_handling(robot):
     # Robot movement
     robot_movement(robot)
     # Robot rendering
-    robot.paint_robot(pygame, screen)
+    robot.paint_robot(pygame, screen, (sum(framearray) / len(framearray)) / 15)
     # Check if robot dies
     check_robot_death(robot)
 
@@ -459,7 +467,7 @@ def robot_movement(robot):
         # we can at best move half as fast as on a normal tile
     else:
         robot.change_velocity_cap(robot.vel + robot.accel)
-    movement.move_robot(robot, robot.vel, arena, dt)
+    movement.move_robot(robot, robot.vel, arena, framearray)
 
 
 def robot_attacks(robot):
@@ -484,7 +492,7 @@ def robot_attacks(robot):
     elif robot.melee_cd != 0 and robot.flame_attack:
         if robot.melee_cd == 180:  # reset cooldown
             robot.melee_cd = 0
-        elif 5 < robot.melee_cd < 60:  # attack will stay for a certain duration
+        elif robot.melee_cd < 60:  # attack will stay for a certain duration
             robot.melee_attack(pygame, screen, robots, arena, "flame")
             robot.melee_cd += 1
         else:
@@ -498,7 +506,7 @@ def robot_attacks(robot):
         else:
             robot.melee_cd += 1
     # Player ranged attack cooldown
-    if robot.ranged_cd != 0 and (not robot.ranged_explodes and not robot.ranged_bounces and not robot.ranged_laser):
+    if robot.ranged_cd != 0 and robot.ranged_normal:
         if robot.ranged_cd == 60:
             robot.ranged_cd = 0
         elif robot.ranged_cd <= 10:  # second ranged attack at ranged_cd == 10
@@ -519,11 +527,12 @@ def robot_attacks(robot):
     elif robot.ranged_cd != 0 and robot.ranged_laser:
         if robot.ranged_cd == 240:  # long cooldown
             robot.ranged_cd = 0
-        elif robot.ranged_cd <= 30:  # laser stays until ranged_cd == 30
+        elif robot.ranged_cd <= 60:  # laser stays until ranged_cd == 30
             robot.ranged_attack(screen, robots, arena, "laser")
             robot.ranged_cd += 1
         else:
             robot.ranged_cd += 1
+            robot.no_move = False
     robot.handle_explosions(screen, arena, robots)
 
 
@@ -640,6 +649,7 @@ def keydown_handling(event):
     if playing and not game_paused:
         player_robot = robots[0]
         key = event.key
+
         if key == pygame.K_LSHIFT and player_robot.melee_cd == 0:
             player_robot.melee_attack(pygame, screen, robots, arena, player_robot.light_melee)
             player_robot.melee_cd += 1
@@ -652,11 +662,6 @@ def keydown_handling(event):
         elif key == pygame.K_r and player_robot.ranged_cd == 0:
             player_robot.ranged_attack(screen, robots, arena, player_robot.heavy_ranged)
             player_robot.ranged_cd += 1
-        elif key == pygame.K_j and player_robot.melee_cd == 0:
-            player_robot.melee_attack(pygame, screen, robots, arena, "stab")
-            player_robot.melee_cd += 1
-        elif key == pygame.K_f:
-            player_robot.take_damage_debug(10)
         elif key == pygame.K_SPACE and (not player_robot.no_move):
             if player_robot.jump_counter <= 1:
                 player_robot.jump = True
@@ -817,7 +822,15 @@ def item_selections():
 ##################################
 while run:
     pygame.time.delay(0)
-    dt = clock.tick(framerate)
+    dt = clock.tick(framerate)  # dt = milliseconds since last call
+    if len(framearray) < 30:
+        framearray.append(dt)
+    elif len(framearray) == 30:
+        framearray.pop(0)
+        framearray.append(dt)
+    #  print(dt)
+    #  clock.tick(framerate) with framerate = 120 makes sure that we don't run faster than 120 frames per second
+    #  we can still experience slowdowns
 
     if mouse_visible:
         mouse_visibility_counter += 1

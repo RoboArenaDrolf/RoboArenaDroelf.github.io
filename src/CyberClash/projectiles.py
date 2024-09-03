@@ -26,8 +26,9 @@ class Projectile:
     type: str
     bounce_count: int
     player_number: int
+    recoil: int
 
-    def __init__(self, x, y, c, r, xs, ys, d, pn, b, t):
+    def __init__(self, x, y, c, r, xs, ys, d, pn, b, t, rec):
         self.x = x
         self.y = y
         self.color = c
@@ -38,6 +39,7 @@ class Projectile:
         self.player_number = pn
         self.bounce_count = b
         self.type = t
+        self.recoil = rec
 
         if t != "tracer":
             if t == "explosive":
@@ -62,9 +64,9 @@ class Projectile:
                 self.bounce_sound = pygame.mixer.Sound(self.get_file("Sounds/bounce.mp3"))
                 self.bounce_sound.set_volume(0.45)
 
-    def move_projectile(self):
-        self.x = self.x + self.x_speed
-        self.y = self.y + self.y_speed
+    def move_projectile(self, dt_scaled):
+        self.x = self.x + self.x_speed * dt_scaled
+        self.y = self.y + self.y_speed * dt_scaled
 
     def bounce(self):
         self.bounce_count = self.bounce_count - 1
