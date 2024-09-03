@@ -1,5 +1,5 @@
 def main():
-    import game
+    import CyberClash.game
 
 
 if __name__ == "__main__":

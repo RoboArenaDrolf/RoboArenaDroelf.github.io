@@ -1,4 +1,4 @@
-from projectiles import Projectile
+from CyberClash.projectiles import Projectile
 
 
 class Movement:

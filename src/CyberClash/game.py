@@ -1,14 +1,16 @@
 import os
+
+import pkg_resources
 import pygame
 from pygame._sdl2.video import Window
 from screeninfo import get_monitors
 import sys
 
-from movement import Movement
-from arena import Arena
-from arenaBuilder import ArenaBuilder
-from robot import Robot
-from screens import Screens
+from CyberClash.movement import Movement
+from CyberClash.arena import Arena
+from CyberClash.arenaBuilder import ArenaBuilder
+from CyberClash.robot import Robot
+from CyberClash.screens import Screens
 
 pygame.init()
 pygame.joystick.init()
@@ -76,7 +78,7 @@ clock = pygame.time.Clock()
 def get_json_filenames(directory):
     json_files = []
     # Gehe durch alle Dateien im angegebenen Verzeichnis
-    for filename in os.listdir(directory):
+    for filename in pkg_resources.resource_listdir('CyberClash', directory):
         # Überprüfe, ob die Datei die Endung .json hat
         if filename.endswith(".json"):
             # Überprüfe, ob es nicht die emptyMap ist, denn diese wird ausgeschlossen

@@ -1,7 +1,9 @@
 import math
+
+import pkg_resources
 import pygame
 
-from src.projectiles import Projectile
+from CyberClash.projectiles import Projectile
 
 
 class Robot:
@@ -23,7 +25,7 @@ class Robot:
     projectiles = []
     melee_cd = 0
     ranged_cd = 0
-    robots_base_path = "./../Robots/"
+    robots_base_path = "Robots/"
     recoil_percent = 0.1
     hit_cooldown = 0
     attack_start: int
@@ -61,10 +63,10 @@ class Robot:
         self.health = self.health_max
         self.color = c
         self.player_number = pn
-        self.first_robot = pygame.image.load(self.robots_base_path + "firstRobot.png")
+        self.first_robot = pygame.image.load(pkg_resources.resource_filename('CyberClash', self.robots_base_path + "firstRobot.png"))
         self.first_robot = pygame.transform.scale(self.first_robot, (self.radius * 2, self.radius * 2))
         self.first_robot_flipped = pygame.transform.flip(self.first_robot, True, False)
-        self.second_robot = pygame.image.load(self.robots_base_path + "secondRobot.png")
+        self.second_robot = pygame.image.load(pkg_resources.resource_filename('CyberClash', self.robots_base_path + "secondRobot.png"))
         self.second_robot = pygame.transform.scale(self.second_robot, (self.radius * 2, self.radius * 2))
         self.second_robot_flipped = pygame.transform.flip(self.second_robot, True, False)
         self.tile_below = 0
@@ -730,9 +732,9 @@ class Robot:
     def draw_recoil_text(self, screen, recoil_percent, player_number, color):
         screen_width = pygame.display.get_window_size()[0]
         screen_height = pygame.display.get_window_size()[1]
-        font_path = "../fonts/Bigdex.ttf"
+        font_path = "fonts/Bigdex.ttf"
         # Eine coole Schriftart laden
-        recoil_font = pygame.font.Font(font_path, int(screen_height / 20))
+        recoil_font = pygame.font.Font(pkg_resources.resource_filename('CyberClash', font_path), int(screen_height / 20))
         # Rückstoßprozente als Text rendern
         recoil_text = recoil_font.render(f"{int(recoil_percent * 100)}%", True, color)
         recoil_rect = recoil_text.get_rect(

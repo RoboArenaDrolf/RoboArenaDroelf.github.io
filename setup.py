@@ -3,8 +3,8 @@ from setuptools import setup, find_packages
 setup(
     name="CyberClash",
     version="1.0.0",
+    packages=find_packages(where='src'),
     package_dir={"": "src"},
-    packages=find_packages(where="src"),
     python_requires=">=3.0",
     install_requires=["pygame", "screeninfo"],
     include_package_data=True,
@@ -12,5 +12,5 @@ setup(
         'console_scripts': [
             'start-game=CyberClash.__main__:main',
         ]
-    }
+    },
 )
