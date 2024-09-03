@@ -775,7 +775,8 @@ class Robot:
     def handle_explosions(self, screen, arena, robots):
         for i in range(0, len(self.explosions) - 1):
             if self.explosions[i + 1] > 0:
-                self.explosion_sound.play()
+                if not self.explosion_sound.play():
+                    self.explosion_sound.play()
                 #pygame.draw.rect(screen, "red", self.explosions[i], 1)
                 self.hit_reg_rect(robots, arena, self.explosions[i], 5, -1)  # explosive damage is 5 for now
                 self.explosions[i + 1] -= 1
