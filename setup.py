@@ -6,7 +6,7 @@ setup(
     packages=find_packages(where="src"),
     package_dir={"": "src"},
     python_requires=">=3.0",
-    install_requires=["pygame", "screeninfo"],
+    install_requires=["pygame", "screeninfo", "pkg_resources"],
     include_package_data=True,
     entry_points={
         "console_scripts": [
