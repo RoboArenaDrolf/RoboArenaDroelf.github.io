@@ -116,6 +116,7 @@ def get_png_filenames(directory):
 
 def update_maps(map_names):
     global maps
+    maps = []
     for name in map_names:
         maps.append(name + ".json")
 
@@ -146,6 +147,8 @@ def reset_selected_item():
 
 def handle_main_menu_events():
     global robots, map, menu, build_arena, settings, run, use_controller
+
+    use_controller = False
 
     if play_item.pressed:
         click_sound.play()
