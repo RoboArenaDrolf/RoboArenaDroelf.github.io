@@ -146,9 +146,7 @@ def reset_selected_item():
 
 
 def handle_main_menu_events():
-    global robots, map, menu, build_arena, settings, run, use_controller
-
-    use_controller = False
+    global robots, map, menu, build_arena, settings, run
 
     if play_item.pressed:
         click_sound.play()
@@ -171,7 +169,9 @@ def handle_main_menu_events():
 
 
 def handle_build_arena_menu_events(event):
-    global input_active_x, input_active_y, build_arena, menu, x_tiles, y_tiles, screens
+    global input_active_x, input_active_y, build_arena, menu, x_tiles, y_tiles, screens, use_controller
+
+    use_controller = False
 
     if event.type == pygame.MOUSEBUTTONDOWN:
         mouse_pos = pygame.mouse.get_pos()
