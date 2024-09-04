@@ -459,9 +459,11 @@ class ArenaBuilder(Arena):
         _, file_extension = os.path.splitext(self._background_image_filename)
         map_name, _ = os.path.splitext(filename)
         try:
-            shutil.copy(self._background_image_filename, os.getcwd() + self.maps_base_path + map_name + file_extension)
+            shutil.copy(pkg_resources.resource_filename("CyberClash", self._background_image_filename),
+                        pkg_resources.resource_filename("CyberClash", self.maps_base_path + map_name + file_extension))
         except shutil.SameFileError:
-            shutil.move(self._background_image_filename, os.getcwd() + self.maps_base_path + map_name + file_extension)
+            shutil.move(pkg_resources.resource_filename("CyberClash", self._background_image_filename),
+                        pkg_resources.resource_filename("CyberClash", self.maps_base_path + map_name + file_extension))
         data = {
             "num_tiles_x": self.num_tiles_x,
             "num_tiles_y": self.num_tiles_y,
